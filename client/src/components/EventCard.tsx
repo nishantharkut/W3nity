@@ -9,7 +9,7 @@ import { format, isAfter, isBefore, addDays } from 'date-fns';
 
 interface EventCardProps {
   event: Event;
-  onViewDetails?: (eventId: string) => void;
+  onViewDetails?: (eventId : string) => void;
   onRegister?: (eventId: string) => void;
 }
 
@@ -200,14 +200,14 @@ const EventCard = ({ event, onViewDetails, onRegister }: EventCardProps) => {
           <Button 
             variant="outline" 
             className="flex-1"
-            onClick={() => onViewDetails?.(event.id)}
+            onClick={() => onViewDetails?.(event._id)}
           >
             View Details
           </Button>
           {isUpcoming && !isSoldOut && (
             <Button 
               className="flex-1 glow-button"
-              onClick={() => onRegister?.(event.id)}
+              onClick={() => onRegister?.(event._id)}
             >
               {event.price > 0 ? 'Buy Ticket' : 'Register Free'}
             </Button>
