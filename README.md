@@ -10,7 +10,7 @@
 - 🎉 **Event Management**  
 - 💬 **Real-Time Community Chat**  
 
-Designed and built in a 2.5-day sprint for **Hack with Gujarat**, SparkVerse lets startups, developers, and communities connect, collaborate, and transact seamlessly — on-chain or off-chain.
+Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets startups, developers, and communities connect, collaborate, and transact seamlessly — on-chain or off-chain.
 
 ---
 
