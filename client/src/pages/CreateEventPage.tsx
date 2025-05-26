@@ -36,22 +36,51 @@ const CreateEventPage = () => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Creating event:', {
-      title,
-      description,
-      category,
-      startDate,
-      endDate,
-      location: { type: locationType, address: location },
-      maxAttendees: Number(maxAttendees),
-      price: Number(price),
-      isOnline,
-      tags
-    });
-    navigate('/events');
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const eventData = {
+    title,
+    description,
+    category,
+    startDate,
+    endDate,
+    location: { type: locationType, address: location },
+    maxAttendees: Number(maxAttendees),
+    price: Number(price),
+    isOnline,
+    tags,
   };
+
+  try {
+    const response = await fetch('http://localhost:8080/api/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(eventData),
+    });
+
+    const text = await response.text(); 
+
+    let data;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch (err) {
+      throw new Error('Invalid JSON response from server');
+    }
+
+    if (!response.ok) {
+      // If server sent error info, use it; else generic error
+      throw new Error(data?.error || 'Failed to create event');
+    }
+
+    console.log('Event created:', data);
+    navigate('/events');
+  } catch (error: any) {
+    alert(`Error: ${error.message}`);
+  }
+};
+
+
 
   return (
     <div className="container mx-auto px-4 py-8">

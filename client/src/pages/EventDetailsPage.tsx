@@ -1,26 +1,50 @@
-
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeft, Calendar, Clock, MapPin, Users, DollarSign } from 'lucide-react';
-import { mockEvents } from '@/lib/mockData';
 import { format } from 'date-fns';
 
 const EventDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  const event = mockEvents.find(e => e.id === id);
-  
-  if (!event) {
+
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch event by ID
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/events/${id}`); // Adjust the endpoint if needed
+        if (!response.ok) {
+          throw new Error('Failed to fetch event');
+        }
+        const data = await response.json();
+        setEvent(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [id]);
+
+  // Loading and error states
+  if (loading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+
+  if (error || !event) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Event not found</h1>
-          <Button onClick={() => navigate('/events')}>Back to Events</Button>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">Event not found</h1>
+        <Button onClick={() => navigate('/events')}>Back to Events</Button>
       </div>
     );
   }
@@ -46,12 +70,12 @@ const EventDetailsPage = () => {
                   <div className="flex items-center space-x-4 text-muted-foreground">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{format(event.startDate, 'EEEE, MMMM do, yyyy')}</span>
+                      <span>{format(new Date(event.startDate), 'EEEE, MMMM do, yyyy')}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Clock className="w-4 h-4" />
                       <span>
-                        {format(event.startDate, 'h:mm a')} - {format(event.endDate, 'h:mm a')}
+                        {format(new Date(event.startDate), 'h:mm a')} - {format(new Date(event.endDate), 'h:mm a')}
                       </span>
                     </div>
                   </div>
@@ -91,9 +115,9 @@ const EventDetailsPage = () => {
                 <div className="flex items-center space-x-2">
                   <MapPin className="w-4 h-4 text-muted-foreground" />
                   <span>
-                    {event.location.type === 'online' 
+                    {event.location?.type === 'online' 
                       ? 'Online Event' 
-                      : event.location.address || 'TBA'
+                      : event.location?.address || 'TBA'
                     }
                   </span>
                 </div>
@@ -138,11 +162,11 @@ const EventDetailsPage = () => {
             <CardContent>
               <div className="flex items-center space-x-3">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={event.organizer.avatar} alt={event.organizer.username} />
-                  <AvatarFallback>{event.organizer.username.charAt(0).toUpperCase()}</AvatarFallback>
+                  <AvatarImage src={event.organizer?.avatar} alt={event.organizer?.username} />
+                  <AvatarFallback>{event.organizer?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="font-medium">{event.organizer.username}</div>
+                  <div className="font-medium">{event.organizer?.username}</div>
                   <div className="text-sm text-muted-foreground">Event Organizer</div>
                 </div>
               </div>

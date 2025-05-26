@@ -9,7 +9,7 @@ import { format, isAfter, isBefore, addDays } from 'date-fns';
 
 interface EventCardProps {
   event: Event;
-  onViewDetails?: (eventId: string) => void;
+  onViewDetails?: (eventId : string) => void;
   onRegister?: (eventId: string) => void;
 }
 
@@ -167,13 +167,13 @@ const EventCard = ({ event, onViewDetails, onRegister }: EventCardProps) => {
         {/* Organizer */}
         <div className="flex items-center space-x-3 p-3 bg-accent/50 rounded-lg">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={event.organizer.avatar} alt={event.organizer.username} />
+            <AvatarImage src={event?.organizer?.avatar} alt={event?.organizer?.username} />
             <AvatarFallback className="text-xs">
-              {event.organizer.username.charAt(0).toUpperCase()}
+              {event?.organizer?.username.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <div className="text-sm font-medium">{event.organizer.username}</div>
+            <div className="text-sm font-medium">{event?.organizer?.username}</div>
             <div className="text-xs text-muted-foreground">Organizer</div>
           </div>
         </div>
@@ -200,14 +200,14 @@ const EventCard = ({ event, onViewDetails, onRegister }: EventCardProps) => {
           <Button 
             variant="outline" 
             className="flex-1"
-            onClick={() => onViewDetails?.(event.id)}
+            onClick={() => onViewDetails?.(event._id)}
           >
             View Details
           </Button>
           {isUpcoming && !isSoldOut && (
             <Button 
               className="flex-1 glow-button"
-              onClick={() => onRegister?.(event.id)}
+              onClick={() => onRegister?.(event._id)}
             >
               {event.price > 0 ? 'Buy Ticket' : 'Register Free'}
             </Button>

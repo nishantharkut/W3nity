@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,12 +9,16 @@ import { useAuthState } from '@/hooks/useAuth';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const { toast } = useToast();
-  const { login } = useAuthState();
+  const { login, error } = useAuthState();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,24 +26,25 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock login success
-      if (email && password) {
-        await login(email, password);
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in.",
-        });
-        navigate('/dashboard');
+      if (formData.email && formData.password) {
+        const result = await login(formData.email, formData.password);
+        console.log(result)
+        if (result?.success) {
+          toast({
+            title: "Welcome back!",
+            description: "You have successfully signed in.",
+          });
+          navigate('/dashboard');
+        } else {
+          throw new Error(result?.error || "Login failed");
+        }
       } else {
         throw new Error('Please fill in all fields');
       }
-    } catch (error) {
+    } catch (err: any) {
       toast({
         title: "Sign in failed",
-        description: "Please check your credentials and try again.",
+        description: err.message || "Please check your credentials and try again.",
         variant: "destructive",
       });
     } finally {
@@ -48,10 +52,17 @@ const LoginPage = () => {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-background via-background to-background/50">
-      <div className="absolute inset-0 bg-gradient-glow opacity-20"></div>
-      
+      <div className="absolute inset-0 bg-gradient-glow opacity-20" />
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">
@@ -76,10 +87,11 @@ const LoginPage = () => {
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={formData.email}
+                    onChange={handleChange}
                     className="pl-10"
                     required
                   />
@@ -92,10 +104,11 @@ const LoginPage = () => {
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                     className="pl-10 pr-10"
                     required
                   />
@@ -122,11 +135,7 @@ const LoginPage = () => {
                 </Link>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full glow-button"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full glow-button" disabled={isLoading}>
                 {isLoading ? (
                   <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
                 ) : (

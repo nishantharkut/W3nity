@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB= require("./db/connectDB.js")
-const userRoutes = require("./routes/userRoutes");
+const userRoutes = require("./routes/userRoutes.js");
 const gigRoutes = require("./routes/gigRoutes");
 // const proposalRoutes = require("./routes/proposalRoutes");
 const eventRoutes = require("./routes/eventRoutes");
@@ -13,11 +13,9 @@ const eventRoutes = require("./routes/eventRoutes");
 dotenv.config();
 const app = express();
 connectDB();
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
 app.use("/api/users", userRoutes);
 app.use("/api/gigs", gigRoutes);
 // app.use("/api/proposals", proposalRoutes);
