@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema(
     location: String,
     skills: [String],
     socialLinks: [String],
+     companyName: { type: String },    // only meaningful if role === 'client'
+    clientSince: { type: Date },
   },
   { timestamps: true }
 );

@@ -9,6 +9,7 @@ const gigRoutes = require("./routes/gigRoutes");
 // const proposalRoutes = require("./routes/proposalRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 // const chatRoutes = require("./routes/chatRoutes");
+const projectRoutes= require("./routes/projectRoutes.js")
 
 dotenv.config();
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/gigs", gigRoutes);
+app.use("/api/projects", projectRoutes)
 // app.use("/api/proposals", proposalRoutes);
 app.use("/api/events", eventRoutes);
 // app.use("/api/chat", chatRoutes);

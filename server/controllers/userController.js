@@ -66,24 +66,21 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-// Update user profile by ID
+
 exports.updateUserProfile = async (req, res) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+
   try {
-    // Define allowed fields to update
-    const allowedUpdates = ["username", "location", "bio"];
-    const updates = Object.fromEntries(
-      Object.entries(req.body).filter(([key]) => allowedUpdates.includes(key))
-    );
-
-    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const { password: _, ...userWithoutPassword } = user._doc;
-    return res.json(userWithoutPassword);
+    const updatedUser = await User.findByIdAndUpdate(id, updatedData, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updatedUser) return res.status(404).json({ error: "User not found" });
+    await updatedUser.save()
+    res.status(200).json(updatedUser);
   } catch (err) {
-    return res.status(400).json({ error: err.message });
+    console.error("Error updating user:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
