@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { User } from '@/types';
 
@@ -8,22 +7,6 @@ interface AuthState {
   isLoading: boolean;
   error?: string;
 }
-
-// Mock user data for development
-const mockUser: User = {
-  id: '1',
-  username: 'johndoe',
-  email: 'john@example.com',
-  avatar: undefined,
-  bio: 'Full-stack developer passionate about Web3 and modern technologies.',
-  skills: ['React', 'TypeScript', 'Node.js', 'Web3', 'Solidity'],
-  rating: 4.8,
-  reviewCount: 24,
-  walletAddress: '0x742d35Cc6734C0532925a3b8D0a4E8a2c9e9e8d2',
-  isVerified: true,
-  joinedAt: new Date('2023-01-15'),
-  location: 'San Francisco, CA'
-};
 
 export const useAuthState = () => {
   const [authState, setAuthState] = useState<AuthState>({
@@ -69,29 +52,34 @@ export const useAuthState = () => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: undefined }));
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock login validation
-      if (email === 'demo@sparkverse.com' && password === 'demo123') {
-        const authData = {
-          user: mockUser,
-          token: 'mock-jwt-token',
-          expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-        };
+      const res = await fetch('http://localhost:8080/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-        localStorage.setItem('sparkverse-auth', JSON.stringify(authData));
-        
-        setAuthState({
-          isAuthenticated: true,
-          user: mockUser,
-          isLoading: false,
-        });
-
-        return { success: true };
-      } else {
-        throw new Error('Invalid credentials');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Login failed');
       }
+
+      const data = await res.json(); // { user, token }
+
+      const authData = {
+        user: data.user,
+        token: data.token,
+        expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      };
+
+      localStorage.setItem('sparkverse-auth', JSON.stringify(authData));
+
+      setAuthState({
+        isAuthenticated: true,
+        user: data.user,
+        isLoading: false,
+      });
+
+      return { success: true };
     } catch (error: any) {
       setAuthState({
         isAuthenticated: false,
@@ -103,39 +91,39 @@ export const useAuthState = () => {
     }
   }, []);
 
-  const register = useCallback(async (userData: { 
-    username: string; 
-    email: string; 
-    password: string; 
+  const register = useCallback(async (userData: {
+    username: string;
+    email: string;
+    password: string;
+    location: string;
   }) => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: undefined }));
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser: User = {
-        ...mockUser,
-        id: Date.now().toString(),
-        username: userData.username,
-        email: userData.email,
-        joinedAt: new Date(),
-        rating: 0,
-        reviewCount: 0,
-        skills: [],
-      };
+      const res = await fetch('http://localhost:8080/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Registration failed');
+      }
+
+      const data = await res.json(); 
 
       const authData = {
-        user: newUser,
-        token: 'mock-jwt-token',
+        user: data.user,
+        token: data.token,
         expiresAt: Date.now() + 24 * 60 * 60 * 1000,
       };
 
       localStorage.setItem('sparkverse-auth', JSON.stringify(authData));
-      
+
       setAuthState({
         isAuthenticated: true,
-        user: newUser,
+        user: data.user,
         isLoading: false,
       });
 

@@ -4,11 +4,28 @@ const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { username, email, password, location } = req.body;
+
+    
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword, role });
+
+    // Create and save user
+    const user = new User({ username, email, password: hashedPassword, location });
     await user.save();
-    res.status(201).json(user);
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+    // Exclude password in response
+    const { password: _, ...userWithoutPassword } = user._doc;
+
+    res.status(201).json({ token, user: userWithoutPassword });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -18,30 +35,54 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
+
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-    res.json({ token, user });
+
+    const { password: _, ...userWithoutPassword } = user._doc;
+
+    res.json({ token, user: userWithoutPassword });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+
 exports.getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    res.json(user);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const { password: _, ...userWithoutPassword } = user._doc;
+    res.json(userWithoutPassword);
   } catch (err) {
     res.status(404).json({ error: "User not found" });
   }
 };
 
+// Update user profile by ID
 exports.updateUserProfile = async (req, res) => {
   try {
-    const updates = req.body;
+    // Define allowed fields to update
+    const allowedUpdates = ["username", "location", "bio"];
+    const updates = Object.fromEntries(
+      Object.entries(req.body).filter(([key]) => allowedUpdates.includes(key))
+    );
+
     const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
-    res.json(user);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const { password: _, ...userWithoutPassword } = user._doc;
+    res.json(userWithoutPassword);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

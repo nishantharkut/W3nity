@@ -167,13 +167,13 @@ const EventCard = ({ event, onViewDetails, onRegister }: EventCardProps) => {
         {/* Organizer */}
         <div className="flex items-center space-x-3 p-3 bg-accent/50 rounded-lg">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={event.organizer.avatar} alt={event.organizer.username} />
+            <AvatarImage src={event?.organizer?.avatar} alt={event?.organizer?.username} />
             <AvatarFallback className="text-xs">
-              {event.organizer.username.charAt(0).toUpperCase()}
+              {event?.organizer?.username.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <div className="text-sm font-medium">{event.organizer.username}</div>
+            <div className="text-sm font-medium">{event?.organizer?.username}</div>
             <div className="text-xs text-muted-foreground">Organizer</div>
           </div>
         </div>

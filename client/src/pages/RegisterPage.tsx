@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,13 +15,15 @@ const RegisterPage = () => {
     confirmPassword: '',
     location: '',
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -31,33 +32,49 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // Validation
-      if (!formData.username || !formData.email || !formData.password) {
+      const { username, email, password, confirmPassword, location } = formData;
+
+      // Basic validations
+      if (!username || !email || !password || !confirmPassword) {
         throw new Error('Please fill in all required fields');
       }
 
-      if (formData.password !== formData.confirmPassword) {
+      if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
       }
 
-      if (formData.password.length < 6) {
+      if (password.length < 6) {
         throw new Error('Password must be at least 6 characters');
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Account created!",
-        description: "Welcome to SparkVerse! Please sign in to continue.",
+      // Call backend API for registration
+      const response = await fetch('http://localhost:8080/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password, location }),
       });
-      
+      console.log(response)
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Registration failed');
+      }
+
+      // Success toast & redirect to login page
+      toast({
+        title: 'Account created!',
+        description: 'Welcome to SparkVerse! Please sign in to continue.',
+      });
+
       navigate('/login');
     } catch (error: any) {
       toast({
-        title: "Registration failed",
-        description: error.message,
-        variant: "destructive",
+        title: 'Registration failed',
+        description: error.message || 'Something went wrong.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -67,7 +84,7 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-background via-background to-background/50">
       <div className="absolute inset-0 bg-gradient-glow opacity-20"></div>
-      
+
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">

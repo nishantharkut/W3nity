@@ -1,36 +1,94 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import EventCard from '@/components/EventCard';
-import { mockEvents } from '@/lib/mockData';
-import { Search, Filter, Plus, Calendar } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import EventCard from "@/components/EventCard";
+import { Search, Filter, Plus, Calendar } from "lucide-react";
 
 const EventsPage = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLocation, setSelectedLocation] = useState('all');
-  
-  const categories = ['all', 'conference', 'workshop', 'networking', 'hackathon', 'webinar'];
-  const locations = ['all', 'online', 'physical', 'hybrid'];
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedLocation, setSelectedLocation] = useState("all");
 
-  const filteredEvents = mockEvents.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
-    const matchesLocation = selectedLocation === 'all' || event.location.type === selectedLocation;
-    
+  const [events, setEvents] = useState([]); // will store fetched events
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:8080/api/events"); // change this URL to your backend endpoint
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+        console.log(response);
+        const data = await response.json();
+        console.log(data);
+        setEvents(data);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch =
+      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "all" || event.category === selectedCategory;
+
+    const matchesLocation =
+      selectedLocation === "all" || event.location?.type === selectedLocation;
+
     return matchesSearch && matchesCategory && matchesLocation;
   });
 
-  const upcomingEvents = filteredEvents.filter(event => event.status === 'upcoming');
-  const liveEvents = filteredEvents.filter(event => event.status === 'live');
-  const pastEvents = filteredEvents.filter(event => event.status === 'completed');
+  const now = new Date();
+
+  const upcomingEvents = filteredEvents.filter(
+    (event) => new Date(event.startDate) > now
+  );
+  const liveEvents = filteredEvents.filter(
+    (event) =>
+      new Date(event.startDate) <= now && new Date(event.endDate) >= now
+  );
+  const pastEvents = filteredEvents.filter(
+    (event) => new Date(event.endDate) < now
+  );
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p>Loading events...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 text-red-600">
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -38,11 +96,13 @@ const EventsPage = () => {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-4xl font-bold mb-2">Tech Events</h1>
-          <p className="text-muted-foreground">Discover and join amazing tech events in your area</p>
+          <p className="text-muted-foreground">
+            Discover and join amazing tech events in your area
+          </p>
         </div>
-        <Button 
+        <Button
           className="glow-button"
-          onClick={() => navigate('/events/create')}
+          onClick={() => navigate("/events/create")}
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Event
@@ -70,7 +130,10 @@ const EventsPage = () => {
                 />
               </div>
             </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
               <SelectTrigger className="md:w-48">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -83,7 +146,10 @@ const EventsPage = () => {
                 <SelectItem value="webinar">Webinar</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+            <Select
+              value={selectedLocation}
+              onValueChange={setSelectedLocation}
+            >
               <SelectTrigger className="md:w-48">
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
@@ -109,14 +175,12 @@ const EventsPage = () => {
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
             <span>Live ({liveEvents.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="past">
-            Past ({pastEvents.length})
-          </TabsTrigger>
+          <TabsTrigger value="past">Past ({pastEvents.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="upcoming" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {upcomingEvents.map(event => (
+            {upcomingEvents.map((event) => (
               <EventCard
                 key={event.id}
                 event={event}
@@ -138,7 +202,7 @@ const EventsPage = () => {
 
         <TabsContent value="live" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {liveEvents.map(event => (
+            {liveEvents.map((event) => (
               <EventCard
                 key={event.id}
                 event={event}
@@ -160,7 +224,7 @@ const EventsPage = () => {
 
         <TabsContent value="past" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {pastEvents.map(event => (
+            {pastEvents.map((event) => (
               <EventCard
                 key={event.id}
                 event={event}
