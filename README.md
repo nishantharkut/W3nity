@@ -98,7 +98,6 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, SparkVerse let
 
 - **Live Preview:**
     
-    https://preview--sparkverse-nexus-hub.lovable.app/
     
 - **Freelance Flow:**
     1. Connect MetaMask → 2. Post gig → 3. Submit proposal → 4. Deposit ETH in escrow → 5. Deliver & release funds.
