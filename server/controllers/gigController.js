@@ -4,15 +4,15 @@ exports.createGig = async (req, res) => {
   try {
     const gig = new Gig(req.body);
     await gig.save();
-    res.status(201).json(gig);
+    return res.status(201).json(gig);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    return res.status(400).json({ error: err.message });
   }
 };
 
 exports.getAllGigs = async (req, res) => {
   try {
-    const gigs = await Gig.find().populate("createdBy");
+    const gigs = await Gig.find().populate("createdBy", "username avatar isVerified rating reviewCount");
     res.json(gigs);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -22,9 +22,9 @@ exports.getAllGigs = async (req, res) => {
 exports.getGigById = async (req, res) => {
   try {
     const gig = await Gig.findById(req.params.id).populate("createdBy");
-    res.json(gig);
+    return res.json(gig);
   } catch (err) {
-    res.status(404).json({ error: "Gig not found" });
+    return res.status(404).json({ error: "Gig not found" });
   }
 };
 

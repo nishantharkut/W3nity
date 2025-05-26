@@ -25,9 +25,9 @@ exports.register = async (req, res) => {
     // Exclude password in response
     const { password: _, ...userWithoutPassword } = user._doc;
 
-    res.status(201).json({ token, user: userWithoutPassword });
+    return res.status(201).json({ token, user: userWithoutPassword });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    return res.status(400).json({ error: err.message });
   }
 };
 
@@ -44,9 +44,9 @@ exports.login = async (req, res) => {
 
     const { password: _, ...userWithoutPassword } = user._doc;
 
-    res.json({ token, user: userWithoutPassword });
+    return res.json({ token, user: userWithoutPassword });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -82,8 +82,8 @@ exports.updateUserProfile = async (req, res) => {
     }
 
     const { password: _, ...userWithoutPassword } = user._doc;
-    res.json(userWithoutPassword);
+    return res.json(userWithoutPassword);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    return res.status(400).json({ error: err.message });
   }
 };
