@@ -1,9 +1,10 @@
-# 🚀 SparkVerse Nexus Hub
+# 🚀 W3nity - Web3 + Unity 
+## All-in-One Tech Collaboration Platform
 
 [![Demo](https://img.shields.io/badge/Live-Demo-blue)](https://preview--sparkverse-nexus-hub.lovable.app/)
 [![Hackathon](https://img.shields.io/badge/Hackathon-Hack%20with%20Gujarat-brightgreen)](https://hackwithgujarat.org)
 
-**SparkVerse Nexus Hub** (a.k.a. **W3nity**) is a unified, Web3-enabled collaboration platform that brings together:
+**W3nity** is a unified, Web3-enabled collaboration platform that brings together:
 
 - 🧑‍💻 **Freelancing Marketplace**  
 - 🎉 **Event Management**  
