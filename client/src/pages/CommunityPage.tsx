@@ -37,7 +37,7 @@ import { User } from "@/types";
 import { useNavigate } from "react-router-dom";
 
 const CommunityPage = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthState();
   // console.log(user)
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,9 +107,9 @@ const CommunityPage = () => {
       if (res.ok) {
         const updatedGroup = await res.json();
         setGroups((prev) =>
-          prev.map((g) => (g._id === updatedGroup._id ? updatedGroup : g))
+          prev.map((g) => (g?._id === updatedGroup._id ? updatedGroup : g))
         );
-        navigate(`/community/${groupId}`)
+        navigate(`/community/${groupId}`);
       }
     } catch (error) {
       console.error("Error joining group:", error);
@@ -155,29 +155,44 @@ const CommunityPage = () => {
         </p>
       </CardHeader>
       <CardContent>
-        {group?.members?.some((member) => member._id === user._id)  ? (
-          <div className="flex gap-2">
-            <Button variant="secondary" disabled className="w-full">
-            <Users className="w-4 h-4 mr-2" /> Joined
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => navigate(`/community/${group._id}`)}
-          >
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Chat Now
-          </Button>
-          </div>
-          
+        {user && user._id ? (
+          // Logged in
+          Array.isArray(group.members) &&
+          group.members.some((m) => m._id === user._id) ? (
+            // Already a member
+            <div className="flex gap-2">
+              <Button variant="secondary" disabled className="w-full">
+                <Users className="w-4 h-4 mr-2" /> Joined
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate(`/community/${group._id}`)}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Chat Now
+              </Button>
+            </div>
+          ) : (
+            // Logged in but not a member
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => handleJoinGroup(group._id)}
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Join Chat
+            </Button>
+          )
         ) : (
+          // Not logged in
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => handleJoinGroup(group._id)}
+            onClick={() => navigate("/login")}
           >
             <MessageSquare className="w-4 h-4 mr-2" />
-            Join Chat
+            Login to Join
           </Button>
         )}
       </CardContent>
@@ -301,24 +316,33 @@ const CommunityPage = () => {
         </TabsContent>
 
         <TabsContent value="my-groups">
-          {filteredGroups.length > 0 ? (
+          {user?._id &&
+          filteredGroups?.some(
+            (g) =>
+              Array.isArray(g?.members) &&
+              g.members.some((m: any) => {
+                if (!m) return false;
+                if (typeof m === "string") return m === user._id;
+                if (typeof m === "object")
+                  return m._id === user._id || m.id === user._id;
+                return false;
+              })
+          ) ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredGroups
-                .filter((g) =>
-                  g.members?.some((m: any) => {
-                    if (!m) return false; 
-                    if (typeof m === "string") return m === user._id;
-
-                    
-                    if (typeof m === "object")
-                      return m._id === user._id || m.id === user._id;
-
-                    return false;
-                  })
+                ?.filter(
+                  (g) =>
+                    Array.isArray(g?.members) &&
+                    g.members.some((m: any) => {
+                      if (!m) return false;
+                      if (typeof m === "string") return m === user._id;
+                      if (typeof m === "object")
+                        return m._id === user._id || m.id === user._id;
+                      return false;
+                    })
                 )
-
                 .map((group) => (
-                  <GroupCard key={group.id} group={group} />
+                  <GroupCard key={group._id} group={group} />
                 ))}
             </div>
           ) : (
