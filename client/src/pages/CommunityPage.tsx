@@ -39,6 +39,7 @@ import { useNavigate } from "react-router-dom";
 const CommunityPage = () => {
   const navigate=useNavigate()
   const { user, isAuthenticated } = useAuthState();
+  // console.log(user)
   const [searchQuery, setSearchQuery] = useState("");
   const [groups, setGroups] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("explore");
@@ -154,7 +155,7 @@ const CommunityPage = () => {
         </p>
       </CardHeader>
       <CardContent>
-        {group.members?.includes(user._id) ? (
+        {group?.members?.some((member) => member._id === user._id)  ? (
           <div className="flex gap-2">
             <Button variant="secondary" disabled className="w-full">
             <Users className="w-4 h-4 mr-2" /> Joined

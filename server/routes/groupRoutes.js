@@ -4,8 +4,12 @@ const Group = require('../models/Group');
 
 
 router.get('/', async (req, res) => {
-  const groups = await Group.find();
-  res.json(groups);
+  try {
+    const groups = await Group.find().populate('members', '_id username email');
+    res.json(groups);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 

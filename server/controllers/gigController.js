@@ -1,14 +1,24 @@
 const Gig = require("../models/Gig");
-const mongoose=require("mongoose")
+const mongoose = require("mongoose");
+
 exports.createGig = async (req, res) => {
   try {
-    const gig = new Gig(req.body);
+    const userId = req.user?._id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized: User not found" });
+
+    const gig = new Gig({
+      ...req.body,
+      createdBy: userId, // ✅ Set from token
+    });
+    console.log(gig)
+
     await gig.save();
     return res.status(201).json(gig);
   } catch (err) {
-    return res.status(400).json({ error: err.message });
+    return res.status(400).json({ message: err.message });
   }
 };
+
 
 exports.getAllGigs = async (req, res) => {
   try {
@@ -30,7 +40,10 @@ exports.getGigById = async (req, res) => {
   }
 
   try {
-    const gig = await Gig.findById(gigId);
+    const gig = await Gig.findById(gigId).populate(
+      "createdBy",
+      "username avatar isVerified rating reviewCount"
+    );
 
     if (!gig) {
       return res.status(404).json({ message: "Gig not found" });
@@ -38,6 +51,7 @@ exports.getGigById = async (req, res) => {
 
     const response = {
       ...gig._doc,
+      client: gig.createdBy, 
       proposalCount: gig.proposals?.length || 0,
       duration: calculateDuration(gig.deadline),
     };

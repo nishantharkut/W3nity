@@ -38,81 +38,90 @@ interface Project {
 }
 
 const ProfilePage = () => {
-  const { user: authUser, isAuthenticated } = useAuthState();
+const { user, isAuthenticated } = useAuthState();
+const [profile, setProfile] = useState(null);
+const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
+const [isLoading, setIsLoading] = useState(true);
+const [isEditing, setIsEditing] = useState(false);
 
-  const [user, setUser] = useState<User | null>(null);
-  const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        
-          const res = await fetch(`http://localhost:8080/api/projects`);
-          // console.log(res.json)
-          if (res.ok) {
-            const data = await res.json();
-            console.log("data",data)
-            setPortfolioProjects(data); // assuming the API returns { projects: [...] }
-          } else {
-            console.error("Failed to fetch projects");
-          }
-        
-      } catch (error) {
-        console.error("Error fetching projects:", error);
+// Fetch full profile from backend once user is authenticated
+useEffect(() => {
+  const fetchUserProfile = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/users/${user._id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setProfile({
+          ...data,
+          joinedAt: new Date(data.joinedAt),
+        });
+      } else {
+        console.error("Failed to fetch user profile");
       }
-    };
-
-    fetchProjects();
-  }, [user]);
-
-  // Simulate loading based on authUser presence
-  useEffect(() => {
-    if (authUser) {
-      const fixedUser: User = {
-        ...authUser,
-        joinedAt: new Date(authUser.joinedAt),
-      };
-      setUser(fixedUser);
-      setIsLoading(false);
-    } else if (!authUser && isAuthenticated) {
+    } catch (err) {
+      console.error("Error fetching user profile:", err);
+    } finally {
       setIsLoading(false);
     }
-  }, [authUser, isAuthenticated]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Loading profile...</p>
-      </div>
-    );
-  }
-
-  // If still unauthenticated or user not valid, redirect to login
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <h2 className="text-2xl font-semibold mb-2">Please Log In</h2>
-            <p className="text-muted-foreground mb-6">
-              You need to be logged in to view your profile.
-            </p>
-            <Button asChild className="w-full">
-              <a href="/login">Log In</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const handleAddProject = (project: Project) => {
-    setPortfolioProjects((prev) => [...prev, project]);
   };
 
-  const earnings = {
+  if (user?._id) {
+    fetchUserProfile();
+  } else {
+    setIsLoading(false);
+  }
+}, [user]);
+
+// Fetch projects after profile is ready
+const getToken = () => {
+  const authString = localStorage.getItem("sparkverse-auth");
+  if (!authString) return null;
+
+  try {
+    const authData = JSON.parse(authString);
+    return authData.token; // adjust if token key is different
+  } catch {
+    return null;
+  }
+};
+
+useEffect(() => {
+  const fetchProjects = async () => {
+    if (!user?._id) {
+      console.warn("User ID not found, skipping fetch");
+      return;
+    }
+
+    try {
+      const token = getToken();
+      const res = await fetch(`http://localhost:8080/api/projects/${user._id}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPortfolioProjects(data);
+        console.log("Fetched projects:", data);
+      } else {
+        console.error("Failed to fetch projects", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  if (profile) {
+    fetchProjects();
+  }
+}, [profile, user]);
+
+const handleAddProject = (project: Project) => {
+  setPortfolioProjects((prev) => [...prev, project]);
+};
+
+ const earnings = {
     thisMonth: 4250,
     lastMonth: 3800,
     total: 47300,
@@ -126,23 +135,50 @@ const ProfilePage = () => {
     { label: "Success Rate", value: "98%", icon: Award },
   ];
 
-  const handleSave = async (updatedData: typeof user) => {
-    try {
-      const res = await fetch(
-        `http://localhost:8080/api/users/${authUser?._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedData),
-        }
-      );
-      if (res.ok) {
-        setUser(updatedData);
-      }
-    } catch (err) {
-      console.error("Update failed", err);
+const handleSave = async (updatedData: typeof profile) => {
+  try {
+    const res = await fetch(`http://localhost:8080/api/users/${user._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (res.ok) {
+      const updatedProfile = await res.json();
+      setProfile(updatedProfile);
+    } else {
+      console.error("Update failed with status:", res.status);
     }
-  };
+  } catch (err) {
+    console.error("Update failed", err);
+  }
+};
+
+if (isLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-muted-foreground">Loading profile...</p>
+    </div>
+  );
+}
+
+if (!isAuthenticated || !user || !profile) {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6 text-center">
+          <h2 className="text-2xl font-semibold mb-2">Please Log In</h2>
+          <p className="text-muted-foreground mb-6">
+            You need to be logged in to view your profile.
+          </p>
+          <Button asChild className="w-full">
+            <a href="/login">Log In</a>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen py-8 px-4">
@@ -153,28 +189,28 @@ const ProfilePage = () => {
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex items-center gap-4">
                 <Avatar className="w-24 h-24">
-                  <AvatarImage src={user.avatar} />
+                  <AvatarImage src={profile.avatar} />
                   <AvatarFallback className="text-2xl bg-gradient-spark text-white">
-                    {user.username.charAt(0).toUpperCase()}
+                    {profile.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h1 className="text-3xl font-bold">{user?.username}</h1>
-                    {user?.isVerified && (
+                    <h1 className="text-3xl font-bold">{profile?.username}</h1>
+                    {profile?.isVerified && (
                       <Shield className="w-6 h-6 text-blue-500" />
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground mb-2">
                     <MapPin className="w-4 h-4" />
-                    <span>{user.location}</span>
+                    <span>{profile.location}</span>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{user?.rating}</span>
+                      <span className="font-medium">{profile?.rating}</span>
                       <span className="text-muted-foreground">
-                        ({user.reviewCount} reviews)
+                        ({profile?.reviewCount} reviews)
                       </span>
                     </div>
                     {/* <span className="text-muted-foreground">
@@ -199,7 +235,7 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {user.bio && (
+            {profile.bio && (
               <p className="mt-4 text-muted-foreground">{user.bio}</p>
             )}
 
@@ -207,7 +243,7 @@ const ProfilePage = () => {
             <div className="mt-4">
               <h3 className="font-semibold mb-2">Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {user?.skills?.map((skill) => (
+                {profile?.skills?.map((skill) => (
                   <Badge key={skill} variant="secondary">
                     {skill}
                   </Badge>
@@ -454,7 +490,7 @@ const ProfilePage = () => {
       </div>
       {isEditing && user && (
         <EditProfileModal
-          user={user}
+          user={profile}
           onClose={() => setIsEditing(false)}
           onSave={handleSave}
         />

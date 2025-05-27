@@ -1,21 +1,31 @@
 const express=require("express")
 const router=express.Router();
 const Project=require("../models/Project.js")
+const authMiddleware= require("../middlewares/authMiddleware.js")
 
-router.get("/", async (req, res) => {
+
+router.get("/:id", async (req, res) => {
   try {
-    const projects = await Project.find();
-    // console.log(projects)
-    return res.json(projects);
+    const { id } = req.params;
+    console.log("Fetching projects for userId:", id);
+
+    const projects = await Project.find({ userId: id });  // ✅ Correct usage
+    console.log("Projects found:", projects);
+
+    res.json(projects);
   } catch (err) {
+    console.error("Error fetching projects:", err);
     res.status(500).json({ message: err.message });
   }
 });
 
-// Add a new project
-router.post("/", async (req, res) => {
-  const { title, description, technologies, status, client, budget } = req.body;
 
+
+
+// Add a new project
+router.post("/", authMiddleware,async (req, res) => {
+  const { title, description, technologies, status, client, budget } = req.body;
+//  console.log(req.user._id)
   const project = new Project({
     title,
     description,
@@ -23,6 +33,7 @@ router.post("/", async (req, res) => {
     status,
     client,
     budget,
+    userId: req.user._id,
   });
 
   try {

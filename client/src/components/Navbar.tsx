@@ -1,8 +1,7 @@
-
 // import { useState } from 'react';
 // import { Link, useLocation } from 'react-router-dom';
 // import { Button } from '@/components/ui/button';
-// import { 
+// import {
 //   NavigationMenu,
 //   NavigationMenuContent,
 //   NavigationMenuItem,
@@ -19,12 +18,12 @@
 //   DropdownMenuSeparator,
 //   DropdownMenuTrigger,
 // } from '@/components/ui/dropdown-menu';
-// import { 
-//   Menu, 
-//   X, 
-//   Zap, 
-//   User, 
-//   Settings, 
+// import {
+//   Menu,
+//   X,
+//   Zap,
+//   User,
+//   Settings,
 //   LogOut,
 //   LayoutDashboard,
 //   Briefcase,
@@ -194,7 +193,7 @@
 //                   </Link>
 //                 );
 //               })}
-              
+
 //               {isAuthenticated && user ? (
 //                 <>
 //                   <div className="border-t border-border/40 my-2 pt-2">
@@ -247,9 +246,9 @@
 
 // export default Navbar;
 
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -257,21 +256,17 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
-import { useAuthState } from '@/hooks/useAuth';
-import { useWeb3 } from '@/hooks/useWeb3';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
+} from "@/components/ui/navigation-menu";
+import { useAuthState } from "@/hooks/useAuth";
+import { useWeb3 } from "@/hooks/useWeb3";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Menu,
   X,
@@ -284,7 +279,7 @@ import {
   Calendar,
   Users,
   Bell,
-} from 'lucide-react';
+} from "lucide-react";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -293,9 +288,9 @@ const Navbar = () => {
   const location = useLocation();
 
   const navigationItems = [
-    { name: 'Freelance', href: '/freelance', icon: Briefcase },
-    { name: 'Events', href: '/events', icon: Calendar },
-    { name: 'Community', href: '/community', icon: Users },
+    { name: "Freelance", href: "/freelance", icon: Briefcase },
+    { name: "Events", href: "/events", icon: Calendar },
+    { name: "Community", href: "/community", icon: Users },
   ];
 
   const isActivePath = (path: string) => location.pathname === path;
@@ -307,7 +302,7 @@ const Navbar = () => {
 
   const WalletButton = () => (
     <Button variant="outline" onClick={connectWallet}>
-      {account ? `Connected: ${account.slice(0, 6)}...` : 'Connect Wallet'}
+      {account ? `Connected: ${account.slice(0, 6)}...` : "Connect Wallet"}
     </Button>
   );
 
@@ -339,8 +334,8 @@ const Navbar = () => {
                           to={item.href}
                           className={`group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 ${
                             isActivePath(item.href)
-                              ? 'bg-accent text-accent-foreground'
-                              : ''
+                              ? "bg-accent text-accent-foreground"
+                              : ""
                           }`}
                         >
                           <Icon className="w-4 h-4 mr-2" />
@@ -363,14 +358,19 @@ const Navbar = () => {
 
             {isAuthenticated && user ? (
               <div className="hidden md:flex items-center space-x-4">
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs"></span>
-                </Button>
+                <Link to="/notifications">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="w-5 h-5" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+                  </Button>
+                </Link>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Button
+                      variant="ghost"
+                      className="relative h-10 w-10 rounded-full"
+                    >
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={user.avatar} />
                         <AvatarFallback className="bg-gradient-spark text-white">
@@ -379,11 +379,16 @@ const Navbar = () => {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 bg-background border border-border" align="end">
+                  <DropdownMenuContent
+                    className="w-56 bg-background border border-border"
+                    align="end"
+                  >
                     <div className="flex items-center justify-start gap-2 p-2">
                       <div className="flex flex-col space-y-1 leading-none">
                         <p className="font-medium">{user.username}</p>
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
                       </div>
                     </div>
                     <DropdownMenuSeparator />
@@ -400,11 +405,16 @@ const Navbar = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                      <Link to="/settings" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="text-red-600"
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
                     </DropdownMenuItem>
@@ -429,7 +439,11 @@ const Navbar = () => {
               className="md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>
@@ -446,7 +460,9 @@ const Navbar = () => {
                     to={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                      isActivePath(item.href) ? 'bg-accent text-accent-foreground' : ''
+                      isActivePath(item.href)
+                        ? "bg-accent text-accent-foreground"
+                        : ""
                     }`}
                   >
                     <Icon className="w-4 h-4 mr-3" />
@@ -488,13 +504,23 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="border-t border-border/40 my-2 pt-2 space-y-2">
-                  <Button variant="ghost" className="w-full justify-start" asChild>
-                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    asChild
+                  >
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       Log In
                     </Link>
                   </Button>
                   <Button className="w-full glow-button" asChild>
-                    <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       Sign Up
                     </Link>
                   </Button>
