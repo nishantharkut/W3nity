@@ -29,11 +29,11 @@ const EventsPage = () => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:8080/api/events"); // change this URL to your backend endpoint
+        const response = await fetch("http://localhost:8080/api/events");
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
-        console.log(response);
+        
         const data = await response.json();
         console.log(data);
         setEvents(data);

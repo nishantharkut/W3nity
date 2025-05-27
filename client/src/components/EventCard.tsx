@@ -58,6 +58,8 @@ const EventCard = ({ event, onViewDetails, onRegister }: EventCardProps) => {
         return '📍';
     }
   };
+  console.log("Organizer Info:", event.organizer);
+
 
   const isUpcoming = isBefore(new Date(), event.startDate);
   const isLive = isAfter(new Date(), event.startDate) && isBefore(new Date(), event.endDate);
