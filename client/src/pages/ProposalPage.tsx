@@ -1,27 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
-import { mockGigs } from '@/lib/mockData';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { getEscrowInstance } from '@/lib/escrow';
+import axios from "axios";
 
 const ESCROW_CONTRACT_ADDRESS = "0x21Ed0dC8810420c09a6507427F77fEF286121aC6";
 
 const ProposalPage = () => {
   const { signer } = useWeb3();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const [gig, setGig] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [coverLetter, setCoverLetter] = useState('');
   const [proposedBudget, setProposedBudget] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
+
   const [isReleasing, setIsReleasing] = useState(false);
   const [txStatus, setTxStatus] = useState<string | null>(null);
 
-  const gig = mockGigs.find(g => g.id === id);
+  // Fetch gig from backend
+  useEffect(() => {
+    const fetchGig = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`http://localhost:8080/api/gigs/${id}`);
+        setGig(response.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to load gig data.");
+        setGig(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchGig();
+  }, [id]);
 
   const handleRelease = async () => {
     if (!signer) {
@@ -48,32 +71,59 @@ const ProposalPage = () => {
       } else {
         setTxStatus(`Error: ${message}`);
       }
-    }
-    finally {
+    } finally {
       setIsReleasing(false);
     }
   };
 
-  if (!gig) {
+  if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Gig not found</h1>
-          <Button onClick={() => navigate('/freelance')}>Back to Freelance</Button>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Loading gig details...</p>
       </div>
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (error || !gig) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">Gig not found</h1>
+        <p className="mb-4">{error || "No gig data available."}</p>
+        <Button onClick={() => navigate('/freelance')}>Back to Freelance</Button>
+      </div>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting proposal:', {
-      gigId: id,
-      coverLetter,
-      proposedBudget: Number(proposedBudget),
-      deliveryTime: Number(deliveryTime)
-    });
-    navigate(`/gig/${id}`);
+
+    if (!signer) {
+      alert("Please connect your wallet before submitting a proposal.");
+      return;
+    }
+
+    try {
+      const payload = {
+        userId: signer.address, // assuming signer.address is the userId
+        message: coverLetter,
+        budget: Number(proposedBudget),
+        // Note: deliveryTime can be sent if your backend supports it, else remove
+        deliveryTime: Number(deliveryTime),
+      };
+
+      const response = await axios.post(`/api/gigs/${id}/proposals`, payload);
+
+      if (response.status === 201 || response.status === 200) {
+        console.log("✅ Proposal submitted:", response.data);
+        navigate(`/gig/${id}`);
+      } else {
+        console.error("❌ Unexpected response:", response);
+        alert("Failed to submit proposal.");
+      }
+    } catch (error) {
+      console.error("❌ Error submitting proposal:", error);
+      alert("Something went wrong while submitting the proposal.");
+    }
   };
 
   const isFormInvalid = !coverLetter || !proposedBudget || !deliveryTime;
@@ -114,8 +164,10 @@ const ProposalPage = () => {
                     type="number"
                     value={proposedBudget}
                     onChange={(e) => setProposedBudget(e.target.value)}
-                    placeholder={`${gig.budget.min} - ${gig.budget.max}`}
+                    placeholder={`${gig.budget?.min ?? ''} - ${gig.budget?.max ?? ''}`}
                     required
+                    min={gig.budget?.min}
+                    max={gig.budget?.max}
                   />
                 </div>
                 <div>
@@ -126,6 +178,7 @@ const ProposalPage = () => {
                     onChange={(e) => setDeliveryTime(e.target.value)}
                     placeholder="7"
                     required
+                    min={1}
                   />
                 </div>
               </div>

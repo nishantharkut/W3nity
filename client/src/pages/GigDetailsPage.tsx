@@ -1,4 +1,4 @@
-import { useParams, useNavigate, } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,7 @@ const GigDetailsPage = () => {
         }
         const data = await res.json();
         setGig(data);
+        console.log(gig);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -156,12 +157,14 @@ const GigDetailsPage = () => {
                   <span className="font-medium">{gig?.duration}</span>
                 </div>
               </div>
-              <Button
-                className="w-full mt-6 glow-button"
-                onClick={() => navigate(`/gig/${gig._id}/proposal`)}
-              >
-                Submit Proposal
-              </Button>
+              {gig?._id && (
+                <Button
+                  className="w-full mt-6 glow-button"
+                  onClick={() => navigate(`/gig/${gig._id}/proposal`)}
+                >
+                  Submit Proposal
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>
