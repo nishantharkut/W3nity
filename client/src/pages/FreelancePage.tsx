@@ -88,7 +88,7 @@ const FreelancePage = () => {
         const res = await fetch("http://localhost:8080/api/gigs");
         if (!res.ok) throw new Error(`Error: ${res.status}`);
         const data = await res.json();
-        setGigs(data); // assuming data is an array of gigs
+        setGigs(data); 
         setError(null);
       } catch (err) {
         setError(err.message || "Failed to fetch gigs");
@@ -101,6 +101,7 @@ const FreelancePage = () => {
   }, []);
 
   const filteredGigs = gigs.filter((gig) => {
+    console.log(gigs)
     const matchesSearch =
       gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       gig.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -221,7 +222,7 @@ const FreelancePage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredGigs.map((gig) => (
               <GigCard
-                key={gig._id} // assuming gigs from backend have _id
+                key={gig._id} 
                 gig={gig}
                 onViewDetails={(id) => navigate(`/gig/${id}`)}
                 onPropose={(id) => navigate(`/gig/${id}/proposal`)}

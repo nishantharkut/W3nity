@@ -1,15 +1,23 @@
 // models/Proposal.js
 const mongoose = require("mongoose");
 
-const proposalSchema = new mongoose.Schema(
-  {
-    gig: { type: mongoose.Schema.Types.ObjectId, ref: "Gig" },
-    freelancer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    message: String,
-    proposedBudget: Number,
-    status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" }
+const proposalSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
-  { timestamps: true }
-);
+  gig: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Gig",
+    required: true,
+  },
+  message: String,
+  budget: Number,
+  submittedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 module.exports = mongoose.model("Proposal", proposalSchema);
