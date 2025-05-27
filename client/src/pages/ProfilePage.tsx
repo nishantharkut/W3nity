@@ -1,19 +1,18 @@
-
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { useAuthState } from '@/hooks/useAuth';
-import { 
-  User, 
-  MapPin, 
-  Star, 
-  Briefcase, 
-  Calendar, 
-  Award, 
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { useAuthState } from "@/hooks/useAuth";
+import EditProfileModal from "@/components/EditProfileModal";
+import {
+  MapPin,
+  Star,
+  Briefcase,
+  Calendar,
+  Award,
   Edit3,
   Mail,
   Phone,
@@ -22,19 +21,80 @@ import {
   Linkedin,
   Settings,
   Shield,
-  Wallet
-} from 'lucide-react';
+  Wallet,
+} from "lucide-react";
+import { User } from "@/types/index";
+
+import AddProjectModal from "@/components/AddProjectModal";
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  technologies: string[];
+  status: string;
+  client: string;
+  budget: string;
+}
 
 const ProfilePage = () => {
-  const { user, isAuthenticated } = useAuthState();
+  const { user: authUser, isAuthenticated } = useAuthState();
+
+  const [user, setUser] = useState<User | null>(null);
+  const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        
+          const res = await fetch(`http://localhost:8080/api/projects`);
+          // console.log(res.json)
+          if (res.ok) {
+            const data = await res.json();
+            console.log("data",data)
+            setPortfolioProjects(data); // assuming the API returns { projects: [...] }
+          } else {
+            console.error("Failed to fetch projects");
+          }
+        
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, [user]);
+
+  // Simulate loading based on authUser presence
+  useEffect(() => {
+    if (authUser) {
+      const fixedUser: User = {
+        ...authUser,
+        joinedAt: new Date(authUser.joinedAt),
+      };
+      setUser(fixedUser);
+      setIsLoading(false);
+    } else if (!authUser && isAuthenticated) {
+      setIsLoading(false);
+    }
+  }, [authUser, isAuthenticated]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading profile...</p>
+      </div>
+    );
+  }
+
+  // If still unauthenticated or user not valid, redirect to login
   if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
-            <User className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-2xl font-semibold mb-2">Please Log In</h2>
             <p className="text-muted-foreground mb-6">
               You need to be logged in to view your profile.
@@ -48,49 +108,41 @@ const ProfilePage = () => {
     );
   }
 
-  const portfolioProjects = [
-    {
-      id: '1',
-      title: 'DeFi Trading Platform',
-      description: 'Built a comprehensive DeFi trading platform with real-time analytics and portfolio management.',
-      technologies: ['React', 'Web3', 'Solidity', 'Node.js'],
-      status: 'Completed',
-      client: 'CryptoVentures',
-      budget: '$15,000'
-    },
-    {
-      id: '2',
-      title: 'NFT Marketplace',
-      description: 'Developed a full-stack NFT marketplace with minting, trading, and auction features.',
-      technologies: ['Next.js', 'TypeScript', 'IPFS', 'Smart Contracts'],
-      status: 'Completed',
-      client: 'ArtBlock',
-      budget: '$12,500'
-    },
-    {
-      id: '3',
-      title: 'Mobile Banking App',
-      description: 'Created a secure mobile banking application with biometric authentication.',
-      technologies: ['React Native', 'Firebase', 'Node.js', 'MongoDB'],
-      status: 'In Progress',
-      client: 'FinTech Solutions',
-      budget: '$18,000'
-    }
-  ];
+  const handleAddProject = (project: Project) => {
+    setPortfolioProjects((prev) => [...prev, project]);
+  };
 
   const earnings = {
     thisMonth: 4250,
     lastMonth: 3800,
     total: 47300,
-    pendingPayouts: 1200
+    pendingPayouts: 1200,
   };
 
   const stats = [
-    { label: 'Projects Completed', value: '24', icon: Briefcase },
-    { label: 'Client Rating', value: '4.9', icon: Star },
-    { label: 'Response Time', value: '2h', icon: Calendar },
-    { label: 'Success Rate', value: '98%', icon: Award }
+    { label: "Projects Completed", value: "24", icon: Briefcase },
+    { label: "Client Rating", value: "4.9", icon: Star },
+    { label: "Response Time", value: "2h", icon: Calendar },
+    { label: "Success Rate", value: "98%", icon: Award },
   ];
+
+  const handleSave = async (updatedData: typeof user) => {
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/users/${authUser?._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData),
+        }
+      );
+      if (res.ok) {
+        setUser(updatedData);
+      }
+    } catch (err) {
+      console.error("Update failed", err);
+    }
+  };
 
   return (
     <div className="min-h-screen py-8 px-4">
@@ -108,8 +160,8 @@ const ProfilePage = () => {
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h1 className="text-3xl font-bold">{user.username}</h1>
-                    {user.isVerified && (
+                    <h1 className="text-3xl font-bold">{user?.username}</h1>
+                    {user?.isVerified && (
                       <Shield className="w-6 h-6 text-blue-500" />
                     )}
                   </div>
@@ -120,19 +172,21 @@ const ProfilePage = () => {
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{user.rating}</span>
-                      <span className="text-muted-foreground">({user.reviewCount} reviews)</span>
+                      <span className="font-medium">{user?.rating}</span>
+                      <span className="text-muted-foreground">
+                        ({user.reviewCount} reviews)
+                      </span>
                     </div>
-                    <span className="text-muted-foreground">
-                      Member since {user.joinedAt.toLocaleDateString()}
-                    </span>
+                    {/* <span className="text-muted-foreground">
+                      Member since {user?.createdAt}
+                    </span> */}
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setIsEditing(!isEditing)}
                   className="flex items-center gap-2"
                 >
@@ -153,7 +207,7 @@ const ProfilePage = () => {
             <div className="mt-4">
               <h3 className="font-semibold mb-2">Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {user.skills.map((skill) => (
+                {user?.skills?.map((skill) => (
                   <Badge key={skill} variant="secondary">
                     {skill}
                   </Badge>
@@ -165,14 +219,18 @@ const ProfilePage = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => {
+          {stats?.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <Card key={index} className="glass-effect">
                 <CardContent className="pt-6 text-center">
                   <Icon className="w-8 h-8 mx-auto mb-2 text-primary" />
-                  <div className="text-2xl font-bold text-gradient">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="text-2xl font-bold text-gradient">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
                 </CardContent>
               </Card>
             );
@@ -192,37 +250,54 @@ const ProfilePage = () => {
             <div className="grid gap-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">My Projects</h2>
-                <Button className="glow-button">
+                {/* <Button className="glow-button">
                   Add New Project
-                </Button>
+                </Button> */}
+                <AddProjectModal onAddProject={handleAddProject} />
               </div>
-              
+
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {portfolioProjects.map((project) => (
+                {portfolioProjects?.map((project) => (
                   <Card key={project.id} className="glass-effect card-hover">
                     <CardHeader>
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg line-clamp-2">{project.title}</CardTitle>
-                        <Badge variant={project.status === 'Completed' ? 'default' : 'secondary'}>
-                          {project.status}
+                        <CardTitle className="text-lg line-clamp-2">
+                          {project.title}
+                        </CardTitle>
+                        <Badge
+                          variant={
+                            project?.status === "Completed"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {project?.status}
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground mb-4 line-clamp-3">
-                        {project.description}
+                        {project?.description}
                       </p>
                       <div className="space-y-3">
                         <div className="flex flex-wrap gap-1">
-                          {project.technologies.map((tech) => (
-                            <Badge key={tech} variant="outline" className="text-xs">
+                          {project?.technologies?.map((tech) => (
+                            <Badge
+                              key={tech}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {tech}
                             </Badge>
                           ))}
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <span className="text-muted-foreground">Client: {project.client}</span>
-                          <span className="font-semibold text-gradient">{project.budget}</span>
+                          <span className="text-muted-foreground">
+                            Client: {project.client}
+                          </span>
+                          <span className="font-semibold text-gradient">
+                            {project.budget}
+                          </span>
                         </div>
                       </div>
                     </CardContent>
@@ -235,50 +310,64 @@ const ProfilePage = () => {
           <TabsContent value="earnings">
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Earnings Overview</h2>
-              
+
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="glass-effect">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">This Month</p>
-                        <p className="text-2xl font-bold text-gradient">${earnings.thisMonth.toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground">
+                          This Month
+                        </p>
+                        <p className="text-2xl font-bold text-gradient">
+                          ${earnings.thisMonth.toLocaleString()}
+                        </p>
                       </div>
                       <Wallet className="w-8 h-8 text-primary" />
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="glass-effect">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Last Month</p>
-                        <p className="text-2xl font-bold">${earnings.lastMonth.toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Last Month
+                        </p>
+                        <p className="text-2xl font-bold">
+                          ${earnings.lastMonth.toLocaleString()}
+                        </p>
                       </div>
                       <Calendar className="w-8 h-8 text-muted-foreground" />
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="glass-effect">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">Total Earned</p>
-                        <p className="text-2xl font-bold">${earnings.total.toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Earned
+                        </p>
+                        <p className="text-2xl font-bold">
+                          ${earnings.total.toLocaleString()}
+                        </p>
                       </div>
                       <Award className="w-8 h-8 text-green-500" />
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="glass-effect">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-muted-foreground">Pending</p>
-                        <p className="text-2xl font-bold text-yellow-500">${earnings.pendingPayouts.toLocaleString()}</p>
+                        <p className="text-2xl font-bold text-yellow-500">
+                          ${earnings.pendingPayouts.toLocaleString()}
+                        </p>
                       </div>
                       <Briefcase className="w-8 h-8 text-yellow-500" />
                     </div>
@@ -295,7 +384,9 @@ const ProfilePage = () => {
                     <div>
                       <div className="flex justify-between mb-2">
                         <span className="text-sm">Monthly Goal: $5,000</span>
-                        <span className="text-sm">{Math.round((earnings.thisMonth / 5000) * 100)}%</span>
+                        <span className="text-sm">
+                          {Math.round((earnings.thisMonth / 5000) * 100)}%
+                        </span>
                       </div>
                       <Progress value={(earnings.thisMonth / 5000) * 100} />
                     </div>
@@ -321,7 +412,7 @@ const ProfilePage = () => {
           <TabsContent value="settings">
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Account Settings</h2>
-              
+
               <div className="grid gap-6">
                 <Card className="glass-effect">
                   <CardHeader>
@@ -332,12 +423,12 @@ const ProfilePage = () => {
                       <Mail className="w-5 h-5 text-muted-foreground" />
                       <span>{user.email}</span>
                     </div>
-                    {user.walletAddress && (
+                    {/* {user?.walletAddress && (
                       <div className="flex items-center gap-3">
                         <Wallet className="w-5 h-5 text-muted-foreground" />
-                        <span className="font-mono text-sm">{user.walletAddress}</span>
+                        <span className="font-mono text-sm">{user?.walletAddress}</span>
                       </div>
-                    )}
+                    )} */}
                   </CardContent>
                 </Card>
 
@@ -361,6 +452,13 @@ const ProfilePage = () => {
           </TabsContent>
         </Tabs>
       </div>
+      {isEditing && user && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setIsEditing(false)}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 };

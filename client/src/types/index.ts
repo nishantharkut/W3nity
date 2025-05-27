@@ -1,18 +1,25 @@
 
 export interface User {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   avatar?: string;
-  bio?: string;
-  skills: string[];
+  isVerified: boolean;
   rating: number;
   reviewCount: number;
-  walletAddress?: string;
-  isVerified: boolean;
-  joinedAt: Date;
+  password?: string; // optional, usually not exposed to frontend
+  role: 'freelancer' | 'client' | 'organizer';
+  bio?: string;
   location?: string;
+  skills: string[];
+  socialLinks: string[]; // array of URLs
+  companyName?: string;  // for clients
+  clientSince: Date;    // for clients
+  createdAt: Date;
+  updatedAt: Date;
+  joinedAt: Date;
 }
+
 
 export interface Gig {
   id: string;

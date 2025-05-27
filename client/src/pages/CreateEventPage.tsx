@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Plus, X } from 'lucide-react';
-
+import { useAuthState } from '@/hooks/useAuth';
 const CreateEventPage = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -24,7 +24,7 @@ const CreateEventPage = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
-
+ const {user, isAuthenticated}= useAuthState()
   const addTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
       setTags([...tags, newTag.trim()]);
@@ -50,6 +50,7 @@ const CreateEventPage = () => {
     price: Number(price),
     isOnline,
     tags,
+    organizer: user._id,
   };
 
   try {

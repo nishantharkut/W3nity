@@ -14,11 +14,22 @@ interface GigCardProps {
 }
 
 const GigCard = ({ gig, onViewDetails, onPropose }: GigCardProps) => {
-  const formatBudget = (budget: Gig['budget']) => {
-    const min = budget.min.toLocaleString();
-    const max = budget.max.toLocaleString();
-    return `$${min} - $${max} ${budget.type === 'hourly' ? '/hr' : ''}`;
-  };
+  const formatBudget = (gig: Gig) => {
+  if (
+    typeof gig.minBudget !== "number" ||
+    typeof gig.maxBudget !== "number" ||
+    isNaN(gig.minBudget) ||
+    isNaN(gig.maxBudget)
+  ) {
+    return "Budget not specified";
+  }
+
+  const min = gig.minBudget.toLocaleString();
+  const max = gig.maxBudget.toLocaleString();
+
+  return `$${min} - $${max}`;
+};
+
 
   const getExperienceBadgeColor = (level: string) => {
     switch (level) {
@@ -55,7 +66,7 @@ const GigCard = ({ gig, onViewDetails, onPropose }: GigCardProps) => {
           <div className="flex-1">
             <CardTitle className="text-lg line-clamp-2 mb-2">{gig.title}</CardTitle>
             <div className="text-2xl font-bold text-gradient mb-2">
-              {formatBudget(gig.budget)}
+              {formatBudget(gig)}
             </div>
           </div>
           <div className="flex flex-col items-end space-y-2">
@@ -87,13 +98,13 @@ const GigCard = ({ gig, onViewDetails, onPropose }: GigCardProps) => {
         {/* Client Info */}
         <div className="flex items-center space-x-3 p-3 bg-accent/50 rounded-lg">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={gig.client.avatar} alt={gig.client.username} />
-            <AvatarFallback>{gig.client.username.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarImage src={gig?.client?.avatar} alt={gig?.client?.username} />
+            <AvatarFallback>{gig?.client?.username?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center space-x-2">
-              <span className="font-medium">{gig.client.username}</span>
-              {gig.client.isVerified && (
+              <span className="font-medium">{gig?.client?.username}</span>
+              {gig?.client?.isVerified && (
                 <Badge variant="secondary" className="text-xs bg-blue-500/20 text-blue-400">
                   Verified
                 </Badge>
@@ -101,8 +112,8 @@ const GigCard = ({ gig, onViewDetails, onPropose }: GigCardProps) => {
             </div>
             <div className="flex items-center space-x-1 text-sm text-muted-foreground">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span>{gig.client.rating}</span>
-              <span>({gig.client.reviewCount} reviews)</span>
+              <span>{gig?.client?.rating}</span>
+              <span>({gig?.client?.reviewCount} reviews)</span>
             </div>
           </div>
         </div>
@@ -111,17 +122,17 @@ const GigCard = ({ gig, onViewDetails, onPropose }: GigCardProps) => {
         <div className="flex justify-between items-center text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">
             <Clock className="w-4 h-4" />
-            <span>Due {formatDistanceToNow(gig.deadline, { addSuffix: true })}</span>
+            <span>Due {formatDistanceToNow(gig?.deadline, { addSuffix: true })}</span>
           </div>
           <div className="flex items-center space-x-1">
             <Users className="w-4 h-4" />
-            <span>{gig.proposals.length} proposals</span>
+            <span>{gig?.proposals?.length} proposals</span>
           </div>
         </div>
 
         {/* Posted Time */}
         <div className="text-xs text-muted-foreground">
-          Posted {formatDistanceToNow(gig.createdAt, { addSuffix: true })}
+          Posted {formatDistanceToNow(gig?.createdAt, { addSuffix: true })}
         </div>
 
         {/* Actions */}
@@ -129,14 +140,14 @@ const GigCard = ({ gig, onViewDetails, onPropose }: GigCardProps) => {
           <Button 
             variant="outline" 
             className="flex-1"
-            onClick={() => onViewDetails?.(gig.id)}
+            onClick={() => onViewDetails?.(gig._id)}
           >
             View Details
           </Button>
           {gig.status === 'open' && (
             <Button 
               className="flex-1 glow-button"
-              onClick={() => onPropose?.(gig.id)}
+              onClick={() => onPropose?.(gig._id)}
             >
               Submit Proposal
             </Button>

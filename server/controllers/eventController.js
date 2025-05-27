@@ -5,15 +5,28 @@ exports.createEvent = async (req, res) => {
   try {
     const event = new Event(req.body);
     await event.save();
-    return res.status(201).json(event);  
+    const populatedEvent = await Event.findById(event._id).populate("organizer");
+    return res.status(201).json(populatedEvent);
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }
 };
 
+exports.updateEvent = async (req, res) => {
+  try {
+    const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate("organizer");
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+    res.json(event);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 exports.getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find();
+    const events = await Event.find().populate("organizer","username avatar");
     return res.json(events);
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -22,21 +35,18 @@ exports.getAllEvents = async (req, res) => {
 
 exports.getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id).populate("organizer");
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
     return res.json(event);
   } catch (err) {
-    return res.status(404).json({ error: "Event not found" });
+    return res.status(400).json({ error: err.message });
   }
 };
 
-exports.updateEvent = async (req, res) => {
-  try {
-    const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(event);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+
+
 
 exports.deleteEvent = async (req, res) => {
   try {

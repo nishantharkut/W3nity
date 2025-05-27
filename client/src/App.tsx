@@ -20,6 +20,7 @@ import EventDetailsPage from "./pages/EventDetailsPage";
 import CreateGigPage from "./pages/CreateGigPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import ProposalPage from "./pages/ProposalPage";
+import ChatInterface from "./pages/ChatInterface";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                     <Route path="/events/create" element={<CreateEventPage />} />
                     <Route path="/event/:id" element={<EventDetailsPage />} />
                     <Route path="/community" element={<CommunityPage />} />
+                    <Route path="/community/:groupId" element={<ChatInterface/>} />
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

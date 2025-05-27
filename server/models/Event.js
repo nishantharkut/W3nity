@@ -19,7 +19,11 @@ const eventSchema = new mongoose.Schema(
       },
       address: { type: String, required: true },
     },
-    organizer: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // optional, can assign later
+    organizer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // or "Organizer", depending on your user model
+      required: true,
+    },
     attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     maxAttendees: { type: Number, default: 0 },
     price: { type: Number, default: 0 },
