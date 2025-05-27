@@ -45,14 +45,14 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
   - Framer Motion for animations  
 - **Backend**  
   - Node.js + Express  
-  - MongoDB (Mongoose) or PostgreSQL (Prisma)  
+  - MongoDB (Mongoose)
 - **Real-Time**  
-  - Socket.IO (WebSockets) or Firebase Realtime DB  
+  - Socket.IO (WebSockets)
 - **Blockchain**  
   - Solidity & Hardhat (local/testnet)  
   - Ethers.js / Wagmi + MetaMask  
 - **Storage & Media**  
-  - AWS S3 or Cloudinary  
+  - Cloudinary  
 - **Deployment**  
   - Vercel (frontend) & Railway/Heroku (backend)  
 
