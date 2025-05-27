@@ -21,6 +21,8 @@ import CreateGigPage from "./pages/CreateGigPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import ProposalPage from "./pages/ProposalPage";
 import ChatInterface from "./pages/ChatInterface";
+import NotificationsPage from "./pages/NotificationsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +56,8 @@ const App = () => (
                     <Route path="/community/:groupId" element={<ChatInterface/>} />
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/notifications" element={<NotificationsPage/>}/>
+                    <Route path="/settings" element={<SettingsPage/>}/>
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

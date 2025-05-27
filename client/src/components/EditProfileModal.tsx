@@ -15,33 +15,37 @@ const EditProfileModal: React.FC<Props> = ({ user, onClose, onSave }) => {
   }, [user]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type, checked } = e.target;
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  const { name, value, type, checked } = e.target;
 
-    if (name === "skills" || name === "socialLinks") {
-      setFormData({
-        ...formData,
-        [name]: value.split(",").map((item) => item.trim()),
-      });
-    } else if (type === "checkbox") {
-      setFormData({
-        ...formData,
-        [name]: checked,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+  if (name === "skills" || name === "socialLinks") {
+    setFormData({
+      ...formData,
+      [name]: value.split(",").map((item) => item.trim()),
+    });
+  } else if (name === "rating" || name === "reviewCount") {
+    setFormData({
+      ...formData,
+      [name]: Number(value),
+    });
+  } else if (type === "checkbox") {
+    setFormData({
+      ...formData,
+      [name]: checked,
+    });
+  } else {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
 
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
+  if (errors[name]) {
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  }
+};
+
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
@@ -60,30 +64,32 @@ const EditProfileModal: React.FC<Props> = ({ user, onClose, onSave }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!validate()) return;
+    e.preventDefault();
+    if (!validate()) return;
 
-  try {
-    const response = await fetch(`http://localhost:8080/api/users/${formData._id}`, {
-      method: "PUT", 
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/users/${formData._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-    if (!response.ok) {
-      throw new Error("Failed to update profile");
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+      console.log(response);
+      const updatedUser = await response.json();
+      onSave(updatedUser);
+      onClose();
+    } catch (error) {
+      console.error("Error updating profile:", error);
     }
-    console.log(response)
-    const updatedUser = await response.json();
-    onSave(updatedUser); 
-    onClose();
-  } catch (error) {
-    console.error("Error updating profile:", error);
-  }
-};
-
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
@@ -304,7 +310,13 @@ const EditProfileModal: React.FC<Props> = ({ user, onClose, onSave }) => {
                     type="number"
                     name="rating"
                     value={formData.rating ?? 0}
-                    className="w-20 rounded-lg border border-gray-600 p-2 bg-gray-700  text-center text-gray-400"
+                    onChange={handleChange} // add this
+                    disabled={formData.role !== "client"}
+                    className={`w-20 rounded-lg border p-2 text-center ${
+                      formData.role === "client"
+                        ? "border-gray-700 bg-gray-800 text-gray-100"
+                        : "border-gray-600 bg-gray-700 text-gray-400 cursor-not-allowed"
+                    }`}
                   />
                 </div>
 
@@ -316,7 +328,13 @@ const EditProfileModal: React.FC<Props> = ({ user, onClose, onSave }) => {
                     type="number"
                     name="reviewCount"
                     value={formData.reviewCount ?? 0}
-                    className="w-20 rounded-lg border border-gray-600 p-2 bg-gray-700 text-center text-gray-400"
+                    onChange={handleChange} // add this
+                    disabled={formData.role !== "client"} // disable if not client
+                    className={`w-20 rounded-lg border p-2 text-center ${
+                      formData.role === "client"
+                        ? "border-gray-700 bg-gray-800 text-gray-100"
+                        : "border-gray-600 bg-gray-700 text-gray-400 cursor-not-allowed"
+                    }`}
                   />
                 </div>
               </div>

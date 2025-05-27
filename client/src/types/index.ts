@@ -32,7 +32,7 @@ export interface Gig {
     type?: 'fixed' | 'hourly';
   };
   skills: string[];
-  client: {
+  createdBy: {
     id: string;
     username: string;
     rating: number;
@@ -50,6 +50,7 @@ export interface Gig {
   proposals: Proposal[];
   status: 'open' | 'in-progress' | 'completed' | 'cancelled';
 }
+
 
 export interface Event {
   id: string;

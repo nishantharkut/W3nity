@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, X } from "lucide-react";
+import { useAuthState } from "@/hooks/useAuth";
 
 const CreateGigPage = () => {
   const navigate = useNavigate();
@@ -31,6 +32,12 @@ const CreateGigPage = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
 
+  const { user } = useAuthState();
+  const token = JSON.parse(
+    localStorage.getItem("sparkverse-auth") || "{}"
+  )?.token;
+  console.log(token)
+
   const addSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       setSkills([...skills, newSkill.trim()]);
@@ -43,41 +50,48 @@ const CreateGigPage = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const gigData = {
-      title,
-      description,
-      category,
-      minBudget: Number(minBudget),
-      maxBudget: Number(maxBudget),
-      deadline: new Date(deadline),
-      clientName,
-      projectLength,
-      projectType,
-      experienceLevel,
-      skills,
-    };
-
-    try {
-      const res = await fetch("http://localhost:8080/api/gigs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(gigData),
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Error ${res.status}: ${errorText}`);
-      }
-
-      const data = await res.json();
-      console.log("Gig created:", data);
-      navigate("/freelance");
-    } catch (error: any) {
-      console.error("Error creating gig:", error.message);
-    }
+  const gigData = {
+    title,
+    description,
+    category,
+    minBudget: Number(minBudget),
+    maxBudget: Number(maxBudget),
+    deadline: new Date(deadline),
+    clientName,
+    projectLength,
+    projectType,
+    experienceLevel,
+    skills,
+    // ❌ Don't send createdBy — backend will infer from token
   };
+
+  try {
+    const token = JSON.parse(localStorage.getItem('sparkverse-auth') || '{}')?.token;
+
+    const res = await fetch("http://localhost:8080/api/gigs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, 
+      },
+      body: JSON.stringify(gigData),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Error ${res.status}: ${errorText}`);
+    }
+
+    const data = await res.json();
+    console.log("Gig created:", data);
+    navigate("/freelance");
+  } catch (error: any) {
+    console.error("Error creating gig:", error.message);
+  }
+};
+
 
   return (
     <div className="container mx-auto px-4 py-8">

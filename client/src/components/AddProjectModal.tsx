@@ -10,9 +10,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useAuthState } from "@/hooks/useAuth";
 
 interface Project {
-  id: string;
+  // id: string;
   title: string;
   description: string;
   technologies: string[];
@@ -33,6 +34,22 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
   const [status, setStatus] = useState("In Progress");
   const [client, setClient] = useState("");
   const [budget, setBudget] = useState("");
+  const { user } = useAuthState();
+
+  const getToken = () => {
+    const authString = localStorage.getItem("sparkverse-auth");
+    if (!authString) return null;
+
+    try {
+      const authData = JSON.parse(authString);
+      return authData.token; // assuming token is saved as authData.token
+    } catch (err) {
+      console.error("Failed to parse auth data from localStorage", err);
+      return null;
+    }
+  };
+  const token = getToken();
+  console.log(token)
 
   const handleSubmit = async () => {
     if (!title || !description) {
@@ -41,7 +58,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
     }
 
     const newProject: Project = {
-      id: Date.now().toString(),
+      // id: Date.now().toString(),
       title,
       description,
       technologies: technologies
@@ -56,14 +73,17 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
     try {
       const response = await fetch("http://localhost:8080/api/projects", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(newProject),
       });
 
       if (!response.ok) {
         throw new Error("Failed to add project");
       }
-      console.log(response)
+      console.log(response);
       const savedProject = await response.json();
       onAddProject(savedProject);
       setOpen(false);

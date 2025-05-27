@@ -72,12 +72,18 @@ exports.updateUserProfile = async (req, res) => {
   const updatedData = req.body;
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, updatedData, {
+    console.log("Updating user:", id, updatedData);
+    const updatedUser = await User.findByIdAndUpdate(id, { $set: req.body }, {
       new: true,
+      
       runValidators: true,
     });
-    if (!updatedUser) return res.status(404).json({ error: "User not found" });
-    await updatedUser.save()
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // No need to call save() here
     res.status(200).json(updatedUser);
   } catch (err) {
     console.error("Error updating user:", err);
