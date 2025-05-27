@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,16 +6,54 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { mockGigs } from '@/lib/mockData';
+import { useWeb3 } from '@/hooks/useWeb3';
+import { getEscrowInstance } from '@/lib/escrow';
+
+const ESCROW_CONTRACT_ADDRESS = "0x21Ed0dC8810420c09a6507427F77fEF286121aC6";
 
 const ProposalPage = () => {
+  const { signer } = useWeb3();
   const { id } = useParams();
   const navigate = useNavigate();
   const [coverLetter, setCoverLetter] = useState('');
   const [proposedBudget, setProposedBudget] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
-  
+  const [isReleasing, setIsReleasing] = useState(false);
+  const [txStatus, setTxStatus] = useState<string | null>(null);
+
   const gig = mockGigs.find(g => g.id === id);
-  
+
+  const handleRelease = async () => {
+    if (!signer) {
+      setTxStatus("⚠️ Please connect your wallet to proceed.");
+      return;
+    }
+    try {
+      setIsReleasing(true);
+      const contract = getEscrowInstance(signer, ESCROW_CONTRACT_ADDRESS);
+      const tx = await contract.releaseFunds();
+      await tx.wait();
+      setTxStatus("Funds released successfully!");
+    } catch (err: any) {
+      const code = err.code || err.info?.error?.code;
+      const message =
+        err.reason ||
+        err.shortMessage ||
+        err.message ||
+        err.info?.error?.message ||
+        "An unknown error occurred.";
+
+      if (code === 4001 || code === "ACTION_REJECTED") {
+        setTxStatus("Transaction rejected by user.");
+      } else {
+        setTxStatus(`Error: ${message}`);
+      }
+    }
+    finally {
+      setIsReleasing(false);
+    }
+  };
+
   if (!gig) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -39,13 +76,11 @@ const ProposalPage = () => {
     navigate(`/gig/${id}`);
   };
 
+  const isFormInvalid = !coverLetter || !proposedBudget || !deliveryTime;
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <Button 
-        variant="outline" 
-        onClick={() => navigate(`/gig/${id}`)}
-        className="mb-6"
-      >
+      <Button variant="outline" onClick={() => navigate(`/gig/${id}`)} className="mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Gig
       </Button>
@@ -96,18 +131,27 @@ const ProposalPage = () => {
               </div>
 
               <div className="flex space-x-4">
-                <Button type="submit" className="glow-button">
+                <Button type="submit" className="glow-button" disabled={isFormInvalid}>
                   Submit Proposal
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => navigate(`/gig/${id}`)}
-                >
+                <Button type="button" variant="outline" onClick={() => navigate(`/gig/${id}`)}>
                   Cancel
                 </Button>
               </div>
             </form>
+
+            {/* Escrow Release UI */}
+            <div className="mt-10 border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4">Escrow Actions</h3>
+              <Button onClick={handleRelease} disabled={isReleasing}>
+                {isReleasing ? "Releasing..." : "Release Escrow"}
+              </Button>
+              {txStatus && (
+                <p className={`mt-2 text-sm ${txStatus.startsWith("Error") ? "text-red-500" : "text-green-500"}`}>
+                  {txStatus}
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
