@@ -44,18 +44,21 @@ const ProfilePage = () => {
   const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        if (user) {
+        
           const res = await fetch(`http://localhost:8080/api/projects`);
+          // console.log(res.json)
           if (res.ok) {
             const data = await res.json();
-            setPortfolioProjects(data.projects); // assuming the API returns { projects: [...] }
+            console.log("data",data)
+            setPortfolioProjects(data); // assuming the API returns { projects: [...] }
           } else {
             console.error("Failed to fetch projects");
           }
-        }
+        
       } catch (error) {
         console.error("Error fetching projects:", error);
       }

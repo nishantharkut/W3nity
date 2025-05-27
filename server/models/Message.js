@@ -1,14 +1,30 @@
-// models/Message.js
 const mongoose = require("mongoose");
 
-const messageSchema = new mongoose.Schema(
-  {
-    chatRoom: { type: mongoose.Schema.Types.ObjectId, ref: "ChatRoom" },
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    content: String,
-    media: String // optional image or file
+const messageSchema = new mongoose.Schema({
+  groupId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Group',
+    required: true
   },
-  { timestamps: true }
-);
+  text: {
+    type: String,
+    required: true
+  },
+  sender: {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    username: {
+      type: String,
+      required: true
+    }
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 module.exports = mongoose.model("Message", messageSchema);

@@ -5,7 +5,8 @@ const Project=require("../models/Project.js")
 router.get("/", async (req, res) => {
   try {
     const projects = await Project.find();
-    res.json(projects);
+    // console.log(projects)
+    return res.json(projects);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -26,6 +27,7 @@ router.post("/", async (req, res) => {
 
   try {
     const savedProject = await project.save();
+    console.log(savedProject)
     return res.status(201).json(savedProject);
   } catch (err) {
     res.status(400).json({ message: err.message });
