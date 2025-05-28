@@ -2,10 +2,9 @@
 const Proposal = require("../models/Proposal");
 const Gig = require("../models/Gig");
 
-exports.submitProposal = async (req, res) => {
+exports.createProposalWithEscrow = async (req, res) => {
   try {
-    const { userId, message, budget } = req.body;
-    const gigId = req.params.id;
+    const { gigId, userId, coverLetter, proposedBudget, deliveryTime, escrowAddress } = req.body;
 
     const gig = await Gig.findById(gigId);
     if (!gig) return res.status(404).json({ message: "Gig not found" });
@@ -13,8 +12,11 @@ exports.submitProposal = async (req, res) => {
     const proposal = await Proposal.create({
       user: userId,
       gig: gigId,
-      message,
-      budget,
+      message: coverLetter,
+      budget: proposedBudget,
+      deliveryTime,
+      escrowAddress,
+      status: "Pending",
     });
 
     gig.proposals.push(proposal._id);
@@ -22,6 +24,7 @@ exports.submitProposal = async (req, res) => {
 
     res.status(201).json(proposal);
   } catch (err) {
-    res.status(500).json({ message: "Error submitting proposal" });
+    console.error("Error creating proposal with escrow:", err);
+    res.status(500).json({ message: "Failed to create proposal with escrow" });
   }
 };

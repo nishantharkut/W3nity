@@ -8,10 +8,13 @@ import { ArrowLeft } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { getEscrowInstance } from '@/lib/escrow';
 import axios from "axios";
-
+import EscrowABI from '@/lib/Escrow.json';
+import { toast } from 'react-hot-toast';
+import { ethers } from 'ethers';
 const ESCROW_CONTRACT_ADDRESS = "0x21Ed0dC8810420c09a6507427F77fEF286121aC6";
-
+import { useAuthState } from "../hooks/useAuth";
 const ProposalPage = () => {
+  const { user, isAuthenticated } = useAuthState();
   const { signer } = useWeb3();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -95,36 +98,62 @@ const ProposalPage = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!signer) {
-      alert("Please connect your wallet before submitting a proposal.");
-      return;
-    }
+  // Ensure user and wallet are connected
+  if (!user?._id) {
+    toast("You must be logged in to submit a proposal");
+    return;
+  }
+  if (!signer) {
+    toast("Please connect your wallet");
+    return;
+  }
 
-    try {
-      const payload = {
-        userId: signer.address, // assuming signer.address is the userId
-        message: coverLetter,
-        budget: Number(proposedBudget),
-        // Note: deliveryTime can be sent if your backend supports it, else remove
-        deliveryTime: Number(deliveryTime),
-      };
+  let escrowAddress = "";
 
-      const response = await axios.post(`/api/gigs/${id}/proposals`, payload);
+  try {
+    // Step 1: Deploy escrow contract (optional, if needed)
+    const signerAddress = await signer.getAddress();
+    const contractFactory = new ethers.ContractFactory(EscrowABI.abi, EscrowABI.bytecode, signer);
 
-      if (response.status === 201 || response.status === 200) {
-        console.log("✅ Proposal submitted:", response.data);
-        navigate(`/gig/${id}`);
-      } else {
-        console.error("❌ Unexpected response:", response);
-        alert("Failed to submit proposal.");
-      }
-    } catch (error) {
-      console.error("❌ Error submitting proposal:", error);
-      alert("Something went wrong while submitting the proposal.");
-    }
-  };
+    const ethValue = ethers.parseEther(proposedBudget.toString()); // Assuming input is in ETH
+    const contract = await contractFactory.deploy(signerAddress, {
+      value: ethValue,
+    });
+    await contract.deployed();
+    escrowAddress = contract.address;
+
+    console.log("✅ Escrow contract deployed at:", escrowAddress);
+  } catch (err: any) {
+    console.error("⛔ Escrow deploy error:", err.message);
+    toast(`Contract deployment failed: ${err.message}`);
+    return;
+  }
+
+  try {
+    // Step 2: Submit proposal to backend
+    const proposalPayload = {
+      gigId: id,
+      userId: user._id,
+      coverLetter,
+      proposedBudget,
+      deliveryTime,
+      escrowAddress,
+    };
+
+    await axios.post("http://localhost:8080/api/proposals", proposalPayload);
+    toast("Proposal submitted successfully!");
+    navigate(`/gig/${id}`);
+  } catch (err) {
+    console.error("⛔ Proposal submission failed:", err);
+    toast("Error submitting proposal to backend");
+  }
+};
+
+
+  
+
 
   const isFormInvalid = !coverLetter || !proposedBudget || !deliveryTime;
 
@@ -159,7 +188,8 @@ const ProposalPage = () => {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Proposed Budget ($)</label>
+                  <label className="block text-sm font-medium mb-2">Proposed Budget (in ETH)</label>
+                  <p className="text-xs text-muted-foreground mt-1">e.g. 0.01 ETH = ~$35 USD</p>
                   <Input
                     type="number"
                     value={proposedBudget}

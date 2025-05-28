@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const gigController = require("../controllers/gigController");
-const { submitProposal } = require("../controllers/proposalController");
 const authMiddleware= require("../middlewares/authMiddleware")
+const { submitProposal, createProposalWithEscrow } = require("../controllers/proposalController");
 
 router.post("/",authMiddleware, gigController.createGig);
 router.get("/", gigController.getAllGigs);
@@ -11,7 +11,7 @@ router.put("/:id", gigController.updateGig);
 router.delete("/:id", gigController.deleteGig);
 
 //after web3
-router.post("/:id/proposals", submitProposal);
+router.post("/:id/proposals", createProposalWithEscrow);
 
 
 module.exports = router;

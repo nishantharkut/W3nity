@@ -14,6 +14,13 @@ const proposalSchema = new mongoose.Schema({
   },
   message: String,
   budget: Number,
+  deliveryTime: Number, // 🆕 Optional: add delivery time
+  escrowAddress: String, // 🆕 Store deployed escrow address
+  status: {
+    type: String,
+    enum: ["Pending", "Accepted", "FundReleased"],
+    default: "Pending",
+  },
   submittedAt: {
     type: Date,
     default: Date.now,

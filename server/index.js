@@ -12,7 +12,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const projectRoutes= require("./routes/projectRoutes.js")
 const { Server } = require('socket.io');
 const groupRoutes= require("./routes/groupRoutes.js")
-
+const proposalRoutes = require("./routes/proposalRoutes");
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -25,7 +25,7 @@ require('./socket.js')(io);
 connectDB();
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/proposals", proposalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/gigs", gigRoutes);
 app.use("/api/projects", projectRoutes)
