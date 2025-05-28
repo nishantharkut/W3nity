@@ -2,18 +2,11 @@ const mongoose = require("mongoose");
 
 const gigSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
+    title: { type: String },
     description: { type: String, required: true },
     category: {
       type: String,
-      enum: [
-        "web-development",
-        "mobile-development",
-        "blockchain",
-        "ai-ml",
-        "design",
-        "devops",
-      ],
+      enum: ['AI/ML', 'App Development', 'Data Science', 'Design', 'Web Development', 'Other'], // include it here
       required: true,
     },
     experienceLevel: {
@@ -21,13 +14,15 @@ const gigSchema = new mongoose.Schema(
       enum: ["entry", "intermediate", "expert"],
       required: true,
     },
-    projectLength: String,
-    projectType: String,
     skills: [{ type: String }],
     minBudget: Number,
     maxBudget: Number,
+    budgetType: String,
     deadline: { type: Date, required: true },
-    clientName: { type: String, required: true },
+    duration: String,
+    deliverables: String,
+    requirements: String,
+    attachments: [String],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

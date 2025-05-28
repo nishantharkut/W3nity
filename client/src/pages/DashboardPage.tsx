@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle , CardDescription} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { useAuthState } from "@/hooks/useAuth";
-
-import AddProjectModal from "@/components/AddProjectModal";
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from "react-router-dom";
 import {
   Briefcase,
   Calendar,
@@ -23,506 +23,362 @@ import {
   MessageSquare,
   Award,
   Target,
+  Eye,
+  CheckCircle
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  status: string;
-  client: string;
-  budget: string;
-  progress: number;
-}
+// interface Project {
+//   id: string;
+//   title: string;
+//   description: string;
+//   technologies: string[];
+//   status: string;
+//   client: string;
+//   budget: string;
+//   progress: number;
+// }
+
 
 const DashboardPage = () => {
-  const { user, isAuthenticated } = useAuthState();
-  console.log(user);
-  const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
-  const [activeProjects, setActiveProjects] = useState([]);
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [activeTab, setActiveTab] = useState("overview");
+
+const { user, isAuthenticated } = useAuthState();
+console.log(user)
+const navigate = useNavigate();
+const { toast } = useToast();
+
+const [completedProjects, setCompletedProjects] = useState(12);
+const [totalEarnings, setTotalEarnings] = useState(15420);
+// const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
+const [activeProjects, setActiveProjects] = useState([]);
+const [upcomingEvents, setUpcomingEvents] = useState([]);
+
 
 useEffect(() => {
   const fetchDashboardData = async () => {
     try {
-        const [projectsRes, eventsRes] = await Promise.all([
-          fetch(`http://localhost:8080/api/projects/${user._id}`),
-          fetch("http://localhost:8080/api/events"),
-        ]);
+      const eventsRes = await fetch("http://localhost:8080/api/events");
+      
+      const eventsData = await eventsRes.json();
 
-        const projectsData = await projectsRes.json();
-        const eventsData = await eventsRes.json();
-
-      setActiveProjects(projectsData);
+    
       setUpcomingEvents(eventsData);
 
-        // Log the fetched data directly
-        console.log("Fetched Projects:", projectsData);
-        console.log("Fetched Events:", eventsData);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      }
-    };
 
-    if (user?._id) {
-      fetchDashboardData();
+      console.log("Fetched Events:", eventsData);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
     }
+  };
+
+  if (user?._id) {
+    fetchDashboardData();
+  }
 }, [user]);
 
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <Activity className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-2xl font-semibold mb-2">Please Log In</h2>
-            <p className="text-muted-foreground mb-6">
-              You need to be logged in to access your dashboard.
-            </p>
-            <Button asChild className="w-full">
-              <Link to="/login">Log In</Link>
+// ✅ Welcome Toast – Always runs once on mount
+useEffect(() => {
+  toast({
+    title: "Welcome to W3nity!",
+    description: "Your collaboration dashboard is ready",
+  });
+}, [toast]);
+
+// ✅ Stats and Data (declared outside render logic)
+const quickStats = [
+  {
+    title: 'Active Projects',
+    value: activeProjects,
+    icon: Briefcase,
+    change: '+2 this week',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50'
+  },
+  {
+    title: 'Total Earnings',
+    value: `$${totalEarnings.toLocaleString()}`,
+    icon: DollarSign,
+    change: '+$2,400 this month',
+    color: 'text-green-600',
+    bgColor: 'bg-green-50'
+  },
+  {
+    title: 'Completed',
+    value: completedProjects,
+    icon: CheckCircle,
+    change: '98% success rate',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50'
+  },
+  {
+    title: 'Network',
+    value: '847',
+    icon: Users,
+    change: '+23 connections',
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50'
+  },
+];
+
+const recentActivities = [
+  { action: 'New proposal received', project: 'React Dashboard', time: '2 hours ago', status: 'pending' },
+  { action: 'Project completed', project: 'Mobile App UI', time: '1 day ago', status: 'completed' },
+  { action: 'Event registered', project: 'Tech Meetup 2024', time: '2 days ago', status: 'upcoming' },
+  { action: 'Community post liked', project: 'Web3 Discussion', time: '3 days ago', status: 'active' },
+];
+
+// ✅ Handler Functions — also declared at top level
+const handleCreateGig = () => {
+  navigate('/freelance/create');
+  toast({ title: "Create New Gig", description: "Starting gig creation process" });
+};
+
+const handleCreateEvent = () => {
+  navigate('/events/create');
+  toast({ title: "Create New Event", description: "Starting event creation process" });
+};
+
+const handleViewGigs = () => {
+  navigate('/freelance');
+  toast({ title: "Browse Gigs", description: "Exploring available freelance opportunities" });
+};
+
+const handleViewEvents = () => {
+  navigate('/events');
+  toast({ title: "Browse Events", description: "Discovering upcoming tech events" });
+};
+
+const handleJoinCommunity = () => {
+  navigate('/community');
+  toast({ title: "Join Community", description: "Connecting with fellow developers" });
+};
+
+const handleViewProfile = () => {
+  navigate('/profile');
+  toast({ title: "View Profile", description: "Managing your professional profile" });
+};
+
+const handleStartChat = () => {
+  navigate('/community');
+  toast({ title: "Start Chatting", description: "Opening real-time collaboration chat" });
+};
+
+const handleViewNotifications = () => {
+  navigate('/notifications');
+  toast({ title: "Notifications", description: "Checking your latest updates" });
+};
+
+if (!isAuthenticated || !user) {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6 text-center">
+          <Activity className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="text-2xl font-semibold mb-2">Please Log In</h2>
+          <p className="text-muted-foreground mb-6">
+            You need to be logged in to access your dashboard.
+          </p>
+          <Button asChild className="w-full">
+            <Link to="/login">Log In</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+return (
+  <div className="space-y-8">
+    {/* Header */}
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Welcome back! 👋
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Ready to spark some collaboration today?
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={handleCreateGig} className="glow-button">
+          <Plus className="w-4 h-4 mr-2" />
+          Create Gig
+        </Button>
+        <Button onClick={handleCreateEvent} variant="outline">
+          <Calendar className="w-4 h-4 mr-2" />
+          Create Event
+        </Button>
+      </div>
+    </div>
+
+    {/* Wallet Connection */}
+    
+
+    {/* Quick Stats */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {quickStats.map((stat, index) => (
+        <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={handleViewProfile}>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {stat.title}
+                </p>
+                <p className="text-2xl font-bold">{stat.value}</p>
+                <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
+              </div>
+              <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+
+    {/* Main Content Grid */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Left Column */}
+      <div className="lg:col-span-2 space-y-6">
+        {/* Quick Actions */}
+        <Card className="glass-effect">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <TrendingUp className="w-5 h-5 mr-2" />
+              Quick Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button onClick={handleViewGigs} variant="outline" className="h-20 flex-col hover:bg-primary/5">
+              <Briefcase className="w-6 h-6 mb-2" />
+              Browse Gigs
+            </Button>
+            <Button onClick={handleViewEvents} variant="outline" className="h-20 flex-col hover:bg-primary/5">
+              <Calendar className="w-6 h-6 mb-2" />
+              Find Events
+            </Button>
+            <Button onClick={handleJoinCommunity} variant="outline" className="h-20 flex-col hover:bg-primary/5">
+              <Users className="w-6 h-6 mb-2" />
+              Join Community
+            </Button>
+            <Button onClick={handleStartChat} variant="outline" className="h-20 flex-col hover:bg-primary/5">
+              <MessageSquare className="w-6 h-6 mb-2" />
+              Start Chat
             </Button>
           </CardContent>
         </Card>
-      </div>
-    );
-  }
 
-  const quickStats = [
-    {
-      title: "Active Projects",
-      value: "3",
-      change: "+2 this week",
-      icon: Briefcase,
-      color: "text-blue-500",
-    },
-    {
-      title: "This Month Earnings",
-      value: "$4,250",
-      change: "+12% from last month",
-      icon: DollarSign,
-      color: "text-green-500",
-    },
-    {
-      title: "Pending Proposals",
-      value: "7",
-      change: "2 responses needed",
-      icon: MessageSquare,
-      color: "text-yellow-500",
-    },
-    {
-      title: "Client Rating",
-      value: "4.9",
-      change: "Based on 24 reviews",
-      icon: Star,
-      color: "text-purple-500",
-    },
-  ];
-
-  // const activeProjects = [
-  //   {
-  //     id: '1',
-  //     title: 'E-commerce Platform Redesign',
-  //     client: 'TechCorp',
-  //     deadline: '2024-12-30',
-  //     progress: 75,
-  //     budget: '$5,000',
-  //     status: 'In Progress'
-  //   },
-  //   {
-  //     id: '2',
-  //     title: 'Mobile App Development',
-  //     client: 'StartupXYZ',
-  //     deadline: '2025-01-15',
-  //     progress: 45,
-  //     budget: '$8,500',
-  //     status: 'In Progress'
-  //   },
-  //   {
-  //     id: '3',
-  //     title: 'API Integration',
-  //     client: 'DataFlow Inc',
-  //     deadline: '2024-12-25',
-  //     progress: 90,
-  //     budget: '$2,200',
-  //     status: 'Review'
-  //   }
-  // ];
-
-  const recentActivity = [
-    {
-      id: "1",
-      type: "proposal",
-      title: "New proposal submitted",
-      description: "Web3 Dashboard Development - $6,000",
-      time: "2 hours ago",
-      icon: MessageSquare,
-    },
-    {
-      id: "2",
-      type: "payment",
-      title: "Payment received",
-      description: "$2,500 from TechCorp",
-      time: "1 day ago",
-      icon: DollarSign,
-    },
-    {
-      id: "3",
-      type: "message",
-      title: "New message from client",
-      description: 'StartupXYZ: "Great progress on the mobile app!"',
-      time: "2 days ago",
-      icon: MessageSquare,
-    },
-    {
-      id: "4",
-      type: "milestone",
-      title: "Project milestone completed",
-      description: "API Integration - Phase 2",
-      time: "3 days ago",
-      icon: Target,
-    },
-  ];
-
-  // const upcomingEvents = [
-  //   {
-  //     id: '1',
-  //     title: 'Project Review Call',
-  //     client: 'TechCorp',
-  //     date: '2024-12-28',
-  //     time: '2:00 PM',
-  //     type: 'meeting'
-  //   },
-  //   {
-  //     id: '2',
-  //     title: 'Deadline: Mobile App MVP',
-  //     client: 'StartupXYZ',
-  //     date: '2024-12-30',
-  //     time: 'End of day',
-  //     type: 'deadline'
-  //   },
-  //   {
-  //     id: '3',
-  //     title: 'Web3 Conference',
-  //     client: 'Industry Event',
-  //     date: '2025-01-05',
-  //     time: '9:00 AM',
-  //     type: 'event'
-  //   }
-  // ];
-
-  const handleAddProject = (project: Project) => {
-  setPortfolioProjects((prev) => [...prev, project]);
-};
-
-
-  return (
-    <div className="min-h-screen py-8 px-4 bg-gradient-to-b from-background to-background/50">
-      <div className="container mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">
-              Welcome back, {user.username}! 👋
-            </h1>
-            <p className="text-muted-foreground">
-              Here's what's happening with your freelance business today.
-            </p>
-          </div>
-          <div className="flex gap-3 mt-4 md:mt-0">
-            <Link to="/notifications">
-            <Button variant="outline">
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
-            </Button></Link>
-            
-            
-              {/* <Plus className="w-4 h-4 mr-2" /> */}
-              <AddProjectModal onAddProject={handleAddProject} />
-            
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {quickStats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={index} className="glass-effect card-hover">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">
-                        {stat.title}
-                      </p>
-                      <p className="text-2xl font-bold text-gradient">
-                        {stat.value}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {stat.change}
-                      </p>
-                    </div>
-                    <Icon className={`w-8 h-8 ${stat.color}`} />
+        {/* Recent Activity */}
+        <Card className="glass-effect">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Clock className="w-5 h-5 mr-2" />
+                Recent Activity
+              </div>
+              <Button onClick={handleViewNotifications} variant="outline" size="sm">
+                <Eye className="w-4 h-4 mr-2" />
+                View All
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer" onClick={handleViewNotifications}>
+                  <div className="flex-1">
+                    <p className="font-medium">{activity.action}</p>
+                    <p className="text-sm text-muted-foreground">{activity.project}</p>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Main Dashboard Content */}
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-6"
-        >
-          <TabsList className="w-full">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="proposals">Proposals</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid lg:grid-cols-2 gap-6">
-              {/* Active Projects */}
-              <Card className="glass-effect">
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Briefcase className="w-5 h-5" />
-                    Active Projects
-                  </CardTitle>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link to="/dashboard?tab=projects">
-                      View All <ArrowRight className="w-4 h-4 ml-1" />
-                    </Link>
-                  </Button>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {activeProjects.slice(0, 3).map((project) => (
-                    <div
-                      key={project.id}
-                      className="border rounded-lg p-4 space-y-2"
-                    >
-                      <div className="flex justify-between items-start">
-                        <h4 className="font-semibold line-clamp-1">
-                          {project.title}
-                        </h4>
-                        <Badge
-                          variant={
-                            project.status === "In Progress"
-                              ? "default"
-                              : "secondary"
-                          }
-                        >
-                          {project.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Client: {project.client} • Due:{" "}
-                        {new Date(project.deadline).toLocaleDateString()}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Progress</span>
-                          <span>{project.progress}%</span>
-                        </div>
-                        <Progress value={project.progress} />
-                      </div>
-                      <div className="text-right text-sm font-medium text-gradient">
-                        {project.budget}
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Recent Activity */}
-              <Card className="glass-effect">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    Recent Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {recentActivity.map((activity) => {
-                    const Icon = activity.icon;
-                    return (
-                      <div key={activity.id} className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <Icon className="w-4 h-4 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm">
-                            {activity.title}
-                          </p>
-                          <p className="text-sm text-muted-foreground line-clamp-1">
-                            {activity.description}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {activity.time}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </CardContent>
-              </Card>
+                  <div className="text-right">
+                    <Badge variant={activity.status === 'completed' ? 'default' : activity.status === 'pending' ? 'secondary' : 'outline'}>
+                      {activity.status}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              ))}
             </div>
+          </CardContent>
+        </Card>
+      </div>
 
-            {/* Upcoming Events */}
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Upcoming Events
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-3 gap-4">
-                  {upcomingEvents.map((event) => (
-                    <div key={event._id} className="border rounded-lg p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div
-                          className={`w-3 h-3 rounded-full ${
-                            event.category === "deadline"
-                              ? "bg-red-500"
-                              : event.category === "meeting"
-                              ? "bg-blue-500"
-                              : "bg-green-500"
-                          }`}
-                        />
-                        <span className="text-sm font-medium">
-                          {event.title}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-1">
-                        {new Date(event.startDate).toLocaleDateString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground mb-1">
-                        {event.isOnline
-                          ? "Online Event"
-                          : event.location?.address || "Location TBA"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Tags: {event.tags?.join(", ")}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+      {/* Right Sidebar */}
+      <div className="space-y-6">
+        {/* Performance Overview */}
+        <Card className="glass-effect">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Award className="w-5 h-5 mr-2" />
+              Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span>Project Success Rate</span>
+                <span>98%</span>
+              </div>
+              <Progress value={98} className="h-2" />
+            </div>
+            
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span>Client Satisfaction</span>
+                <span>4.9/5</span>
+              </div>
+              <Progress value={98} className="h-2" />
+            </div>
+            
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span>Response Time</span>
+                <span>&lt; 2hrs</span>
+              </div>
+              <Progress value={95} className="h-2" />
+            </div>
+            
+            <Button onClick={handleViewProfile} variant="outline" className="w-full mt-4">
+              <Star className="w-4 h-4 mr-2" />
+              View Full Profile
+            </Button>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="projects">
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle>All Projects</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {activeProjects.map((project) => (
-                    <div
-                      key={project.id}
-                      className="border rounded-lg p-6 space-y-4"
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                          <h3 className="text-lg font-semibold">
-                            {project.title}
-                          </h3>
-                          <p className="text-muted-foreground">
-                            Client: {project.client}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <Badge
-                            variant={
-                              project.status === "In Progress"
-                                ? "default"
-                                : "secondary"
-                            }
-                          >
-                            {project.status}
-                          </Badge>
-                          <span className="font-semibold text-gradient">
-                            {project.budget}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Progress ({project.progress}%)</span>
-                          <span>
-                            Due:{" "}
-                            {new Date(project.deadline).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <Progress value={project.progress} />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm">View Details</Button>
-                        <Button size="sm" variant="outline">
-                          Message Client
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="proposals">
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle>Submitted Proposals</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <MessageSquare className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-xl font-semibold mb-2">
-                    No Proposals Yet
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Start browsing projects and submit your first proposal.
-                  </p>
-                  <Button asChild className="glow-button">
-                    <Link to="/freelance">Browse Projects</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Performance Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <TrendingUp className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-xl font-semibold mb-2">
-                    Analytics Coming Soon
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Detailed analytics and insights will be available here.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* Upcoming Events */}
+        <Card className="glass-effect">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Calendar className="w-5 h-5 mr-2" />
+                Upcoming
+              </div>
+              <Button onClick={handleViewEvents} variant="outline" size="sm">
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={handleViewEvents}>
+              <h4 className="font-medium">Tech Meetup 2024</h4>
+              <p className="text-sm text-muted-foreground">Tomorrow, 6:00 PM</p>
+            </div>
+            <div className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={handleViewEvents}>
+              <h4 className="font-medium">Web3 Workshop</h4>
+              <p className="text-sm text-muted-foreground">Dec 25, 2:00 PM</p>
+            </div>
+            <div className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={handleViewEvents}>
+              <h4 className="font-medium">React Conference</h4>
+              <p className="text-sm text-muted-foreground">Jan 15, 9:00 AM</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default DashboardPage;
+
+
+

@@ -1,5 +1,16 @@
 "use client";
 
+import {
+  Users,
+  MessageCircle,
+  Phone,
+  Video,
+  Paperclip,
+  Smile,
+  MoreHorizontal,
+  Circle,
+} from "lucide-react";
+import React from "react";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import io from "socket.io-client";
@@ -12,12 +23,34 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuthState } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Send } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 let socket: any;
 
 const ChatInterface = () => {
-  const { groupId, groupName: rawGroupName } = useParams();
-  const groupName = decodeURIComponent(rawGroupName || "Group Chat");
+  const { id: groupId } = useParams();
+  console.log(groupId);
+
+  const [groupName, setGroupName] = useState("");
+
+  useEffect(() => {
+    const fetchGroupDetails = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/groups/${groupId}`
+        );
+        console.log(res);
+        setGroupName(res.data.name);
+      } catch (err) {
+        console.error("Error fetching group:", err);
+      }
+    };
+
+    if (groupId) {
+      fetchGroupDetails();
+    }
+  }, [groupId]);
+
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthState();
   const { toast } = useToast();
@@ -93,6 +126,13 @@ const ChatInterface = () => {
 
     return () => {
       socket.disconnect();
+
+      if (socket) {
+        socket.off("groupMessages");
+        socket.off("activeUsers");
+        socket.off("newMessage");
+        socket.disconnect();
+      }
     };
   }, [groupId, user, isAuthenticated]);
 
@@ -121,22 +161,52 @@ const ChatInterface = () => {
     setNewMessage("");
   };
 
+  const formatTimeAgo = (timestamp: string | number | Date): string => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diff = Math.floor((now.getTime() - time.getTime()) / 1000); // in seconds
+
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+
+    // For older than a day
+    return time.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="h-screen flex flex-col">
-      <div className="flex items-center justify-start gap-4 bg-gray-900 text-white px-4 py-3 shadow-md">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/community")}
-          >
-            {" "}
-            <ArrowLeft className="w-5 h-5" />{" "}
-          </Button>
-          <h1 className="text-lg font-semibold">{groupName}</h1>
+      <div className="flex items-center justify-between gap-4 bg-gray-900 text-white px-4 py-3 shadow-md">
+        <div className="flex gap-4 justify-center items-center">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/community")}
+            >
+              {" "}
+              <ArrowLeft className="w-5 h-5" />{" "}
+            </Button>
+            <h1 className="text-lg font-semibold">{groupName}</h1>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {activeUsers.length} online
+          </div>
         </div>
-        <div className="text-sm text-muted-foreground">
-          {activeUsers.length} online
+
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm">
+            <Phone className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="sm">
+            <Video className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="sm">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
@@ -171,11 +241,7 @@ const ChatInterface = () => {
                 return (
                   <div
                     key={group._id}
-                    onClick={() =>
-                      navigate(
-                        `/chat/${group._id}/${encodeURIComponent(group.name)}`
-                      )
-                    }
+                    onClick={() => navigate(`/community/${group._id}}`)}
                     className={`flex items-center justify-between p-3 mb-2 rounded-lg cursor-pointer transition 
             ${
               isActive
@@ -232,7 +298,9 @@ const ChatInterface = () => {
                   >
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`} />
+                        <AvatarImage
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`}
+                        />
                         <AvatarFallback>
                           {u.username[0]?.toUpperCase()}
                         </AvatarFallback>
@@ -257,53 +325,73 @@ const ChatInterface = () => {
           <ScrollArea className="flex-1 overflow-y-auto pr-2">
             {messages.map((msg, idx) => {
               const isOwn = msg.sender?._id === user?._id;
+              const msgDate = new Date(msg.createdAt);
+              const showDateHeader =
+                idx === 0 ||
+                new Date(messages[idx - 1].createdAt).toDateString() !==
+                  msgDate.toDateString();
+
               return (
-                <div
-                  key={idx}
-                  className={`flex mb-3 ${
-                    isOwn ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {!isOwn && (
-                    <Avatar className="mr-2">
-                      <AvatarImage
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.sender.username}`}
-                      />
-                      <AvatarFallback>
-                        {msg.sender?.username?.[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                  <Card
-                    className={`max-w-sm p-3 ${
-                      isOwn ? "bg-blue-500 text-white" : "bg-muted"
-                    }`}
-                  >
-                    <div className="text-xs font-medium mb-1">
-                      {msg.sender.username}
-                    </div>
-                    <div>{msg.text}</div>
-                    <div
-                      className={`text-[10px] mt-1 ${
-                        isOwn ? "text-white/80" : "text-gray-500"
-                      }`}
-                    >
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
+                <React.Fragment key={idx}>
+                  {showDateHeader && (
+                    <div className="text-center text-xs text-gray-500 my-4">
+                      {msgDate.toLocaleDateString(undefined, {
+                        weekday: "short",
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
                       })}
                     </div>
-                  </Card>
-                  {isOwn && (
-                    <Avatar className="ml-2">
-                      <AvatarFallback>
-                        {user.username?.[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
                   )}
-                </div>
+                  <div
+                    className={`flex mb-3 ${
+                      isOwn ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    {!isOwn && (
+                      <Avatar className="mr-2">
+                        <AvatarImage
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${msg.sender.username}`}
+                        />
+                        <AvatarFallback>
+                          {msg.sender?.username?.[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    <Card
+                      className={`max-w-sm p-3 px-4 ${
+                        isOwn
+                          ? "bg-blue-500 text-white rounded-tr-none after:absolute after:top-0 after:right-0 after:w-0 after:h-0 after:border-t-[10px] after:border-t-transparent after:border-l-[10px] after:border-l-blue-500 after:translate-x-full"
+                          : "bg-muted rounded-tl-none after:absolute after:top-0 after:left-0 after:w-0 after:h-0 after:border-t-[10px] after:border-t-transparent after:border-r-[10px] after:border-r-muted after:-translate-x-full"
+                      }`}
+                    >
+                      <div className="text-xs font-medium mb-1">
+                        {msg.sender.username}
+                      </div>
+                      <div>{msg.text}</div>
+                      <div
+                        className={`text-[10px] mt-1 ${
+                          isOwn ? "text-white/80" : "text-gray-500"
+                        }`}
+                      >
+                        {msgDate.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
+                    </Card>
+                    {isOwn && (
+                      <Avatar className="ml-2">
+                        <AvatarFallback>
+                          {user.username?.[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                </React.Fragment>
               );
             })}
+
             <div ref={messagesEndRef} />
           </ScrollArea>
 
