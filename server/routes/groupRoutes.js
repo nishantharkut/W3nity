@@ -11,6 +11,14 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+router.get('/:id', async (req, res) => {
+  try {
+    const groups = await Group.findById(req.params.id);
+    res.json(groups);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 
 router.post('/', async (req, res) => {
@@ -32,12 +40,14 @@ router.post('/', async (req, res) => {
   }
 });
 
-// POST /api/groups/:id/join
+
 router.post('/:id/join', async (req, res) => {
   const {id: userId } = req.body;
-
+  console.log(userId)
+  console.log(req.params.id)
   try {
     const group = await Group.findById(req.params.id);
+    
 
     if (!group) return res.status(404).json({ message: 'Group not found' });
 

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -155,11 +155,33 @@ const CommunityPage = () => {
         </p>
       </CardHeader>
       <CardContent>
+        <div className="flex -space-x-2">
+          {group.members.slice(0, 5).map((member: any) => (
+            <Avatar
+              key={member._id || member.id}
+              className="w-8 h-8 border-2 border-background mb-1"
+            >
+              <AvatarImage
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member?.username}`}
+              />
+              <AvatarFallback className="text-xs">
+                {member.username.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          ))}
+          {group.members.length > 5 && (
+            <div className="w-8 h-8 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs">
+              +{group.members.length - 5}
+            </div>
+          )}
+        </div>
+
+        <div className="text-xs text-muted-foreground mb-3">
+          Last active: {new Date(group.lastActivity).toLocaleDateString()}
+        </div>
+
         {user && user._id ? (
-          // Logged in
-          Array.isArray(group.members) &&
-          group.members.some((m) => m._id === user._id) ? (
-            // Already a member
+          group.members.some((m: any) => m._id === user._id) ? (
             <div className="flex gap-2">
               <Button variant="secondary" disabled className="w-full">
                 <Users className="w-4 h-4 mr-2" /> Joined
@@ -174,18 +196,24 @@ const CommunityPage = () => {
               </Button>
             </div>
           ) : (
-            // Logged in but not a member
             <Button
               variant="outline"
               className="w-full"
-              onClick={() => handleJoinGroup(group._id)}
+              onClick={() => {
+                console.log(
+                  "Joining group with ID:",
+                  group._id,
+                  "as user",
+                  user._id
+                );
+                handleJoinGroup(group._id);
+              }}
             >
               <MessageSquare className="w-4 h-4 mr-2" />
               Join Chat
             </Button>
           )
         ) : (
-          // Not logged in
           <Button
             variant="outline"
             className="w-full"
@@ -286,19 +314,50 @@ const CommunityPage = () => {
         </div>
       </div>
 
-      {/* Tabs */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <Card className="glass-effect">
+          <CardContent className="pt-6 text-center">
+            <div className="text-2xl font-bold text-gradient">
+              {groups.length}
+            </div>
+            <div className="text-sm text-muted-foreground">Total Groups</div>
+          </CardContent>
+        </Card>
+        <Card className="glass-effect">
+          <CardContent className="pt-6 text-center">
+            <div className="text-2xl font-bold text-gradient">
+              {groups.length}
+            </div>
+            <div className="text-sm text-muted-foreground">Active Members</div>
+          </CardContent>
+        </Card>
+        <Card className="glass-effect">
+          <CardContent className="pt-6 text-center">
+            <div className="text-2xl font-bold text-gradient">1.2K</div>
+            <div className="text-sm text-muted-foreground">Messages Today</div>
+          </CardContent>
+        </Card>
+        <Card className="glass-effect">
+          <CardContent className="pt-6 text-center">
+            <div className="text-2xl font-bold text-gradient">24</div>
+            <div className="text-sm text-muted-foreground">Online Now</div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Tabs
         defaultValue="explore"
         onValueChange={setActiveTab}
         className="space-y-6"
       >
-        <TabsList className="grid grid-cols-2 w-full mb-4">
+        <TabsList className="grid grid-cols-3 w-full mb-4">
           <TabsTrigger value="explore">
             <Globe className="w-4 h-4 mr-2" /> Explore
           </TabsTrigger>
           <TabsTrigger value="my-groups">
             <Users className="w-4 h-4 mr-2" /> My Groups
           </TabsTrigger>
+          <TabsTrigger value="trending">Trending</TabsTrigger>
         </TabsList>
 
         <TabsContent value="explore">
@@ -350,6 +409,15 @@ const CommunityPage = () => {
               You're not part of any groups yet.
             </p>
           )}
+        </TabsContent>
+        <TabsContent value="trending" className="space-y-6">
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🔥</div>
+            <h3 className="text-xl font-semibold mb-2">Trending Communities</h3>
+            <p className="text-muted-foreground">
+              Coming soon - discover what's hot in the community
+            </p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

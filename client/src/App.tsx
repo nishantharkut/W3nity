@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
@@ -23,6 +22,7 @@ import ProposalPage from "./pages/ProposalPage";
 import ChatInterface from "./pages/ChatInterface";
 import NotificationsPage from "./pages/NotificationsPage";
 import SettingsPage from "./pages/SettingsPage";
+import Breadcrumbs from "./components/BreadCrumbs";
 
 const queryClient = new QueryClient();
 
@@ -34,37 +34,62 @@ const App = () => (
       <BrowserRouter>
         <div className="min-h-screen flex flex-col">
           <Routes>
-            {/* Auth routes without navbar/footer */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            
+
             {/* Main app routes with navbar/footer */}
-            <Route path="/*" element={
-              <>
-                <Navbar />
-                <main className="flex-1">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/freelance" element={<FreelancePage />} />
-                    <Route path="/freelance/create" element={<CreateGigPage />} />
-                    <Route path="/gig/:id" element={<GigDetailsPage />} />
-                    <Route path="/gig/:id/proposal" element={<ProposalPage />} />
-                    <Route path="/events" element={<EventsPage />} />
-                    <Route path="/events/create" element={<CreateEventPage />} />
-                    <Route path="/event/:id" element={<EventDetailsPage />} />
-                    <Route path="/community" element={<CommunityPage />} />
-                    <Route path="/community/:groupId" element={<ChatInterface/>} />
-                    <Route path="/dashboard" element={<DashboardPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/notifications" element={<NotificationsPage/>}/>
-                    <Route path="/settings" element={<SettingsPage/>}/>
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-                <Footer />
-              </>
-            } />
+            <Route
+              path="/*"
+              element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <div className="container mx-auto px-4 py-6">
+                      <Breadcrumbs />
+                      <Routes>
+                      <Route path="/" element={<Index />} />
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/freelance" element={<FreelancePage />} />
+                        <Route
+                          path="/freelance/create"
+                          element={<CreateGigPage />}
+                        />
+                        <Route path="/gig/:id" element={<GigDetailsPage />} />
+                        <Route
+                          path="/gig/:id/proposal"
+                          element={<ProposalPage />}
+                        />
+                        <Route path="/events" element={<EventsPage />} />
+                        <Route
+                          path="/events/create"
+                          element={<CreateEventPage />}
+                        />
+                        <Route
+                          path="/event/:id"
+                          element={<EventDetailsPage />}
+                        />
+                        <Route path="/community" element={<CommunityPage />} />
+                        <Route path="/community/:id" element={<ChatInterface />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route
+                          path="/notifications"
+                          element={<NotificationsPage />}
+                        />
+                        <Route path="/settings" element={<SettingsPage />} />
+                        {/* <Route path="/chat" element={<ChatPage />} />
+                        <Route
+                          path="/onboarding"
+                          element={<OnboardingPage />}
+                        /> */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </div>
+                  </main>
+
+                  <Footer />
+                </>
+              }
+            />
           </Routes>
         </div>
       </BrowserRouter>
