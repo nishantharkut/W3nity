@@ -50,7 +50,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { toast } = useToast();
   const { isAuthenticated, user, logout } = useAuthState();
-  const { account, connectWallet, isConnected } = useWeb3();
+  const { account, connect, isConnected } = useWeb3();
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,7 +75,7 @@ const Navbar = () => {
 
   const handleWallet = () => {
     if (!walletAddress) {
-      connectWallet();
+      connect();
       toast({ title: 'Connecting Wallet', description: 'Please authorize the connection.' });
     } else {
       toast({ title: 'Wallet Connected', description: `Connected to ${walletAddress}` });

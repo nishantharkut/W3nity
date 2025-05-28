@@ -161,6 +161,7 @@ export interface Web3State {
   account: string | null;
   isConnected: boolean;
   chainId: number | null;
+  chainName?: string | null;
   balance: string | null;
   isLoading: boolean;
   error: string | null;
