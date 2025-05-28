@@ -1,25 +1,18 @@
 
 export interface User {
-  _id: string;
+  id: string;
   username: string;
   email: string;
   avatar?: string;
-  isVerified: boolean;
+  bio?: string;
+  skills: string[];
   rating: number;
   reviewCount: number;
-  password?: string; // optional, usually not exposed to frontend
-  role: 'freelancer' | 'client' | 'organizer';
-  bio?: string;
-  location?: string;
-  skills: string[];
-  socialLinks: string[]; // array of URLs
-  companyName?: string;  // for clients
-  clientSince: Date;    // for clients
-  createdAt: Date;
-  updatedAt: Date;
+  walletAddress?: string;
+  isVerified: boolean;
   joinedAt: Date;
+  location?: string;
 }
-
 
 export interface Gig {
   id: string;
@@ -32,7 +25,7 @@ export interface Gig {
     type?: 'fixed' | 'hourly';
   };
   skills: string[];
-  createdBy: {
+  client: {
     id: string;
     username: string;
     rating: number;
@@ -49,8 +42,8 @@ export interface Gig {
   proposalCount: number;
   proposals: Proposal[];
   status: 'open' | 'in-progress' | 'completed' | 'cancelled';
+  tags?: string[];
 }
-
 
 export interface Event {
   id: string;
@@ -61,6 +54,8 @@ export interface Event {
   location: {
     type: 'online' | 'physical' | 'hybrid';
     address?: string;
+    coordinates?: { lat: number; lng: number };
+    meetingLink?: string;
   };
   category: string;
   organizer: {
@@ -76,6 +71,7 @@ export interface Event {
   image?: string;
   registrationDeadline?: Date;
   status: 'upcoming' | 'live' | 'completed' | 'cancelled';
+  registrations?: string[];
 }
 
 export interface ChatMessage {
@@ -131,4 +127,61 @@ export interface Notification {
   isRead: boolean;
   createdAt: Date;
   actionUrl?: string;
+}
+
+// Missing types for useChat hook
+export interface Message {
+  id: string;
+  groupId: string;
+  sender: User;
+  content: string;
+  type: 'text' | 'image' | 'file';
+  timestamp: Date;
+  reactions: Array<{
+    emoji: string;
+    users: string[];
+    count: number;
+  }>;
+}
+
+export interface ChatGroup {
+  id: string;
+  name: string;
+  description: string;
+  type: 'public' | 'private';
+  members: User[];
+  admins: string[];
+  createdAt: Date;
+  lastActivity: Date;
+  isArchived: boolean;
+}
+
+// Missing type for useWeb3 hook
+export interface Web3State {
+  account: string | null;
+  isConnected: boolean;
+  chainId: number | null;
+  balance: string | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// Missing type for dashboard stats
+export interface DashboardStats {
+  freelance: {
+    activeGigs: number;
+    totalProposals: number;
+    acceptanceRate: number;
+    earnings: number;
+  };
+  events: {
+    registeredEvents: number;
+    hostedEvents: number;
+    upcomingEvents: number;
+  };
+  community: {
+    totalMessages: number;
+    activeGroups: number;
+    connections: number;
+  };
 }

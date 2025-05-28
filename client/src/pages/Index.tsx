@@ -187,7 +187,7 @@ const Index = () => {
         <div className="container mx-auto text-center relative z-10">
           <div className="animate-fade-in">
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              Welcome to <span className="text-gradient">SparkVerse</span>
+              Welcome to <span className="text-gradient">W3nity</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               The ultimate platform for tech collaboration. Connect with
@@ -425,7 +425,7 @@ const Index = () => {
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
               Join thousands of tech professionals who are already building
-              their future on SparkVerse
+              their future on W3nity
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

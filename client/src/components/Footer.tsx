@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -60,7 +59,7 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-spark rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">S</span>
               </div>
-              <span className="text-xl font-bold text-gradient">SparkVerse</span>
+              <span className="text-xl font-bold text-gradient">W3nity</span>
             </Link>
             <p className="text-muted-foreground mb-6 max-w-md">
               The ultimate platform for tech collaboration, connecting freelancers, 
@@ -106,10 +105,10 @@ const Footer = () => {
         <div className="border-t border-border/50 pt-8 mt-12">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-muted-foreground text-sm mb-4 md:mb-0">
-              © {currentYear} SparkVerse. All rights reserved.
+              © {currentYear} W3nity. All rights reserved.
             </div>
             <div className="flex items-center space-x-6 text-sm">
-              <span className="text-muted-foreground">Built with ❤️ for the tech community</span>
+              <span className="text-muted-foreground">Built with ❤️ for Hack With Gujarat</span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-green-400">All systems operational</span>

@@ -69,7 +69,7 @@ const LoginPage = () => {
             <div className="w-10 h-10 bg-gradient-spark rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">S</span>
             </div>
-            <span className="text-2xl font-bold text-gradient">SparkVerse</span>
+            <span className="text-2xl font-bold text-gradient">W3nity</span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
           <p className="text-muted-foreground">Sign in to your account to continue</p>
