@@ -35,6 +35,7 @@ interface Project {
   status: string;
   client: string;
   budget: string;
+  progress: number;
 }
 
 const ProfilePage = () => {
@@ -189,7 +190,7 @@ if (!isAuthenticated || !user || !profile) {
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex items-center gap-4">
                 <Avatar className="w-24 h-24">
-                  <AvatarImage src={profile.avatar} />
+                  <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.username}`} />
                   <AvatarFallback className="text-2xl bg-gradient-spark text-white">
                     {profile.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
