@@ -24,7 +24,7 @@ router.get("/:id", async (req, res) => {
 
 // Add a new project
 router.post("/", authMiddleware,async (req, res) => {
-  const { title, description, technologies, status, client, budget } = req.body;
+  const { title, description, technologies, status, client, budget, progress } = req.body;
 //  console.log(req.user._id)
   const project = new Project({
     title,
@@ -34,6 +34,7 @@ router.post("/", authMiddleware,async (req, res) => {
     client,
     budget,
     userId: req.user._id,
+    progress,
   });
 
   try {

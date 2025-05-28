@@ -70,6 +70,7 @@ export const useAuthState = () => {
         token: data.token,
         expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
       };
+      localStorage.setItem("sparkverse-auth", JSON.stringify(authData));
 
       
 

@@ -20,6 +20,7 @@ interface Project {
   status: string;
   client: string;
   budget: string;
+  progress: number;
 }
 
 interface AddProjectModalProps {
@@ -32,6 +33,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
   const [description, setDescription] = useState("");
   const [technologies, setTechnologies] = useState("");
   const [status, setStatus] = useState("In Progress");
+  const [progress, setProgress] = useState(0);
   const [client, setClient] = useState("");
   const [budget, setBudget] = useState("");
   const { user } = useAuthState();
@@ -42,14 +44,14 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
 
     try {
       const authData = JSON.parse(authString);
-      return authData.token; // assuming token is saved as authData.token
+      return authData.token;
     } catch (err) {
       console.error("Failed to parse auth data from localStorage", err);
       return null;
     }
   };
   const token = getToken();
-  console.log(token)
+  console.log(token);
 
   const handleSubmit = async () => {
     if (!title || !description) {
@@ -68,6 +70,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
       status,
       client,
       budget,
+      progress,
     };
 
     try {
@@ -95,6 +98,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
       setStatus("In Progress");
       setClient("");
       setBudget("");
+      setProgress(0);
     } catch (error) {
       console.error("Error adding project:", error);
       alert("There was an error adding the project. Please try again.");
@@ -130,11 +134,29 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ onAddProject }) => {
             value={technologies}
             onChange={(e) => setTechnologies(e.target.value)}
           />
-          <Input
-            placeholder="Status (Completed / In Progress)"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          />
+          <div className="flex gap-2 justify-center w-full">
+            <Input
+              placeholder="Status (Completed / In Progress)"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            />
+            <Input
+              type="number"
+              placeholder="Progress (% out of 100)"
+              value={progress}
+              onChange={(e) => {
+                const val = parseInt(e.target.value, 10);
+                if (val >= 0 && val <= 100) {
+                  setProgress(val);
+                } else if (e.target.value === "") {
+                  setProgress(0); // Allow clearing the input
+                }
+              }}
+              min={0}
+              max={100}
+            />
+          </div>
+
           <Input
             placeholder="Client"
             value={client}

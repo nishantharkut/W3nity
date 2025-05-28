@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { useAuthState } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
+
+import AddProjectModal from "@/components/AddProjectModal";
 import {
   Briefcase,
   Calendar,
@@ -24,17 +25,28 @@ import {
   Target,
 } from "lucide-react";
 
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  technologies: string[];
+  status: string;
+  client: string;
+  budget: string;
+  progress: number;
+}
+
 const DashboardPage = () => {
   const { user, isAuthenticated } = useAuthState();
-  console.log(user)
+  console.log(user);
+  const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
   const [activeProjects, setActiveProjects] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [activeTab, setActiveTab] = useState("overview");
 
-  useEffect(() => {
-    
-    const fetchDashboardData = async () => {
-      try {
+useEffect(() => {
+  const fetchDashboardData = async () => {
+    try {
         const [projectsRes, eventsRes] = await Promise.all([
           fetch(`http://localhost:8080/api/projects/${user._id}`),
           fetch("http://localhost:8080/api/events"),
@@ -43,17 +55,21 @@ const DashboardPage = () => {
         const projectsData = await projectsRes.json();
         const eventsData = await eventsRes.json();
 
-        setActiveProjects(projectsData);
-        console.log(activeProjects);
-        setUpcomingEvents(eventsData);
-        console.log(upcomingEvents);
+      setActiveProjects(projectsData);
+      setUpcomingEvents(eventsData);
+
+        // Log the fetched data directly
+        console.log("Fetched Projects:", projectsData);
+        console.log("Fetched Events:", eventsData);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       }
     };
 
-    fetchDashboardData();
-  }, [user]);
+    if (user?._id) {
+      fetchDashboardData();
+    }
+}, [user]);
 
   if (!isAuthenticated || !user) {
     return (
@@ -197,6 +213,11 @@ const DashboardPage = () => {
   //   }
   // ];
 
+  const handleAddProject = (project: Project) => {
+  setPortfolioProjects((prev) => [...prev, project]);
+};
+
+
   return (
     <div className="min-h-screen py-8 px-4 bg-gradient-to-b from-background to-background/50">
       <div className="container mx-auto max-w-7xl">
@@ -211,14 +232,16 @@ const DashboardPage = () => {
             </p>
           </div>
           <div className="flex gap-3 mt-4 md:mt-0">
+            <Link to="/notifications">
             <Button variant="outline">
               <Bell className="w-4 h-4 mr-2" />
               Notifications
-            </Button>
-            <Button className="glow-button">
-              <Plus className="w-4 h-4 mr-2" />
-              New Project
-            </Button>
+            </Button></Link>
+            
+            
+              {/* <Plus className="w-4 h-4 mr-2" /> */}
+              <AddProjectModal onAddProject={handleAddProject} />
+            
           </div>
         </div>
 
@@ -352,38 +375,46 @@ const DashboardPage = () => {
 
             {/* Upcoming Events */}
             <Card className="glass-effect">
-  <CardHeader>
-    <CardTitle className="flex items-center gap-2">
-      <Calendar className="w-5 h-5" />
-      Upcoming Events
-    </CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div className="grid md:grid-cols-3 gap-4">
-      {upcomingEvents.map((event) => (
-        <div key={event._id} className="border rounded-lg p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className={`w-3 h-3 rounded-full ${
-              event.category === 'deadline' ? 'bg-red-500' :
-              event.category === 'meeting' ? 'bg-blue-500' : 'bg-green-500'
-            }`} />
-            <span className="text-sm font-medium">{event.title}</span>
-          </div>
-          <p className="text-xs text-muted-foreground mb-1">
-            {new Date(event.startDate).toLocaleDateString()}
-          </p>
-          <p className="text-xs text-muted-foreground mb-1">
-            {event.isOnline ? 'Online Event' : event.location?.address || 'Location TBA'}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Tags: {event.tags?.join(', ')}
-          </p>
-        </div>
-      ))}
-    </div>
-  </CardContent>
-</Card>
-
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Upcoming Events
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {upcomingEvents.map((event) => (
+                    <div key={event._id} className="border rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div
+                          className={`w-3 h-3 rounded-full ${
+                            event.category === "deadline"
+                              ? "bg-red-500"
+                              : event.category === "meeting"
+                              ? "bg-blue-500"
+                              : "bg-green-500"
+                          }`}
+                        />
+                        <span className="text-sm font-medium">
+                          {event.title}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {new Date(event.startDate).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {event.isOnline
+                          ? "Online Event"
+                          : event.location?.address || "Location TBA"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Tags: {event.tags?.join(", ")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="projects">
