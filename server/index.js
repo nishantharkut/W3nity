@@ -1,3 +1,5 @@
+const paymentRoutes = require("./routes/paymentRoutes.js");
+
 const http=require("http")
 const express = require("express");
 const mongoose = require("mongoose");
@@ -13,6 +15,7 @@ const projectRoutes= require("./routes/projectRoutes.js")
 const { Server } = require('socket.io');
 const groupRoutes= require("./routes/groupRoutes.js")
 const proposalRoutes = require("./routes/proposalRoutes");
+const ticketRoutes = require("./routes/ticketRoutes");
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -33,7 +36,8 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/events", eventRoutes);
 // app.use("/api/chat", chatRoutes);
 app.use("/api/groups", groupRoutes)
-
+app.use("/api/tickets", ticketRoutes);
+app.use("/api/payments", paymentRoutes);
 const PORT= process.env.PORT || 3000;
 
 server.listen(PORT, () => {
