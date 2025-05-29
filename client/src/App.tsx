@@ -23,6 +23,9 @@ import ChatInterface from "./pages/ChatInterface";
 import NotificationsPage from "./pages/NotificationsPage";
 import SettingsPage from "./pages/SettingsPage";
 import Breadcrumbs from "./components/BreadCrumbs";
+import PaymentPage from "./pages/PaymentPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import PaymentCancelPage from "./pages/PaymentCancelPage";
 
 const queryClient = new QueryClient();
 
@@ -76,11 +79,10 @@ const App = () => (
                           element={<NotificationsPage />}
                         />
                         <Route path="/settings" element={<SettingsPage />} />
-                        {/* <Route path="/chat" element={<ChatPage />} />
-                        <Route
-                          path="/onboarding"
-                          element={<OnboardingPage />}
-                        /> */}
+                        <Route path="/payment/:type/:id" element={<PaymentPage/>}/>
+                        <Route path="/payment/success" element={<PaymentSuccessPage/>}/>
+                        <Route path="/payment/cancel" element={<PaymentCancelPage/>}/>
+
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </div>

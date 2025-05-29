@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+
 import {
   Briefcase,
   Calendar,
@@ -180,7 +182,12 @@ const Index = () => {
   // ];
 
   return (
-    <div className="min-h-screen">
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="min-h-screen"
+    >
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-glow opacity-30"></div>
@@ -214,7 +221,12 @@ const Index = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 animate-slide-up">
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 animate-slide-up"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
@@ -229,12 +241,17 @@ const Index = () => {
                 </div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-gradient-to-b from-background to-background/50">
+      <motion.section
+        className="py-20 px-4 bg-gradient-to-b from-background to-background/50"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+      >
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">
@@ -249,22 +266,30 @@ const Index = () => {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="glass-effect card-hover group">
-                  <CardHeader className="text-center">
-                    <div className="mx-auto w-16 h-16 bg-gradient-spark rounded-xl flex items-center justify-center mb-4 group-hover:animate-glow">
-                      <Icon className="w-8 h-8 text-white" />
-                    </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-muted-foreground mb-6">
-                      {feature.description}
-                    </p>
-                    <Button asChild className="w-full">
-                      <Link to={feature.link}>Learn More</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                >
+                  <Card key={index} className="glass-effect card-hover group">
+                    <CardHeader className="text-center">
+                      <div className="mx-auto w-16 h-16 bg-gradient-spark rounded-xl flex items-center justify-center mb-4 group-hover:animate-glow">
+                        <Icon className="w-8 h-8 text-white" />
+                      </div>
+                      <CardTitle className="text-xl">{feature.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                      <p className="text-muted-foreground mb-6">
+                        {feature.description}
+                      </p>
+                      <Button asChild className="w-full">
+                        <Link to={feature.link}>Learn More</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               );
             })}
           </div>
@@ -287,10 +312,15 @@ const Index = () => {
             })}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Featured Gigs */}
-      <section className="py-20 px-4">
+      <motion.section
+        className="py-20 px-4"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.9 }}
+      >
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-12">
             <div>
@@ -305,50 +335,64 @@ const Index = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {featuredGigs?.map((gig) => (
-              <Card
-                key={gig.id}
-                className="glass-effect card-hover cursor-pointer"
-                onClick={() => navigate(`/gig/${gig.id}`)}
+            {featuredGigs?.map((gig, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
               >
-                <CardHeader>
-                  <div className="flex justify-between items-start mb-2">
-                    <CardTitle className="text-lg line-clamp-2">
-                      {gig?.title}
-                    </CardTitle>
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">
-                        {gig.category}
-                      </span>
+                <Card
+                  key={gig.id}
+                  className="glass-effect card-hover cursor-pointer"
+                  onClick={() => navigate(`/gig/${gig.id}`)}
+                >
+                  <CardHeader>
+                    <div className="flex justify-between items-start mb-2">
+                      <CardTitle className="text-lg line-clamp-2">
+                        {gig?.title}
+                      </CardTitle>
+                      <div className="flex items-center space-x-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">
+                          {gig.category}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-2xl font-bold text-gradient">
-                    ${gig.minBudget}-{gig.maxBudget}
-                  </p>
-                  {/* <p className="text-2xl font-bold text-gradient">{gig.budget.min}-{gig.budget.max}/{gig.budget.type}</p> */}
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {gig.skills.map((skill) => (
-                      <Badge key={skill} variant="secondary">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center text-sm text-muted-foreground">
-                    <span>by {gig.createdBy.username}</span>
-                    <span>{gig.proposalCount} proposals</span>
-                  </div>
-                </CardContent>
-              </Card>
+                    <p className="text-2xl font-bold text-gradient">
+                      ${gig.minBudget}-{gig.maxBudget}
+                    </p>
+                    {/* <p className="text-2xl font-bold text-gradient">{gig.budget.min}-{gig.budget.max}/{gig.budget.type}</p> */}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {gig.skills.map((skill) => (
+                        <Badge key={skill} variant="secondary">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center text-sm text-muted-foreground">
+                      <span>by {gig.createdBy.username}</span>
+                      <span>{gig.proposalCount} proposals</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Featured Events */}
-      <section className="py-20 px-4 bg-gradient-to-b from-background/50 to-background">
+      <motion.section
+        className="py-20 px-4 bg-gradient-to-b from-background/50 to-background"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.9 }}
+      >
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-12">
             <div>
@@ -414,10 +458,16 @@ const Index = () => {
             })}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
+      <motion.section
+        className="py-20 px-4"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 1 }}
+      >
         <div className="container mx-auto text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold mb-6">
@@ -427,7 +477,13 @@ const Index = () => {
               Join thousands of tech professionals who are already building
               their future on W3nity
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 1.1 }}
+            >
               <Button
                 size="lg"
                 className="glow-button text-lg px-8 py-3"
@@ -443,11 +499,11 @@ const Index = () => {
               >
                 <Link to="/community">Join Community</Link>
               </Button>
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 };
 

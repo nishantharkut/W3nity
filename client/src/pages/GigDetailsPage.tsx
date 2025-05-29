@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Star, Clock, Users, MapPin } from "lucide-react";
 import { mockGigs } from "@/lib/mockData";
 import { useState, useEffect } from "react";
+import PaymentButton from "@/components/PaymentButton";
 
 const GigDetailsPage = () => {
   const { id } = useParams();
@@ -158,12 +159,26 @@ const GigDetailsPage = () => {
                 </div>
               </div>
               {gig?._id && (
-                <Button
+                <div>
+                  <Button
                   className="w-full mt-6 glow-button"
                   onClick={() => navigate(`/gig/${gig._id}/proposal`)}
                 >
                   Submit Proposal
                 </Button>
+                {gig.status === 'completed' && (
+                  <PaymentButton
+                    type="gig_payout"
+                    itemId={gig._id}
+                    amount={(gig.minBudget + gig.maxBudget) / 2}
+                    className="w-full"
+                  >
+                    Request Payout
+                  </PaymentButton>
+                )}
+                </div>
+                
+
               )}
             </CardContent>
           </Card>
