@@ -98,7 +98,11 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 
     # Run frontend
     cd ../client && npm run dev
+
+   #Run mint Listeners 
+   npx tsx events/listenMintEvents.ts
    ```
+  
    
 5. **(Optional) Deploy smart contracts**
    ```bash
@@ -153,4 +157,4 @@ Distributed under the MIT License. See [LICENSE](https://www.notion.so/LICENSE) 
 
 ### Built with ❤️ at **Hack with Gujarat**
 
-**Hackathon:** [Hack with Gujarat](https://hackwithgujarat.org/)  |  **Team:** SparkVerse — Innovate, Collaborate, Elevated.
+**Hackathon:** [Hack with Gujarat](https://hackwithgujarat.org/)  |  **Team:** Null & Void — Innovate, Collaborate, Elevated.
