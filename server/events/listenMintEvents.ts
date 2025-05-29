@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 import { ethers } from "ethers";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 import Ticket from "../models/ticket.js";
 const EventTicketNFTABI = require("../abi/EventTicketNFT.json");
