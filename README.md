@@ -41,7 +41,7 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 ## 🛠️ Tech Stack
 
 - **Frontend**  
-  - Next.js (React) + Tailwind CSS  
+  - Vite (React) + Tailwind CSS  
   - Framer Motion for animations  
 - **Backend**  
   - Node.js + Express  
@@ -66,28 +66,43 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 
 1. **Clone the repo**  
    ```bash
-   git clone https://github.com/yourusername/sparkverse-nexus-hub.git
-   cd sparkverse-nexus-hub
+   git clone https://github.com/yourusername/W3nity.git
+   cd W3nity
    ```
 2. **Install dependencies**
    ```bash
-    # Frontend
-    cd frontend && npm install
+    #Client
+    cd client && npm install
 
-    # Backend
-    cd ../backend && npm install
+    # Server
+    cd ../server && npm install
    ```
 3. **Configure environment**
-   - Copy example.env to .env in both frontend/ and backend/
-   - Set your MongoDB/Postgres URI, MetaMask RPC endpoint, AWS/Cloudinary keys, etc.
+   - Copy example.env to .env in both client/ and server/
+   - Set your MongoDB URI , MetaMask RPC endpoint, AWS/Cloudinary keys, etc.
+     
+
+   ```bash
+     # Server
+     PORT= 8080
+     MONGO_URI="your MongoDb URI"
+     JWT_SECRET="your JWT secret"
+     STRIPE_SECRET_KEY="your stripe secret key"
+     CLIENT_URL="your frontend ur"
+    ```
+   
 4. **Run locally**
    ```bash
     # Run backend
-    cd backend && npm run dev
+    cd server && npm run dev
 
     # Run frontend
-    cd ../frontend && npm run dev
+    cd ../client && npm run dev
+
+   #Run mint Listeners 
+   npx tsx events/listenMintEvents.ts
    ```
+  
    
 5. **(Optional) Deploy smart contracts**
    ```bash
@@ -111,7 +126,7 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 
 ## 🗺️ Roadmap
 
-- ✅ Core MVP: gigs, events, chat, Web3 login
+- ✅ Core MVP: gigs, events, chat, Web3 login, NFT Ticketing
 - 🔄 User profiles & ratings
 - 📊 Admin analytics dashboard
 - 💳 Fiat payments (Stripe/Razorpay)
@@ -142,4 +157,4 @@ Distributed under the MIT License. See [LICENSE](https://www.notion.so/LICENSE) 
 
 ### Built with ❤️ at **Hack with Gujarat**
 
-**Hackathon:** [Hack with Gujarat](https://hackwithgujarat.org/)  |  **Team:** SparkVerse — Innovate, Collaborate, Elevated.
+**Hackathon:** [Hack with Gujarat](https://hackwithgujarat.org/)  |  **Team:** Null & Void — Innovate, Collaborate, Elevated.
