@@ -3,12 +3,14 @@
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "./dist",
-    "rootDir": "./",  // ← change from ./src to ./
+    "rootDir": "./",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,         // ✅ Add this line
+    "allowSyntheticDefaultImports": true  // ✅ Add this for JSON import
   },
   "include": ["./**/*"]
 }
