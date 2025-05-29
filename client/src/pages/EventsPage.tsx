@@ -14,6 +14,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EventCard from "@/components/EventCard";
 import { Search, Filter, Plus, Calendar } from "lucide-react";
+import { motion } from "framer-motion";
 
 const EventsPage = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const EventsPage = () => {
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
-        
+
         const data = await response.json();
         console.log(data);
         setEvents(data);
@@ -93,9 +94,21 @@ const EventsPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <motion.div
+        className="flex justify-between items-center mb-8"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
         <div>
-          <h1 className="text-4xl font-bold mb-2">Tech Events</h1>
+          <motion.h1
+            className="text-4xl font-bold mb-2"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+          >
+            Tech Events
+          </motion.h1>
           <p className="text-muted-foreground">
             Discover and join amazing tech events in your area
           </p>
@@ -107,65 +120,74 @@ const EventsPage = () => {
           <Plus className="w-4 h-4 mr-2" />
           Create Event
         </Button>
-      </div>
+      </motion.div>
 
       {/* Filters */}
-      <Card className="mb-8 glass-effect">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Filter className="w-5 h-5 mr-2" />
-            Filters
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search events..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+      >
+        <Card className="mb-8 glass-effect">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Filter className="w-5 h-5 mr-2" />
+              Filters
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search events..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger className="md:w-48">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="conference">Conference</SelectItem>
+                  <SelectItem value="workshop">Workshop</SelectItem>
+                  <SelectItem value="networking">Networking</SelectItem>
+                  <SelectItem value="hackathon">Hackathon</SelectItem>
+                  <SelectItem value="webinar">Webinar</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                value={selectedLocation}
+                onValueChange={setSelectedLocation}
+              >
+                <SelectTrigger className="md:w-48">
+                  <SelectValue placeholder="Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  <SelectItem value="online">Online</SelectItem>
+                  <SelectItem value="physical">Physical</SelectItem>
+                  <SelectItem value="hybrid">Hybrid</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Select
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-            >
-              <SelectTrigger className="md:w-48">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="conference">Conference</SelectItem>
-                <SelectItem value="workshop">Workshop</SelectItem>
-                <SelectItem value="networking">Networking</SelectItem>
-                <SelectItem value="hackathon">Hackathon</SelectItem>
-                <SelectItem value="webinar">Webinar</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={selectedLocation}
-              onValueChange={setSelectedLocation}
-            >
-              <SelectTrigger className="md:w-48">
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                <SelectItem value="online">Online</SelectItem>
-                <SelectItem value="physical">Physical</SelectItem>
-                <SelectItem value="hybrid">Hybrid</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Event Tabs */}
       <Tabs defaultValue="upcoming" className="space-y-6">
+        <motion.div initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4 }}>
         <TabsList className="grid w-full grid-cols-3 glass-effect">
           <TabsTrigger value="upcoming" className="flex items-center space-x-2">
             <Calendar className="w-4 h-4" />
@@ -177,9 +199,16 @@ const EventsPage = () => {
           </TabsTrigger>
           <TabsTrigger value="past">Past ({pastEvents.length})</TabsTrigger>
         </TabsList>
+        </motion.div>
+        
 
         <TabsContent value="upcoming" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
             {upcomingEvents.map((event) => (
               <EventCard
                 key={event.id}
@@ -188,7 +217,7 @@ const EventsPage = () => {
                 onRegister={(id) => navigate(`/event/${id}`)}
               />
             ))}
-          </div>
+          </motion.div>
           {upcomingEvents.length === 0 && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📅</div>
@@ -201,7 +230,12 @@ const EventsPage = () => {
         </TabsContent>
 
         <TabsContent value="live" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
             {liveEvents.map((event) => (
               <EventCard
                 key={event.id}
@@ -210,7 +244,7 @@ const EventsPage = () => {
                 onRegister={(id) => navigate(`/event/${id}`)}
               />
             ))}
-          </div>
+          </motion.div>
           {liveEvents.length === 0 && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🔴</div>
@@ -223,7 +257,12 @@ const EventsPage = () => {
         </TabsContent>
 
         <TabsContent value="past" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
             {pastEvents.map((event) => (
               <EventCard
                 key={event.id}
@@ -231,7 +270,7 @@ const EventsPage = () => {
                 onViewDetails={(id) => navigate(`/event/${id}`)}
               />
             ))}
-          </div>
+          </motion.div>
           {pastEvents.length === 0 && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📚</div>

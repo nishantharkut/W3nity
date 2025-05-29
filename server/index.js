@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 const connectDB= require("./db/connectDB.js")
 const userRoutes = require("./routes/userRoutes.js");
 const gigRoutes = require("./routes/gigRoutes");
-// const proposalRoutes = require("./routes/proposalRoutes");
+const paymentRoutes= require("./routes/paymentRoutes.js")
 const eventRoutes = require("./routes/eventRoutes");
 // const chatRoutes = require("./routes/chatRoutes");
 const projectRoutes= require("./routes/projectRoutes.js")
@@ -29,7 +29,7 @@ app.use("/api/proposals", proposalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/gigs", gigRoutes);
 app.use("/api/projects", projectRoutes)
-// app.use("/api/proposals", proposalRoutes);
+app.use("/api/payments", paymentRoutes);
 app.use("/api/events", eventRoutes);
 // app.use("/api/chat", chatRoutes);
 app.use("/api/groups", groupRoutes)

@@ -35,6 +35,7 @@ import {
 import { useAuthState } from "@/hooks/useAuth";
 import { User } from "@/types";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const CommunityPage = () => {
   const navigate = useNavigate();
@@ -230,12 +231,22 @@ const CommunityPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <motion.div
+        className="flex justify-between items-center mb-8"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
         <div>
           <h1 className="text-3xl font-bold mb-1">Community</h1>
-          <p className="text-muted-foreground">
+          <motion.p
+            className="text-muted-foreground"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Connect with others and explore groups
-          </p>
+          </motion.p>
         </div>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -299,10 +310,15 @@ const CommunityPage = () => {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </motion.div>
 
       {/* Search */}
-      <div className="mb-6">
+      <motion.div
+        className="mb-6"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -312,114 +328,171 @@ const CommunityPage = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+      >
         <Card className="glass-effect">
           <CardContent className="pt-6 text-center">
-            <div className="text-2xl font-bold text-gradient">
+            <motion.div
+              className="text-2xl font-bold text-gradient"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
               {groups.length}
-            </div>
+            </motion.div>
             <div className="text-sm text-muted-foreground">Total Groups</div>
           </CardContent>
         </Card>
         <Card className="glass-effect">
           <CardContent className="pt-6 text-center">
-            <div className="text-2xl font-bold text-gradient">
+            <motion.div
+              className="text-2xl font-bold text-gradient"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
               {groups.length}
-            </div>
+            </motion.div>
             <div className="text-sm text-muted-foreground">Active Members</div>
           </CardContent>
         </Card>
         <Card className="glass-effect">
           <CardContent className="pt-6 text-center">
-            <div className="text-2xl font-bold text-gradient">1.2K</div>
+            <motion.div
+              className="text-2xl font-bold text-gradient"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              1.2K
+            </motion.div>
             <div className="text-sm text-muted-foreground">Messages Today</div>
           </CardContent>
         </Card>
         <Card className="glass-effect">
           <CardContent className="pt-6 text-center">
-            <div className="text-2xl font-bold text-gradient">24</div>
+            <motion.div
+              className="text-2xl font-bold text-gradient"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              24
+            </motion.div>
             <div className="text-sm text-muted-foreground">Online Now</div>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
-      <Tabs
-        defaultValue="explore"
-        onValueChange={setActiveTab}
-        className="space-y-6"
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.7 }}
       >
-        <TabsList className="grid grid-cols-3 w-full mb-4">
-          <TabsTrigger value="explore">
-            <Globe className="w-4 h-4 mr-2" /> Explore
-          </TabsTrigger>
-          <TabsTrigger value="my-groups">
-            <Users className="w-4 h-4 mr-2" /> My Groups
-          </TabsTrigger>
-          <TabsTrigger value="trending">Trending</TabsTrigger>
-        </TabsList>
+        <Tabs
+          defaultValue="explore"
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
+          <TabsList className="grid grid-cols-3 w-full mb-4">
+            <TabsTrigger value="explore">
+              <Globe className="w-4 h-4 mr-2" /> Explore
+            </TabsTrigger>
+            <TabsTrigger value="my-groups">
+              <Users className="w-4 h-4 mr-2" /> My Groups
+            </TabsTrigger>
+            <TabsTrigger value="trending">Trending</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="explore">
-          {filteredGroups.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredGroups.map((group) => (
-                <GroupCard key={group._id} group={group} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground py-8">
-              No groups found. Try creating one!
-            </p>
-          )}
-        </TabsContent>
-
-        <TabsContent value="my-groups">
-          {user?._id &&
-          filteredGroups?.some(
-            (g) =>
-              Array.isArray(g?.members) &&
-              g.members.some((m: any) => {
-                if (!m) return false;
-                if (typeof m === "string") return m === user._id;
-                if (typeof m === "object")
-                  return m._id === user._id || m.id === user._id;
-                return false;
-              })
-          ) ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredGroups
-                ?.filter(
-                  (g) =>
-                    Array.isArray(g?.members) &&
-                    g.members.some((m: any) => {
-                      if (!m) return false;
-                      if (typeof m === "string") return m === user._id;
-                      if (typeof m === "object")
-                        return m._id === user._id || m.id === user._id;
-                      return false;
-                    })
-                )
-                .map((group) => (
+          <TabsContent value="explore">
+            {filteredGroups.length > 0 ? (
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1 }}
+              >
+                {filteredGroups.map((group) => (
                   <GroupCard key={group._id} group={group} />
                 ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground py-8">
-              You're not part of any groups yet.
-            </p>
-          )}
-        </TabsContent>
-        <TabsContent value="trending" className="space-y-6">
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔥</div>
-            <h3 className="text-xl font-semibold mb-2">Trending Communities</h3>
-            <p className="text-muted-foreground">
-              Coming soon - discover what's hot in the community
-            </p>
-          </div>
-        </TabsContent>
-      </Tabs>
+              </motion.div>
+            ) : (
+              <p className="text-center text-muted-foreground py-8">
+                No groups found. Try creating one!
+              </p>
+            )}
+          </TabsContent>
+
+          <TabsContent value="my-groups">
+            {user?._id &&
+            filteredGroups?.some(
+              (g) =>
+                Array.isArray(g?.members) &&
+                g.members.some((m: any) => {
+                  if (!m) return false;
+                  if (typeof m === "string") return m === user._id;
+                  if (typeof m === "object")
+                    return m._id === user._id || m.id === user._id;
+                  return false;
+                })
+            ) ? (
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2}}
+              >
+                {filteredGroups
+                  ?.filter(
+                    (g) =>
+                      Array.isArray(g?.members) &&
+                      g.members.some((m: any) => {
+                        if (!m) return false;
+                        if (typeof m === "string") return m === user._id;
+                        if (typeof m === "object")
+                          return m._id === user._id || m.id === user._id;
+                        return false;
+                      })
+                  )
+                  .map((group) => (
+                    <GroupCard key={group._id} group={group} />
+                  ))}
+              </motion.div>
+            ) : (
+              <motion.p
+                className="text-center text-muted-foreground py-8"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2}}
+              >
+                You're not part of any groups yet.
+              </motion.p>
+            )}
+          </TabsContent>
+          <TabsContent value="trending" className="space-y-6">
+            <motion.div
+              className="text-center py-12"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="text-6xl mb-4">🔥</div>
+              <h3 className="text-xl font-semibold mb-2">
+                Trending Communities
+              </h3>
+              <p className="text-muted-foreground">
+                Coming soon - discover what's hot in the community
+              </p>
+            </motion.div>
+          </TabsContent>
+        </Tabs>
+      </motion.div>
     </div>
   );
 };

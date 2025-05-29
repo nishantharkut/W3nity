@@ -16,6 +16,7 @@ import {
   Edit,
   Save,
   X,
+  Mail,
   Plus,
   DollarSign,
   Briefcase,
@@ -51,6 +52,7 @@ const ProfilePage = () => {
         const res = await fetch(`http://localhost:8080/api/users/${user._id}`);
         if (res.ok) {
           const data = await res.json();
+          console.log(data)
           setProfile({
             ...data,
             joinedAt: new Date(data.joinedAt),
@@ -219,13 +221,10 @@ const ProfilePage = () => {
                   <span>({profile.reviewCount} reviews)</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
+                  <Mail className="w-4 h-4" />
                   <span>
-                    Joined{" "}
-                    {profile.joinedAt.toLocaleDateString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {/* Joined{" "} */}
+                    {profile.email}
                   </span>
                 </div>
               </div>
