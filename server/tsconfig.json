@@ -12,5 +12,5 @@
     "resolveJsonModule": true,         // ✅ Add this line
     "allowSyntheticDefaultImports": true  // ✅ Add this for JSON import
   },
-  "include": ["./**/*"]
+  "include": ["./**/*", "server/types"]
 }
