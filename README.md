@@ -59,6 +59,7 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 ---
 
 ## 🏗️ Architecture
+![architecture](https://github.com/user-attachments/assets/2be4c097-27c5-4ece-a9fd-e9a6625031a4)
 
 ---
 
