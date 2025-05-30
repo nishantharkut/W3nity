@@ -49,12 +49,13 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 - **Real-Time**  
   - Socket.IO (WebSockets)
 - **Blockchain**  
-  - Solidity & Hardhat (local/testnet)  
+  - Solidity & Hardhat (local/testnet)
+  - Alchemy
   - Ethers.js / Wagmi + MetaMask  
 - **Storage & Media**  
-  - Cloudinary  
+  - Cloudinary [Planned]
 - **Deployment**  
-  - Vercel (frontend) & Railway/Heroku (backend)  
+  - Vercel (frontend) & Render (backend)  
 
 ---
 
