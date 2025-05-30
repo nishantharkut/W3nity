@@ -157,19 +157,24 @@ const CommunityPage = () => {
       </CardHeader>
       <CardContent>
         <div className="flex -space-x-2">
-          {group.members.slice(0, 5).map((member: any) => (
-            <Avatar
-              key={member._id || member.id}
-              className="w-8 h-8 border-2 border-background mb-1"
-            >
-              <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member?.username}`}
-              />
-              <AvatarFallback className="text-xs">
-                {member.username.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          ))}
+          {Array.isArray(group?.members) &&
+            group.members
+              .slice(0, 5)
+              .filter((member) => member) // skip null/undefined members
+              .map((member: any) => (
+                <Avatar
+                  key={member._id || member.id}
+                  className="w-8 h-8 border-2 border-background mb-1"
+                >
+                  <AvatarImage
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member?.username}`}
+                  />
+                  <AvatarFallback className="text-xs">
+                    {member?.username?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+
           {group.members.length > 5 && (
             <div className="w-8 h-8 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs">
               +{group.members.length - 5}
@@ -181,8 +186,8 @@ const CommunityPage = () => {
           Last active: {new Date(group.lastActivity).toLocaleDateString()}
         </div>
 
-        {user && user._id ? (
-          group.members.some((m: any) => m._id === user._id) ? (
+        {user && (user._id || user.id) ? (
+          group.members.some((m: any) => m?._id === (user._id || user.id)) ? (
             <div className="flex gap-2">
               <Button variant="secondary" disabled className="w-full">
                 <Users className="w-4 h-4 mr-2" /> Joined
@@ -205,7 +210,7 @@ const CommunityPage = () => {
                   "Joining group with ID:",
                   group._id,
                   "as user",
-                  user._id
+                  user._id || user.id
                 );
                 handleJoinGroup(group._id);
               }}
@@ -446,7 +451,7 @@ const CommunityPage = () => {
                 className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2}}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
                 {filteredGroups
                   ?.filter(
@@ -469,7 +474,7 @@ const CommunityPage = () => {
                 className="text-center text-muted-foreground py-8"
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2}}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
                 You're not part of any groups yet.
               </motion.p>
