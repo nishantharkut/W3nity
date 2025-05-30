@@ -115,11 +115,8 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 ## 📺 Usage & Demo
 
 ### 🔗 Demo Video  
-[▶️ Watch the W3nity Demo](https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea)
 
-<a href="https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea" target="_blank">
-  <img src="./assets/demo-thumbnail.png" alt="Demo Preview" width="300"/>
-</a>
+https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
 
 ---
 
