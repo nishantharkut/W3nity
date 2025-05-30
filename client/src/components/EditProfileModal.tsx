@@ -69,7 +69,7 @@ const EditProfileModal: React.FC<Props> = ({ user, onClose, onSave }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/users/${formData._id}`,
+        `${import.meta.env.VITE_API_URL}/api/users/${formData._id}`,
         {
           method: "PUT",
           headers: {

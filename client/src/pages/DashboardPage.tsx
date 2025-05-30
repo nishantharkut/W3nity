@@ -67,7 +67,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const eventsRes = await fetch("http://localhost:8080/api/events");
+        const eventsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
 
         const eventsData = await eventsRes.json();
         const sortedEvents = eventsData.sort(

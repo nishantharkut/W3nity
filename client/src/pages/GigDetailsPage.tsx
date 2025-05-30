@@ -20,7 +20,7 @@ const GigDetailsPage = () => {
     async function fetchGig() {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:8080/api/gigs/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gigs/${id}`);
         if (!res.ok) {
           throw new Error("Gig not found");
         }

@@ -37,7 +37,7 @@ const ChatInterface = () => {
     const fetchGroupDetails = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/groups/${groupId}`
+          `${import.meta.env.VITE_API_URL}/api/groups/${groupId}`
         );
         console.log(res);
         setGroupName(res.data.name);
@@ -65,7 +65,7 @@ const ChatInterface = () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/groups", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/groups`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -84,7 +84,7 @@ const ChatInterface = () => {
   useEffect(() => {
     if (!user || !isAuthenticated) return;
 
-    socket = io("http://localhost:8080");
+    socket = io(`${import.meta.env.VITE_API_URL}`);
 
     socket.emit("joinGroup", {
       groupId,

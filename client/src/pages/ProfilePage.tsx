@@ -49,7 +49,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/users/${user._id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user._id}`);
         if (res.ok) {
           const data = await res.json();
           console.log(data)
@@ -88,7 +88,7 @@ const ProfilePage = () => {
 
   const handleSave = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/users/${user._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editData),

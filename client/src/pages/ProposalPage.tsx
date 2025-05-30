@@ -405,7 +405,7 @@ const ProposalPage = () => {
   useEffect(() => {
     const fetchGig = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/gigs/${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/gigs/${id}`);
         setGig(response.data);
       } catch (err) {
         setError("Failed to load gig data.");
@@ -579,7 +579,7 @@ const ProposalPage = () => {
     
 
     try {
-      await axios.post("http://localhost:8080/api/proposals", {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/proposals`, {
         gigId: id,
         userId: user._id,
         coverLetter,

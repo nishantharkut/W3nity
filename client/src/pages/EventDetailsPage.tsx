@@ -40,7 +40,7 @@ const EventDetailsPage = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/events/${id}`); // Adjust the endpoint if needed
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/events/${id}`); // Adjust the endpoint if needed
         if (!response.ok) {
           throw new Error("Failed to fetch event");
         }

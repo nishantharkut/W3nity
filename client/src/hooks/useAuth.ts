@@ -52,7 +52,7 @@ export const useAuthState = () => {
     setAuthState((prev) => ({ ...prev, isLoading: true, error: undefined }));
 
     try {
-      const res = await fetch("http://localhost:8080/api/users/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -102,7 +102,7 @@ export const useAuthState = () => {
       setAuthState((prev) => ({ ...prev, isLoading: true, error: undefined }));
 
       try {
-        const res = await fetch("http://localhost:8080/api/users/register", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userData),

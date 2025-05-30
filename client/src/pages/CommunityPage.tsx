@@ -54,7 +54,7 @@ const CommunityPage = () => {
   // 🟡 Fetch groups from backend
   const fetchGroups = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/groups");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups`);
       const data = await res.json();
       console.log(data);
       setGroups(data);
@@ -72,7 +72,7 @@ const CommunityPage = () => {
     if (!user?._id) return;
 
     try {
-      const res = await fetch("http://localhost:8080/api/groups", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -97,7 +97,7 @@ const CommunityPage = () => {
   const handleJoinGroup = async (groupId: string) => {
     try {
       const res = await fetch(
-        `http://localhost:8080/api/groups/${groupId}/join`,
+        `${import.meta.env.VITE_API_URL}/api/groups/${groupId}/join`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

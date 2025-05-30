@@ -81,7 +81,7 @@ const Index = () => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:8080/api/events");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
@@ -103,7 +103,7 @@ const Index = () => {
     const fetchGigs = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:8080/api/gigs");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/gigs`);
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }

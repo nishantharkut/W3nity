@@ -77,7 +77,7 @@ const FreelancePage = () => {
     const fetchGigs = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:8080/api/gigs");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gigs`);
         if (!res.ok) throw new Error(`Error: ${res.status}`);
         const data = await res.json();
         setGigs(data);

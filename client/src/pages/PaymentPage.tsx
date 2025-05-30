@@ -65,7 +65,7 @@ const PaymentPage = () => {
 
   const fetchEvent = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/events/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events/${id}`);
       if (!res.ok) throw new Error("Failed to fetch event.");
       const data = await res.json();
       setEvent(data);
@@ -85,7 +85,7 @@ const PaymentPage = () => {
       const wallet = await signer.getAddress();
       setUserWallet(wallet);
 
-      const res = await fetch(`http://localhost:8080/api/tickets/${wallet}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/${wallet}`);
       const data = await res.json();
       setUserTickets(data);
 
@@ -101,7 +101,7 @@ const PaymentPage = () => {
 
     try {
       if (type === "event_ticket") {
-        const { data: event } = await axios.get(`http://localhost:8080/api/events/${id}`);
+        const { data: event } = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/${id}`);
         setPaymentDetails({
           type: "event_ticket",
           item: event,
@@ -111,7 +111,7 @@ const PaymentPage = () => {
           description: `Purchase ticket for ${event.title}`,
         });
       } else if (type === "gig_payout") {
-        const { data: gig } = await axios.get(`http://localhost:8080/api/gigs/${id}`);
+        const { data: gig } = await axios.get(`${import.meta.env.VITE_API_URL}/api/gigs/${id}`);
         const amount = searchParams.get("amount") || "0";
         setPaymentDetails({
           type: "gig_payout",
@@ -162,7 +162,7 @@ const PaymentPage = () => {
     setPaymentStatus("processing");
 
     try {
-      const res = await fetch(`http://localhost:8080/api/payments/create-stripe-checkout`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payments/create-stripe-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

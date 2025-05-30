@@ -44,7 +44,7 @@ const PaymentSuccessPage = () => {
   const loadPaymentDetails = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/payments/${paymentId}`
+        `${import.meta.env.VITE_API_URL}/api/payments/${paymentId}`
       );
       if (!response.ok) {
         throw new Error(
@@ -80,7 +80,7 @@ const PaymentSuccessPage = () => {
   const verifyStripePayment = async (sessionId: string) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/payments/verify-stripe-payment",
+        `${import.meta.env.VITE_API_URL}/api/payments/verify-stripe-payment`,
         {
           method: "POST",
           headers: {

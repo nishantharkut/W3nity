@@ -113,7 +113,7 @@ const EnhancedGigCreation = () => {
     try {
       const token = JSON.parse(localStorage.getItem('sparkverse-auth') || '{}')?.token;
   
-      const res = await fetch("http://localhost:8080/api/gigs", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/gigs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
