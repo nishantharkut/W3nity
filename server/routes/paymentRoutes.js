@@ -35,8 +35,10 @@ router.post('/create-stripe-checkout', async (req, res) => {
       currency,
       paymentType,
       referenceId,
-      metadata,
+      metadata, // should include eventId
     } = req.body;
+
+    const { eventId, title, description } = metadata;
 
     const payment = await Payment.create({
       userId,
@@ -49,22 +51,24 @@ router.post('/create-stripe-checkout', async (req, res) => {
       metadata,
     });
 
+    const baseUrl = process.env.CLIENT_URL; // Use Vercel frontend URL in prod
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
           currency,
           product_data: {
-            name: metadata.title,
-            description: metadata.description,
+            name: title,
+            description,
           },
-          unit_amount: Math.round(amount * 100), // amount in cents
+          unit_amount: Math.round(amount * 100),
         },
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/payment/success?payment_id=${payment._id}`,
-      cancel_url: `${process.env.CLIENT_URL}/payment/cancel?payment_id=${payment._id}`,
+      success_url: `${baseUrl}/events/${eventId}/payment/success?payment_id=${payment._id}`,
+      cancel_url: `${baseUrl}/events/${eventId}/payment/cancel?payment_id=${payment._id}`,
       metadata: {
         paymentId: payment._id.toString(),
       },
