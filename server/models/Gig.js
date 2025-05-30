@@ -6,7 +6,8 @@ const gigSchema = new mongoose.Schema(
     description: { type: String, required: true },
     category: {
       type: String,
-      enum: ['AI/ML', 'App Development', 'Data Science', 'Design', 'Web Development', 'Other'], // include it here
+      enum: ['ai-ml', 'app-development', 'data-science', 'design', 'web-development', 'other'],
+ // include it here
       required: true,
     },
     experienceLevel: {

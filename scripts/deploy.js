@@ -12,7 +12,7 @@ async function main() {
 
   // === (OPTIONAL) DEPLOY ESCROW CONTRACT ===
   // Uncomment if you want to deploy Escrow again
-  const freelancerAddress = "0xEe9B179cA16Cb4e6E9c89B3B586a8f484d2b656c";
+  const freelancerAddress = "0x07D8493B31cd500ec8e11534f052Da94F47C9A97";
   const Escrow = await hre.ethers.getContractFactory("Escrow");
   const escrow = await Escrow.deploy(freelancerAddress, {
     value: hre.ethers.parseEther("0.01"),

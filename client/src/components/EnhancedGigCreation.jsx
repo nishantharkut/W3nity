@@ -44,16 +44,12 @@ const EnhancedGigCreation = () => {
   console.log(token)
 
   const categories = [
+    'ai-ml',
+    'app-development',
+    'data-science',
+    'design',
     'web-development',
-    'Mobile Development',
-    'UI/UX Design',
-    'Blockchain',
-    'AI/ML',
-    'Data Science',
-    'DevOps',
-    'Marketing',
-    'Writing',
-    'Other'
+    'other',
   ];
 
   const popularSkills = [
