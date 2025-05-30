@@ -62,15 +62,6 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 
 ---
 
-## Project video:
-
-
-https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
-
-
-
----
-
 ## 🚀 Getting Started
 
 1. **Clone the repo**  
@@ -124,7 +115,7 @@ https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
 ## 📺 Usage & Demo
 
 - **Live Preview:**
-    
+    https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
     
 - **Freelance Flow:**
     1. Connect MetaMask → 2. Post gig → 3. Submit proposal → 4. Deposit ETH in escrow → 5. Deliver & release funds.
