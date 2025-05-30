@@ -132,8 +132,8 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 - 🔄 User profiles & ratings
 - 📊 Admin analytics dashboard
 - 💳 Fiat payments (Stripe/Razorpay)
-- 🤖 AI-powered gig recommendations
-- 📱 Mobile-responsive & PWA support
+- 🤖 AI-powered gig recommendations [TO BE DONE]
+- 📱 Mobile-responsive & PWA support [TO BE DONE]
 
 ---
 
@@ -156,7 +156,7 @@ Please review our [CODE_OF_CONDUCT.md](https://www.notion.so/CODE_OF_CONDUCT.md)
 Distributed under the MIT License. See [LICENSE](https://www.notion.so/LICENSE) for details.
 
 ---
-![Visitor Count](https://profile-counter.glitch.me/nishantharkut/W3nity/count.svg)
+![Visitor Count](https://profile-counter.glitch.me/nishantharkut-W3nity/count.svg)
 
 ### Built with ❤️ at **Hack with Gujarat**
 
