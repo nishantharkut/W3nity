@@ -121,47 +121,7 @@ https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
 
 ### 🖼️ **Screenshots**
 
-### 🧑‍💼 Freelance Marketplace
-
-Connect MetaMask → Post Gig → Submit Proposal → Deposit ETH in Escrow → Deliver & Release
-
-<img src="https://github.com/user-attachments/assets/17a982d2-841d-44e7-b51e-f386fa15aa78" alt="Freelance Proposal Page" width="800"/>
-
----
-
-### 🎟️ Event Management & NFT Ticketing
-
-Create Event → Register → Mint NFT Ticket → Manage Attendees
-
-<img src="https://github.com/user-attachments/assets/29869cd7-7629-4422-9cfe-08ae59e6105e" alt="NFT Ticketing Page" width="800"/>
-
----
-
-### 💬 Real-Time Chat System
-
-Join Global or Project Channels → Send/Receive Messages → Share Files & Media
-
-<img src="https://github.com/user-attachments/assets/92e1a960-4fb3-47e9-bcab-a759449113fc" alt="Community Chat" width="800"/>
-
----
-
-### 🔐 MetaMask Login & Wallet Integration
-
-Secure authentication and blockchain interaction using MetaMask.
-
-<img src="https://github.com/user-attachments/assets/017c7fd9-a1f0-4424-9106-baffb9f6cd98" alt="MetaMask Login" width="800"/>
-
----
-
-### 🛠️ Admin/Event Dashboard
-
-<img src="https://github.com/user-attachments/assets/307a22cc-9cee-4713-b786-93fa46c0e959" alt="Admin Dashboard" width="800"/>
-
----
-
-### 📄 Proposal & Contract Handling
-
-<img src="https://github.com/user-attachments/assets/3272e54a-d922-4751-bb38-bf9b48fceae6" alt="Proposal Management" width="800"/>
+<table> <tr> <td align="center"> <img src="https://github.com/user-attachments/assets/017c7fd9-a1f0-4424-9106-baffb9f6cd98" alt="Onboarding Page" width="350"/><br/> <strong>🔐 Onboarding</strong><br/>Wallet Connect & MetaMask Auth </td> <td align="center"> <img src="https://github.com/user-attachments/assets/307a22cc-9cee-4713-b786-93fa46c0e959" alt="Dashboard" width="350"/><br/> <strong>📊 Dashboard</strong><br/>Your Gateway to Freelance, Events, and Chat </td> <td align="center"> <img src="https://github.com/user-attachments/assets/17a982d2-841d-44e7-b51e-f386fa15aa78" alt="Freelance Marketplace" width="350"/><br/> <strong>💼 Freelancing</strong><br/>Post Gigs, Submit Proposals, Escrow ETH </td> </tr> <tr> <td align="center"> <img src="https://github.com/user-attachments/assets/29869cd7-7629-4422-9cfe-08ae59e6105e" alt="Event Management" width="350"/><br/> <strong>🎉 Events</strong><br/>Create Events & Mint NFT Tickets </td> <td align="center"> <img src="https://github.com/user-attachments/assets/92e1a960-4fb3-47e9-bcab-a759449113fc" alt="Community Chat" width="350"/><br/> <strong>💬 Community</strong><br/>Real-time Global & Private Chat </td> <td align="center"> <img src="https://github.com/user-attachments/assets/3272e54a-d922-4751-bb38-bf9b48fceae6" alt="Profile Page" width="350"/><br/> <strong>👤 Profile</strong><br/>Track Proposals, Projects & Tickets </td> </tr> </table>
 
 ---
 
