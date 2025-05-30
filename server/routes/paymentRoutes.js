@@ -67,8 +67,8 @@ router.post('/create-stripe-checkout', async (req, res) => {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${baseUrl}/events/${eventId}/payment/success?payment_id=${payment._id}`,
-      cancel_url: `${baseUrl}/events/${eventId}/payment/cancel?payment_id=${payment._id}`,
+      success_url: `${baseUrl}/payment/success?payment_id=${payment._id}`,
+      cancel_url: `${baseUrl}/payment/cancel?payment_id=${payment._id}`,
       metadata: {
         paymentId: payment._id.toString(),
       },
