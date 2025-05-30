@@ -62,6 +62,15 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
 
 ---
 
+## Project video:
+
+
+https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
+
+
+
+---
+
 ## 🚀 Getting Started
 
 1. **Clone the repo**  
@@ -78,17 +87,19 @@ Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets st
     cd ../server && npm install
    ```
 3. **Configure environment**
-   - Copy example.env to .env in both client/ and server/
+   - Copy example.env to .env in both root dir, client/ and server/
    - Set your MongoDB URI , MetaMask RPC endpoint, AWS/Cloudinary keys, etc.
      
 
    ```bash
-     # Server
+   # Example:
      PORT= 8080
      MONGO_URI="your MongoDb URI"
      JWT_SECRET="your JWT secret"
      STRIPE_SECRET_KEY="your stripe secret key"
      CLIENT_URL="your frontend ur"
+     NFT_CONTRACT_ADDRESS="your contract address"
+     SEPOLIA_RPC_URL="your sepolia url"
     ```
    
 4. **Run locally**
