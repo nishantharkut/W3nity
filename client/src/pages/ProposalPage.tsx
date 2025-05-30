@@ -773,6 +773,76 @@ const ProposalPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        <div className="space-y-6">
+            {/* Tips Card */}
+            <Card className="glass-effect border-blue-200 bg-blue-50/50">
+              <CardHeader>
+                <CardTitle className="text-lg text-blue-800">💡 Proposal Tips</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-blue-700 space-y-3">
+                <p>• Personalize your message to the specific project</p>
+                <p>• Highlight relevant experience and portfolio pieces</p>
+                <p>• Be realistic with your timeline and budget</p>
+                <p>• Ask clarifying questions to show engagement</p>
+                <p>• Proofread before submitting</p>
+              </CardContent>
+            </Card>
+
+            {/* Project Summary */}
+            <Card className="glass-effect">
+              <CardHeader>
+                <CardTitle className="text-lg">Project Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div>
+                  <p className="font-medium text-muted-foreground">Client Budget</p>
+                  <p className="font-semibold">${gig.minBudget} - ${gig.maxBudget}</p>
+                </div>
+                <div>
+                  <p className="font-medium text-muted-foreground">Required Skills</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {gig.skills.map(skill => (
+                      <Badge key={skill} variant="outline" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="font-medium text-muted-foreground">Category</p>
+                  <p className="capitalize">{gig.category.replace('-', ' ')}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Form Validation */}
+            <Card className="glass-effect">
+              <CardHeader>
+                <CardTitle className="text-lg">Checklist</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className={`flex items-center gap-2 ${coverLetter.trim() ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${coverLetter.trim() ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                    {coverLetter.trim() && <span className="text-white text-xs">✓</span>}
+                  </div>
+                  Cover letter written
+                </div>
+                <div className={`flex items-center gap-2 ${proposedBudget ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${proposedBudget ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                    {proposedBudget && <span className="text-white text-xs">✓</span>}
+                  </div>
+                  Budget proposed
+                </div>
+                <div className={`flex items-center gap-2 ${deliveryTime ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${deliveryTime ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                    {deliveryTime && <span className="text-white text-xs">✓</span>}
+                  </div>
+                  Delivery time set
+                </div>
+              </CardContent>
+            </Card>
+          </div>
       </div>
     </div>
   );
