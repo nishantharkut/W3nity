@@ -92,7 +92,7 @@ https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
      
 
    ```bash
-     # Server
+   # Example:
      PORT= 8080
      MONGO_URI="your MongoDb URI"
      JWT_SECRET="your JWT secret"
