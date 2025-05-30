@@ -165,6 +165,7 @@ Please review our [CODE_OF_CONDUCT.md](https://www.notion.so/CODE_OF_CONDUCT.md)
 Distributed under the MIT License. See [LICENSE](https://www.notion.so/LICENSE) for details.
 
 ---
+![Visitor Count](https://profile-counter.glitch.me/nishantharkut/W3nity/count.svg)
 
 ### Built with ❤️ at **Hack with Gujarat**
 
