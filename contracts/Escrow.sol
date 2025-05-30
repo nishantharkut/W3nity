@@ -8,6 +8,7 @@ contract Escrow {
     bool public isComplete;
 
     constructor(address _freelancer) payable {
+        require(msg.value > 0, "Must send some ether");
         client = msg.sender;
         freelancer = _freelancer;
         amount = msg.value;
@@ -15,10 +16,16 @@ contract Escrow {
     }
 
     function releaseFunds() external {
-        require(msg.sender == client, "Only client can release funds");
-        require(!isComplete, "Already released");
+        require(!isComplete, "Funds already released");
+        require(address(this).balance >= amount, "Insufficient balance");
 
         isComplete = true;
-        payable(freelancer).transfer(amount);
+
+        (bool sent, ) = payable(freelancer).call{value: amount}("");
+        require(sent, "Failed to send Ether");
+    }
+
+    function getBalance() external view returns (uint256) {
+        return address(this).balance;
     }
 }

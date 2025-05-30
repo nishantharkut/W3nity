@@ -1,4 +1,3 @@
-// controllers/proposalController.js
 const Proposal = require("../models/Proposal");
 const Gig = require("../models/Gig");
 
@@ -6,9 +5,18 @@ exports.createProposalWithEscrow = async (req, res) => {
   try {
     const { gigId, userId, coverLetter, proposedBudget, deliveryTime, escrowAddress } = req.body;
 
-    const gig = await Gig.findById(gigId);
-    if (!gig) return res.status(404).json({ message: "Gig not found" });
+    // Basic validation
+    if (!gigId || !userId || !coverLetter || !proposedBudget || !deliveryTime || !escrowAddress) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
+    // Check if gig exists
+    const gig = await Gig.findById(gigId);
+    if (!gig) {
+      return res.status(404).json({ message: "Gig not found" });
+    }
+
+    // Create proposal
     const proposal = await Proposal.create({
       user: userId,
       gig: gigId,
@@ -19,12 +27,17 @@ exports.createProposalWithEscrow = async (req, res) => {
       status: "Pending",
     });
 
+    // Ensure gig.proposals is an array
+    if (!Array.isArray(gig.proposals)) {
+      gig.proposals = [];
+    }
+
     gig.proposals.push(proposal._id);
     await gig.save();
 
-    res.status(201).json(proposal);
+    return res.status(201).json(proposal);
   } catch (err) {
-    console.error("Error creating proposal with escrow:", err);
-    res.status(500).json({ message: "Failed to create proposal with escrow" });
+    console.error("❌ Error creating proposal with escrow:", err);
+    return res.status(500).json({ message: "Failed to create proposal with escrow" });
   }
 };

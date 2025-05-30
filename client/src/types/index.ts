@@ -161,11 +161,12 @@ export interface Web3State {
   account: string | null;
   isConnected: boolean;
   chainId: number | null;
-  chainName?: string | null;
-  balance: string | null;
+  // chainName: string | null;
+  balance: string | null; // Typically in ETH, formatted (e.g., "1.234")
   isLoading: boolean;
   error: string | null;
 }
+
 
 // Missing type for dashboard stats
 export interface DashboardStats {

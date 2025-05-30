@@ -26,6 +26,7 @@ import Breadcrumbs from "./components/BreadCrumbs";
 import PaymentPage from "./pages/PaymentPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentCancelPage from "./pages/PaymentCancelPage";
+import PaymentSuccessNFT from "./pages/PaymentSuccessNFT";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => (
                         <Route path="/payment/:type/:id" element={<PaymentPage/>}/>
                         <Route path="/payment/success" element={<PaymentSuccessPage/>}/>
                         <Route path="/payment/cancel" element={<PaymentCancelPage/>}/>
+                        <Route path="/NFTpayment/success" element={<PaymentSuccessNFT/>}/>
 
                         <Route path="*" element={<NotFound />} />
                       </Routes>

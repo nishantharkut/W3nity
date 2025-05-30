@@ -313,6 +313,9 @@ const PaymentPage = () => {
                         description: "Check your wallet.",
                       });
                       fetchWalletAndTickets();
+                      setTimeout(() => {
+                        navigate(`/NFTpayment/success?tokenURI=${encodeURIComponent(tokenURI)}&eventId=${id}`);
+                      }, 2000);
                     }}
                   />
                 )}
