@@ -122,7 +122,43 @@ https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
 
 ### 🖼️ **Screenshots**
 
-<table> <tr> <td align="center"> <img src="https://github.com/user-attachments/assets/17a982d2-841d-44e7-b51e-f386fa15aa78" alt="Onboarding Page" width="350"/><br/> <strong>🔐 Onboarding</strong><br/>Wallet Connect & MetaMask Auth </td> <td align="center"> <img src="https://github.com/user-attachments/assets/29869cd7-7629-4422-9cfe-08ae59e6105e" alt="Dashboard" width="350"/><br/> <strong>📊 Dashboard</strong><br/>Your Gateway to Freelance, Events, and Chat </td> <td align="center"> <img src="https://github.com/user-attachments/assets/92e1a960-4fb3-47e9-bcab-a759449113fc" alt="Freelance Marketplace" width="350"/><br/> <strong>💼 Freelancing</strong><br/>Post Gigs, Submit Proposals, Escrow ETH </td> </tr> <tr> <td align="center"> <img src="https://github.com/user-attachments/assets/017c7fd9-a1f0-4424-9106-baffb9f6cd98" alt="Event Management" width="350"/><br/> <strong>🎉 Events</strong><br/>Create Events & Mint NFT Tickets </td> <td align="center"> <img src="https://github.com/user-attachments/assets/307a22cc-9cee-4713-b786-93fa46c0e959" alt="Community Chat" width="350"/><br/> <strong>💬 Community</strong><br/>Real-time Global & Private Chat </td> <td align="center"> <img src="https://github.com/user-attachments/assets/3272e54a-d922-4751-bb38-bf9b48fceae6" alt="Profile Page" width="350"/><br/> <strong>👤 Profile</strong><br/>Track Proposals, Projects & Tickets </td> </tr> </table>
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/17a982d2-841d-44e7-b51e-f386fa15aa78" alt="Onboarding Page" width="350"/><br/>
+      <strong>🔐 Onboarding</strong><br/>
+      <span style="font-size: 0.8em; color: #666;">Wallet Connect & MetaMask Auth</span>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/29869cd7-7629-4422-9cfe-08ae59e6105e" alt="Dashboard" width="350"/><br/>
+      <strong>📊 Dashboard</strong><br/>
+      <span style="font-size: 0.8em; color: #666;">Your Gateway to Freelance, Events, and Chat</span>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/92e1a960-4fb3-47e9-bcab-a759449113fc" alt="Freelance Marketplace" width="350"/><br/>
+      <strong>💼 Freelancing</strong><br/>
+      <span style="font-size: 0.8em; color: #666;">Post Gigs, Submit Proposals, Escrow ETH</span>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/017c7fd9-a1f0-4424-9106-baffb9f6cd98" alt="Event Management" width="350"/><br/>
+      <strong>🎉 Events</strong><br/>
+      <span style="font-size: 0.8em; color: #666;">Create Events & Mint NFT Tickets</span>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/307a22cc-9cee-4713-b786-93fa46c0e959" alt="Community Chat" width="350"/><br/>
+      <strong>💬 Community</strong><br/>
+      <span style="font-size: 0.8em; color: #666;">Real-time Global & Private Chat</span>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/3272e54a-d922-4751-bb38-bf9b48fceae6" alt="Profile Page" width="350"/><br/>
+      <strong>👤 Profile</strong><br/>
+      <span style="font-size: 0.8em; color: #666;">Track Proposals, Projects & Tickets</span>
+    </td>
+  </tr>
+</table>
+
 
 ---
 
