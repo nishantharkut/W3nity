@@ -87,7 +87,7 @@ https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
     cd ../server && npm install
    ```
 3. **Configure environment**
-   - Copy example.env to .env in both client/ and server/
+   - Copy example.env to .env in both root dir, client/ and server/
    - Set your MongoDB URI , MetaMask RPC endpoint, AWS/Cloudinary keys, etc.
      
 
