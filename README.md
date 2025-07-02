@@ -10,7 +10,7 @@
 - 🎉 **Event Management**  
 - 💬 **Real-Time Community Chat**  
 
-Designed and built in a 2.5-day sprint for **Hack with Gujarat**, W3nity lets startups, developers, and communities connect, collaborate, and transact seamlessly — on-chain or off-chain.
+W3nity lets startups, developers, and communities connect, collaborate, and transact seamlessly — on-chain or off-chain.
 
 ---
 
@@ -220,7 +220,3 @@ Distributed under the MIT License. See [LICENSE](https://www.notion.so/LICENSE) 
 
 ---
 ![Visitor Count](https://profile-counter.glitch.me/nishantharkut-W3nity/count.svg)
-
-### Built with ❤️ at **Hack with Gujarat**
-
-**Hackathon:** [Hack with Gujarat](https://hackwithgujarat.org/)  |  **Team:** Null & Void — Innovate, Collaborate, Elevated.
