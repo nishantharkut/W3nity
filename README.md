@@ -2,7 +2,7 @@
 ## All-in-One Tech Collaboration Platform
 
 [![Demo](https://img.shields.io/badge/Live-Demo-blue)](https://w3nity.vercel.app/)
-[![Hackathon](https://img.shields.io/badge/Hackathon-Hack%20with%20Gujarat-brightgreen)]
+
 
 **W3nity** is a unified, Web3-enabled collaboration platform that brings together:
 
