@@ -1,4 +1,4 @@
-# 🚀 W3nity - Web3 + Unity 
+# W3nity - Web3 + Unity 
 ## All-in-One Tech Collaboration Platform
 
 [![Demo](https://img.shields.io/badge/Live-Demo-blue)](https://w3nity.vercel.app/)
@@ -6,15 +6,15 @@
 
 **W3nity** is a unified, Web3-enabled collaboration platform that brings together:
 
-- 🧑‍💻 **Freelancing Marketplace**  
-- 🎉 **Event Management**  
-- 💬 **Real-Time Community Chat**  
+-  **Freelancing Marketplace**  
+-  **Event Management**  
+-  **Real-Time Community Chat**  
 
 W3nity lets startups, developers, and communities connect, collaborate, and transact seamlessly — on-chain or off-chain.
 
 ---
 
-## 📌 Table of Contents
+##  Table of Contents
 
 1. [Key Features](#-key-features)  
 2. [Tech Stack](#-tech-stack)  
@@ -27,7 +27,7 @@ W3nity lets startups, developers, and communities connect, collaborate, and tran
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
 | Module                   | Description                                                                                   |
 |--------------------------|-----------------------------------------------------------------------------------------------|
@@ -59,12 +59,12 @@ W3nity lets startups, developers, and communities connect, collaborate, and tran
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 ![architectureee](https://github.com/user-attachments/assets/5beace3e-b41d-4781-a68c-0a091d9b0cc3)
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 1. **Clone the repo**  
    ```bash
@@ -114,15 +114,15 @@ W3nity lets startups, developers, and communities connect, collaborate, and tran
     npx hardhat run scripts/deploy.js --network localhost
    ```
 
-## 📺 Usage & Demo
+##  Usage & Demo
 
-### 🔗 Demo Video  
+###  Demo Video  
 
 https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
 
 ---
 
-### 🖼️ **Screenshots**
+###  **Screenshots**
 
 <table>
   <tr>
@@ -164,39 +164,39 @@ https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
 
 ---
 
-### 🎮 User Flows
+### User Flows
 
-### 🔧 **Freelance Flow**
+### **Freelance Flow**
 
-1. 🔗 Connect MetaMask
-2. 📝 Post Gig
-3. 📩 Submit Proposal
-4. 💰 Deposit ETH in Escrow
-5. ✅ Deliver Work & Release Payment
+1. Connect MetaMask
+2. Post Gig
+3. Submit Proposal
+4. Deposit ETH in Escrow
+5. Deliver Work & Release Payment
 
-### 🎉 **Event Flow**
+### **Event Flow**
 
-1. 🗓️ Create Event
-2. ✍️ Register
-3. 🧾 Mint NFT Ticket
-4. 📋 View/Manage Attendees
+1. Create Event
+2. Register
+3. Mint NFT Ticket
+4. View/Manage Attendees
 
-### 💬 **Chat Flow**
+### **Chat Flow**
 
-1. 💬 Join Public/Private Channels
-2. ✉️ Send Messages
-3. 📎 Share Files & Media
+1. Join Public/Private Channels
+2. Send Messages
+3. Share Files & Media
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-- ✅ Core MVP: gigs, events, chat, Web3 login, NFT Ticketing
-- 🔄 User profiles & ratings
-- 📊 Admin analytics dashboard
-- 💳 Fiat payments (Stripe/Razorpay)
-- 🤖 AI-powered gig recommendations [TO BE DONE]
-- 📱 Mobile-responsive & PWA support [TO BE DONE]
+- Core MVP: gigs, events, chat, Web3 login, NFT Ticketing
+- User profiles & ratings
+- Admin analytics dashboard
+- Fast payments (Stripe/Razorpay)
+- AI-powered gig recommendations [TO BE DONE]
+- Mobile-responsive & PWA support [TO BE DONE]
 
 ---
 
@@ -209,8 +209,6 @@ We welcome bug reports, feature requests, and pull requests!
 3. Commit your changes (`git commit -m 'Add AwesomeFeature'`)
 4. Push to the branch (`git push origin feature/AwesomeFeature`)
 5. Open a Pull Request
-
-Please review our [CODE_OF_CONDUCT.md](https://www.notion.so/CODE_OF_CONDUCT.md) and [CONTRIBUTING.md](https://www.notion.so/CONTRIBUTING.md).
 
 ---
 
