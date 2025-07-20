@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Plus, X } from "lucide-react";
 
+
 const CreateEventPage = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -29,6 +30,10 @@ const CreateEventPage = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
+
+const auth = localStorage.getItem("sparkverse-auth");
+const parsedAuth = auth ? JSON.parse(auth) : null;
+const user = parsedAuth?.user;
 
   const addTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
@@ -55,7 +60,7 @@ const CreateEventPage = () => {
       price: Number(price),
       isOnline,
       tags,
-      organizer: user._id,
+      organizer: user?._id,
     };
 
     try {

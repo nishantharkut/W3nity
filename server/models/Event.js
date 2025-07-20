@@ -21,7 +21,7 @@ const eventSchema = new mongoose.Schema(
     },
     organizer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // or "Organizer", depending on your user model
+      ref: "User", 
       required: true,
     },
     attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
