@@ -1,8 +1,11 @@
 # W3nity - Web3 + Unity 
 ## All-in-One Tech Collaboration Platform
 
-[![Demo](https://img.shields.io/badge/Live-Demo-blue)](https://w3nity.vercel.app/)
-
+[![Demo](https://img.shields.io/badge/Live-Demo-green)](https://w3nity.vercel.app/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org)
+[![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.28-blue)](https://docs.soliditylang.org/)
 
 **W3nity** is a unified, Web3-enabled collaboration platform that brings together:
 
@@ -10,7 +13,47 @@
 -  **Event Management**  
 -  **Real-Time Community Chat**  
 
-W3nity lets startups, developers, and communities connect, collaborate, and transact seamlessly — on-chain or off-chain.
+## 🔒 Security Features
+
+- **Smart Contract Security**
+  - OpenZeppelin secure base contracts
+  - Comprehensive test coverage
+  - External audit planned
+
+- **Web Security**
+  - JWT authentication
+  - Rate limiting
+  - Input validation
+  - CORS protection
+
+- **Data Privacy**
+  - Encrypted storage
+  - Secure key management
+  - Regular backups
+
+## ⚡ Performance
+
+- **Frontend Optimization**
+  - Code splitting
+  - Lazy loading
+  - Asset optimization
+  - Caching strategies
+
+- **Backend Efficiency**
+  - Database indexing
+  - Query optimization
+  - Load balancing ready
+  - Caching layers
+
+- **Blockchain Integration**
+  - Optimized gas usage
+  - Batch transactions
+  - Event listeners
+  - Fallback providers
+
+---
+
+### W3nity lets startups, developers, and communities connect, collaborate, and transact seamlessly — on-chain or off-chain.
 
 ---
 
@@ -18,12 +61,13 @@ W3nity lets startups, developers, and communities connect, collaborate, and tran
 
 1. [Key Features](#-key-features)  
 2. [Tech Stack](#-tech-stack)  
-3. [Architecture](#-architecture)  
-4. [Getting Started](#-getting-started)  
-5. [Usage & Demo](#-usage--demo)  
-6. [Roadmap](#-roadmap)  
-7. [Contributing](#-contributing)  
-8. [License](#-license)  
+3. [Architecture](#-architecture)
+4. [Prerequisites](#-prerequisites)
+5. [Getting Started](#-getting-started)  
+6. [Usage & Demo](#-usage--demo)  
+7. [Roadmap](#-roadmap)  
+8. [Contributing](#-contributing)  
+9. [License](#-license)  
 
 ---
 
@@ -41,7 +85,7 @@ W3nity lets startups, developers, and communities connect, collaborate, and tran
 ## Tech Stack
 
 - **Frontend**  
-  - React + Tailwind CSS  
+  - React + Typescript + Tailwind CSS  
   - Framer Motion for animations  
 - **Backend**  
   - Node.js + Express  
@@ -63,6 +107,24 @@ W3nity lets startups, developers, and communities connect, collaborate, and tran
 ![architectureee](https://github.com/user-attachments/assets/5beace3e-b41d-4781-a68c-0a091d9b0cc3)
 
 ---
+
+### System Components
+- **Frontend**: React SPA with TypeScript and Tailwind CSS
+- **Backend**: RESTful API with Express, real-time WebSocket server
+- **Database**: MongoDB for user data, events, and transactions
+- **Blockchain**: Smart contracts for tickets and payments
+- **Storage**: IPFS for decentralized content storage
+
+---
+
+## 📋 Prerequisites
+
+- Node.js >= 14.0.0
+- npm >= 6.14.0
+- MongoDB >= 4.4
+- MetaMask wallet
+- Git
+
 
 ##  Getting Started
 
@@ -103,7 +165,11 @@ W3nity lets startups, developers, and communities connect, collaborate, and tran
   NFT_CONTRACT_ADDRESS="your contract address"
 
 ```
-
+> ⚠️ **Security Notes**: 
+> - Never commit `.env` files to version control
+> - Use strong secrets for JWT_SECRET
+> - Keep your private keys secure
+> - Use test API keys for development
    
 4. **Run locally**
 
@@ -200,19 +266,37 @@ https://github.com/user-attachments/assets/cc042158-d2ca-4e0d-b470-fcf282571fea
 
 ---
 
-## Roadmap
+## 🛣️ Roadmap
 
-- Core MVP: gigs, events, chat, Web3 login, NFT Ticketing
-- User profiles & ratings
-- Admin analytics dashboard
-- Fast payments (Stripe/Razorpay)
-- AI-powered gig recommendations [TO BE DONE]
-- Mobile-responsive & PWA support [TO BE DONE]
+### Phase 1: Core Platform (Completed ✅)
+- ✅ Web3 login with MetaMask integration
+- ✅ Freelance marketplace with escrow
+- ✅ Event management with NFT ticketing
+- ✅ Real-time community chat
+
+### Phase 2: Enhanced Features (In Progress 🚀)
+- 🏗️ User profiles and reputation system
+- 🏗️ Advanced search and filtering
+- 🏗️ Admin analytics dashboard
+- 🏗️ Fast payments (Stripe/Razorpay)
+
+### Phase 3: Future Expansion (Planned 📋)
+- 📅 AI-powered gig recommendations
+- 📅 Mobile-responsive & PWA support
+- 📅 Multi-chain support
+- 📅 DAO governance implementation
+
+### Phase 4: Platform Scale (Upcoming 🔮)
+- 🎯 Enhanced security features
+- 🎯 Performance optimizations
+- 🎯 Advanced analytics
+- 🎯 Community governance
 
 ---
 
 ## Contributing
 
+Please follow the Code of Conducts and Learn.md documentations properly.
 We welcome bug reports, feature requests, and pull requests!
 
 1. Fork the repo
@@ -223,9 +307,22 @@ We welcome bug reports, feature requests, and pull requests!
 
 ---
 
-## License
+## 📄 License
 
-Distributed under the MIT License. See [LICENSE](https://www.notion.so/LICENSE) for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📫 Contact & Support
+
+- **Issues**: Use GitHub Issues for bugs and feature requests
+- **Discussions**: Join project discussions on GitHub
+
+## 🙏 Acknowledgments
+
+- [OpenZeppelin](https://www.openzeppelin.com/) for smart contract libraries
+- [Ethers.js](https://docs.ethers.org/) for blockchain interactions
+- [Socket.io](https://socket.io/) for real-time features
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [Hardhat](https://hardhat.org/) for smart contract development
 
 ---
-![Visitor Count](https://profile-counter.glitch.me/nishantharkut/W3nity/count.svg)
+[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fnishantharkut%2FW3nity&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visitors&edge_flat=false)](https://hits.seeyoufarm.com)
