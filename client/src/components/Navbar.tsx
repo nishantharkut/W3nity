@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import Logo from '@/components/ui/Logo';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthState } from '@/hooks/useAuth';
@@ -95,14 +96,9 @@ const Navbar = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Button variant="ghost" onClick={() => navigate('/')} className="flex items-center space-x-2 hover:bg-primary/10">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                W3nity
-              </span>
-            </Button>
+            <div className="pl-12">
+              <Logo variant="navbar" height="h-24" />
+            </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
