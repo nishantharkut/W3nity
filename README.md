@@ -6,6 +6,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.28-blue)](https://docs.soliditylang.org/)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=nishantharkut.W3nity)
 
 **W3nity** is a unified, Web3-enabled collaboration platform that brings together:
 
@@ -324,5 +325,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [Hardhat](https://hardhat.org/) for smart contract development
 
----
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=nishantharkut.W3nity)
