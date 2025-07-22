@@ -35,7 +35,9 @@ import {
   Briefcase,
   Calendar,
   Users,
-  TrendingUp
+  TrendingUp,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 const navigationItems = [
@@ -54,6 +56,18 @@ const Navbar = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Theme state
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark' || stored === 'light') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     setWalletAddress(account || null);
@@ -81,6 +95,8 @@ const Navbar = () => {
       toast({ title: 'Wallet Connected', description: `Connected to ${walletAddress}` });
     }
   };
+
+  const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
 
   const WalletButton = () => (
     <Button variant={walletAddress ? 'default' : 'outline'} size="sm" onClick={handleWallet}>
@@ -128,6 +144,21 @@ const Navbar = () => {
               {/* Search */}
               <Button variant="outline" size="icon" onClick={() => { setIsSearchOpen(true); toast({ title: 'Search', description: 'Looking for something?' }); }}>
                 <Search className="w-4 h-4" />
+              </Button>
+
+              {/* Theme Toggle */}
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Toggle dark mode"
+                onClick={toggleTheme}
+                className="transition-colors"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-5 h-5 text-yellow-400" />
+                ) : (
+                  <Moon className="w-5 h-5 text-blue-600" />
+                )}
               </Button>
 
               {/* Wallet */}
@@ -212,6 +243,20 @@ const Navbar = () => {
                   </Button>
                 ))}
                 <div className="pt-2 space-y-2">
+                  {/* Theme Toggle in mobile menu */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Toggle dark mode"
+                    onClick={toggleTheme}
+                    className="transition-colors"
+                  >
+                    {theme === 'dark' ? (
+                      <Sun className="w-5 h-5 text-yellow-400" />
+                    ) : (
+                      <Moon className="w-5 h-5 text-blue-600" />
+                    )}
+                  </Button>
                   <WalletButton />
                   {isAuthenticated && (
                     <>

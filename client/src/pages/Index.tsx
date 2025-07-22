@@ -193,10 +193,10 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-glow opacity-30"></div>
         <div className="container mx-auto text-center relative z-10">
           <div className="animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
               Welcome to <span className="text-gradient">W3nity</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <p className="text-xl  md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto ">
               The ultimate platform for tech collaboration. Connect with
               freelancers, discover events, and build communities in the Web3
               era.
@@ -324,8 +324,8 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-12">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Featured Gigs</h2>
-              <p className="text-muted-foreground">
+              <h2 className="text-3xl text-white font-bold mb-2">Featured Gigs</h2>
+              <p className="text-white">
                 Discover high-quality projects from top clients
               </p>
             </div>
@@ -470,10 +470,10 @@ const Index = () => {
       >
         <div className="container mx-auto text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold mb-6">
+            <h2 className="text-4xl font-bold mb-6 text-white">
               Ready to Start Your Journey?
             </h2>
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-xl text-muted-foreground mb-8 text-slate-100">
               Join thousands of tech professionals who are already building
               their future on W3nity
             </p>
