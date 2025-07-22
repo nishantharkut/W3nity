@@ -1,11 +1,24 @@
 # W3nity - Web3 + Unity 
+
 ## All-in-One Tech Collaboration Platform
 
 [![Demo](https://img.shields.io/badge/Live-Demo-green)](https://w3nity.vercel.app/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.28-blue)](https://docs.soliditylang.org/)
+
+<img src="assets/w3nity logo2.png" alt="W3nity Logo" width="200" align="right" style="margin-left: 20px;"/>
+
+**W3nity** is a unified, Web3-enabled collaboration platform that brings together:
+
+- **Freelancing Marketplace**
+- **Event Management**
+- **Real-Time Community Chat**
+
+
 
 **W3nity** is a unified, Web3-enabled collaboration platform that brings together:
 
