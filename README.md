@@ -325,4 +325,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Hardhat](https://hardhat.org/) for smart contract development
 
 ---
-[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fnishantharkut%2FW3nity&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visitors&edge_flat=false)](https://hits.seeyoufarm.com)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=nishantharkut.W3nity)
