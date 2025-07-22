@@ -381,6 +381,7 @@ const EnhancedGigCreation = () => {
                           selected={gigData.deadline}
                           onSelect={(date) => setGigData(prev => ({ ...prev, deadline: date }))}
                           initialFocus
+                          disabled={{ before: new Date() }}
                         />
                       </PopoverContent>
                     </Popover>
