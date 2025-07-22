@@ -1,5 +1,14 @@
-# W3nity - Web3 + Unity 
-## All-in-One Tech Collaboration Platform
+<table width="400%">
+  <tr>
+    <td>
+      <h1 style="margin-bottom: 0;">W3nity - Web3 + Unity</h1>
+      <h2 style="font-size: 1.2em;">All-in-One Tech Collaboration Platform + Unity</h2>
+    </td>
+    <td align="right" width="450">
+      <img src="assets/w3nity%20logo.png" alt="W3nity Logo" width="200"/>
+    </td>
+  </tr>
+</table>
 
 [![Demo](https://img.shields.io/badge/Live-Demo-green)](https://w3nity.vercel.app/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
