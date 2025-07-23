@@ -339,8 +339,8 @@ const EnhancedGigCreation = () => {
                     </label>
                     <Input
                       type="number"
-                      value={gigData.budgetMin}
-                      onChange={(e) => setGigData(prev => ({ ...prev, budgetMin: e.target.value }))}
+                      value={gigData.minBudget}
+                      onChange={(e) => setGigData(prev => ({ ...prev, minBudget: e.target.value }))}
                       placeholder="1000"
                     />
                   </div>
@@ -350,8 +350,8 @@ const EnhancedGigCreation = () => {
                     </label>
                     <Input
                       type="number"
-                      value={gigData.budgetMax}
-                      onChange={(e) => setGigData(prev => ({ ...prev, budgetMax: e.target.value }))}
+                      value={gigData.maxBudget}
+                      onChange={(e) => setGigData(prev => ({ ...prev, maxBudget: e.target.value }))}
                       placeholder="5000"
                     />
                   </div>
@@ -394,7 +394,7 @@ const EnhancedGigCreation = () => {
                   </Button>
                   <Button
                     onClick={() => setStep(4)}
-                    disabled={!gigData.budgetMin || !gigData.budgetMax || !gigData.duration}
+                    disabled={!gigData.minBudget || !gigData.maxBudget || !gigData.duration}
                     className="glow-button"
                   >
                     Continue
@@ -435,7 +435,7 @@ const EnhancedGigCreation = () => {
                       <strong>Category:</strong> {gigData.category}
                     </div>
                     <div>
-                      <strong>Budget:</strong> ${gigData.budgetMin} - ${gigData.budgetMax} ({gigData.budgetType})
+                      <strong>Budget:</strong> ${gigData.minBudget} - ${gigData.maxBudget} ({gigData.budgetType})
                     </div>
                     <div>
                       <strong>Duration:</strong> {gigData.duration}
