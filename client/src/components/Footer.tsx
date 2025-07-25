@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import Logo from '@/components/ui/Logo';
+
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -55,12 +57,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Logo and Description */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-spark rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">S</span>
-              </div>
-              <span className="text-xl font-bold text-gradient">W3nity</span>
-            </Link>
+
+           <div className='mb-2'>
+             <Logo variant="footer" height="h-10" />
+           </div>
+
             <p className="text-muted-foreground mb-6 max-w-md">
               The ultimate platform for tech collaboration, connecting freelancers, 
               hosting events, and building communities in the Web3 era.
