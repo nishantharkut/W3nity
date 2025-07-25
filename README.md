@@ -9,6 +9,7 @@
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.28-blue)](https://docs.soliditylang.org/)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=nishantharkut.W3nity)
 
 <img src="assets/w3nity logo2.png" alt="W3nity Logo" width="200" align="right" style="margin-left: 20px;"/>
 
@@ -337,5 +338,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [Hardhat](https://hardhat.org/) for smart contract development
 
----
-[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fnishantharkut%2FW3nity&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visitors&edge_flat=false)](https://hits.seeyoufarm.com)
