@@ -17,7 +17,10 @@ describe("EventTicketNFT", function () {
     // Sample token URI
     const sampleURI = "ipfs://QmSampleIPFSHash";
 
-    return { eventTicketNFT, deployer, user1, user2, sampleURI };
+    // Constant for mintTicket offset
+    const MINT_TICKET_OFFSET = 1_000_000;
+
+    return { eventTicketNFT, deployer, user1, user2, sampleURI, MINT_TICKET_OFFSET };
   }
 
   describe("Deployment", function () {
@@ -65,42 +68,42 @@ describe("EventTicketNFT", function () {
     });
 
     it("Should set correct token URI", async function () {
-      const { eventTicketNFT, user1, sampleURI } = await loadFixture(deployEventTicketNFTFixture);
+      const { eventTicketNFT, user1, sampleURI, MINT_TICKET_OFFSET } = await loadFixture(deployEventTicketNFTFixture);
       
       // Mint a token
       await eventTicketNFT.connect(user1).mintTicket(sampleURI);
       
-      // Token ID should be 0 for first token
-      const tokenId = 0;
+      // Token ID should be MINT_TICKET_OFFSET for first token
+      const tokenId = MINT_TICKET_OFFSET;
       
       // Check token URI was set correctly
       expect(await eventTicketNFT.tokenURI(tokenId)).to.equal(sampleURI);
     });
 
     it("Should assign the token to the sender", async function () {
-      const { eventTicketNFT, user1, sampleURI } = await loadFixture(deployEventTicketNFTFixture);
+      const { eventTicketNFT, user1, sampleURI, MINT_TICKET_OFFSET } = await loadFixture(deployEventTicketNFTFixture);
       
       // Mint a token
       await eventTicketNFT.connect(user1).mintTicket(sampleURI);
       
-      // Token ID should be 0 for first token
-      const tokenId = 0;
+      // Token ID should be MINT_TICKET_OFFSET for first token
+      const tokenId = MINT_TICKET_OFFSET;
       
       // Check token ownership
       expect(await eventTicketNFT.ownerOf(tokenId)).to.equal(user1.address);
     });
 
     it("Should emit TicketMinted event", async function () {
-      const { eventTicketNFT, user1, sampleURI } = await loadFixture(deployEventTicketNFTFixture);
+      const { eventTicketNFT, user1, sampleURI, MINT_TICKET_OFFSET } = await loadFixture(deployEventTicketNFTFixture);
       
       // Check event emission
       await expect(eventTicketNFT.connect(user1).mintTicket(sampleURI))
         .to.emit(eventTicketNFT, "TicketMinted")
-        .withArgs(user1.address, 0, sampleURI);
+        .withArgs(user1.address, MINT_TICKET_OFFSET, sampleURI);
     });
 
     it("Should return the correct token ID", async function () {
-      const { eventTicketNFT, user1, sampleURI } = await loadFixture(deployEventTicketNFTFixture);
+      const { eventTicketNFT, user1, sampleURI, MINT_TICKET_OFFSET } = await loadFixture(deployEventTicketNFTFixture);
       
       // Mint a token and capture returned ID
       const tx = await eventTicketNFT.connect(user1).mintTicket(sampleURI);
@@ -176,48 +179,67 @@ describe("EventTicketNFT", function () {
   });
 
   describe("Integration Tests", function () {
-    it("Should handle multiple mints correctly", async function () {
-      const { eventTicketNFT, deployer, user1, user2, sampleURI } = await loadFixture(deployEventTicketNFTFixture);
+    // Create a separate fixture for integration tests to avoid ID conflicts
+    async function deployIntegrationFixture() {
+      // Get signers for different roles
+      const [deployer, user1, user2] = await hre.ethers.getSigners();
+
+      // Deploy the contract
+      const EventTicketNFT = await hre.ethers.getContractFactory("EventTicketNFT");
+      const eventTicketNFT = await EventTicketNFT.deploy(deployer.address);
       
-      // User1 mints a token using mintTicket
-      await eventTicketNFT.connect(user1).mintTicket(sampleURI + "1");
+      // Sample token URI
+      const sampleURI = "ipfs://QmSampleIPFSHash";
+
+      // Constant for mintTicket offset
+      const MINT_TICKET_OFFSET = 1_000_000;
+
+      return { eventTicketNFT, deployer, user1, user2, sampleURI, MINT_TICKET_OFFSET };
+    }
+
+    it("Should handle minting from both functions separately", async function () {
+      const { eventTicketNFT, deployer, user1, user2, sampleURI, MINT_TICKET_OFFSET } = await loadFixture(deployIntegrationFixture);
       
-      // User1 mints another token using mintTicket
-      await eventTicketNFT.connect(user1).mintTicket(sampleURI + "3");
+      // Use safeMint - these use IDs starting at 0
+      const safeId1 = await eventTicketNFT.connect(deployer).safeMint(user2.address, sampleURI + "Safe1").then(tx => tx.wait());
+      const safeId2 = await eventTicketNFT.connect(deployer).safeMint(user2.address, sampleURI + "Safe2").then(tx => tx.wait());
       
-      // Owner safe mints a token to user2 (this uses a different counter)
-      await eventTicketNFT.connect(deployer).safeMint(user2.address, sampleURI + "2");
+      // Use mintTicket - these use IDs starting at MINT_TICKET_OFFSET
+      const regularId1 = await eventTicketNFT.connect(user1).mintTicket(sampleURI + "Regular1").then(tx => tx.wait());
+      const regularId2 = await eventTicketNFT.connect(user1).mintTicket(sampleURI + "Regular2").then(tx => tx.wait());
       
-      // Check ownership for mintTicket tokens
-      expect(await eventTicketNFT.ownerOf(0)).to.equal(user1.address);
-      expect(await eventTicketNFT.ownerOf(1)).to.equal(user1.address);
+      // Verify token ownership
+      expect(await eventTicketNFT.ownerOf(0)).to.equal(user2.address); // safeMint token
+      expect(await eventTicketNFT.ownerOf(1)).to.equal(user2.address); // safeMint token
+      expect(await eventTicketNFT.ownerOf(MINT_TICKET_OFFSET)).to.equal(user1.address); // mintTicket token
+      expect(await eventTicketNFT.ownerOf(MINT_TICKET_OFFSET + 1)).to.equal(user1.address); // mintTicket token
       
-      // Check ownership for safeMint token (should use s_tokenIdCounter which starts at 0)
-      expect(await eventTicketNFT.ownerOf(2)).to.equal(user2.address);
+      // Verify token URIs
+      expect(await eventTicketNFT.tokenURI(0)).to.equal(sampleURI + "Safe1");
+      expect(await eventTicketNFT.tokenURI(1)).to.equal(sampleURI + "Safe2");
+      expect(await eventTicketNFT.tokenURI(MINT_TICKET_OFFSET)).to.equal(sampleURI + "Regular1");
+      expect(await eventTicketNFT.tokenURI(MINT_TICKET_OFFSET + 1)).to.equal(sampleURI + "Regular2");
       
-      // Check token URIs
-      expect(await eventTicketNFT.tokenURI(0)).to.equal(sampleURI + "1");
-      expect(await eventTicketNFT.tokenURI(1)).to.equal(sampleURI + "3");
-      expect(await eventTicketNFT.tokenURI(2)).to.equal(sampleURI + "2");
-      
-      // Check final token counter from mintTicket
+      // Verify token counter (only affected by mintTicket)
       expect(await eventTicketNFT.getTokenCounter()).to.equal(2);
     });
 
-    it("Should track tokens separately between mintTicket and safeMint", async function () {
-      const { eventTicketNFT, deployer, user1, sampleURI } = await loadFixture(deployEventTicketNFTFixture);
+    it("Should manage token counters correctly", async function () {
+      const { eventTicketNFT, deployer, user1, sampleURI, MINT_TICKET_OFFSET } = await loadFixture(deployIntegrationFixture);
       
-      // Use mintTicket - token ID 0
-      await eventTicketNFT.connect(user1).mintTicket(sampleURI + "Regular");
+      // Use both minting functions
+      await eventTicketNFT.connect(deployer).safeMint(user1.address, sampleURI + "SafeFirst");
+      await eventTicketNFT.connect(user1).mintTicket(sampleURI + "RegularAfter");
       
-      // Use safeMint - should not conflict with mintTicket's tokens
-      await eventTicketNFT.connect(deployer).safeMint(user1.address, sampleURI + "Safe");
+      // Check token ownership - these should be in completely separate ID spaces now
+      expect(await eventTicketNFT.ownerOf(0)).to.equal(user1.address); // From safeMint
+      expect(await eventTicketNFT.ownerOf(MINT_TICKET_OFFSET)).to.equal(user1.address); // From mintTicket
       
-      // Check token URIs - safeMint should use a different ID counter
-      expect(await eventTicketNFT.tokenURI(0)).to.equal(sampleURI + "Regular");
-      expect(await eventTicketNFT.tokenURI(1)).to.equal(sampleURI + "Safe");
+      // Check token URIs
+      expect(await eventTicketNFT.tokenURI(0)).to.equal(sampleURI + "SafeFirst");
+      expect(await eventTicketNFT.tokenURI(MINT_TICKET_OFFSET)).to.equal(sampleURI + "RegularAfter");
       
-      // Only mintTicket should affect s_tokenCounter
+      // Only mintTicket affects s_tokenCounter
       expect(await eventTicketNFT.getTokenCounter()).to.equal(1);
     });
   });
