@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -53,20 +52,20 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-dark border-t border-border/50">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Logo and Description */}
           <div className="lg:col-span-2">
+            <div className='mb-2 max-w-[120px] sm:max-w-none'>
+              <Logo variant="footer" height="h-10" />
+            </div>
 
-           <div className='mb-2'>
-             <Logo variant="footer" height="h-10" />
-           </div>
-
-            <p className="text-muted-foreground mb-6 max-w-md">
+            <p className="text-muted-foreground mb-6 max-w-md text-sm sm:text-base">
               The ultimate platform for tech collaboration, connecting freelancers, 
               hosting events, and building communities in the Web3 era.
             </p>
-            <div className="flex space-x-4">
+
+            <div className="flex flex-wrap gap-3">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
@@ -85,13 +84,13 @@ const Footer = () => {
           {/* Footer Links */}
           {footerSections.map((section) => (
             <div key={section.title}>
-              <h3 className="font-semibold text-foreground mb-4">{section.title}</h3>
+              <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">{section.title}</h3>
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       to={link.href}
-                      className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+                      className="text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm sm:text-base"
                     >
                       {link.label}
                     </Link>
@@ -104,11 +103,11 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-border/50 pt-8 mt-12">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-muted-foreground text-sm mb-4 md:mb-0">
+          <div className="flex flex-col sm:flex-col md:flex-row justify-between items-center text-center gap-4">
+            <div className="text-muted-foreground text-sm">
               © {currentYear} W3nity. All rights reserved.
             </div>
-            <div className="flex items-center space-x-6 text-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-sm">
               <span className="text-muted-foreground">Built with ❤️ for Hack With Gujarat</span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
