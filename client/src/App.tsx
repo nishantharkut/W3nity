@@ -27,78 +27,91 @@ import PaymentPage from "./pages/PaymentPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentCancelPage from "./pages/PaymentCancelPage";
 import PaymentSuccessNFT from "./pages/PaymentSuccessNFT";
+import { useAuthState } from "@/hooks/useAuth";
+import { useEffect } from "react";
+import { registerUserForNotifications } from "@/socket";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+const App = () => {
+  const { isAuthenticated, user } = useAuthState();
 
-            {/* Main app routes with navbar/footer */}
-            <Route
-              path="/*"
-              element={
-                <>
-                  <Navbar />
-                  <main className="flex-1">
-                    <div className="container mx-auto px-4 py-6">
-                      <Breadcrumbs />
-                      <Routes>
-                      <Route path="/" element={<Index />} />
-                        <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/freelance" element={<FreelancePage />} />
-                        <Route
-                          path="/freelance/create"
-                          element={<CreateGigPage />}
-                        />
-                        <Route path="/gig/:id" element={<GigDetailsPage />} />
-                        <Route
-                          path="/gig/:id/proposal"
-                          element={<ProposalPage />}
-                        />
-                        <Route path="/events" element={<EventsPage />} />
-                        <Route
-                          path="/events/create"
-                          element={<CreateEventPage />}
-                        />
-                        <Route
-                          path="/event/:id"
-                          element={<EventDetailsPage />}
-                        />
-                        <Route path="/community" element={<CommunityPage />} />
-                        <Route path="/community/:id" element={<ChatInterface />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route
-                          path="/notifications"
-                          element={<NotificationsPage />}
-                        />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/payment/:type/:id" element={<PaymentPage/>}/>
-                        <Route path="/payment/success" element={<PaymentSuccessPage/>}/>
-                        <Route path="/payment/cancel" element={<PaymentCancelPage/>}/>
-                        <Route path="/NFTpayment/success" element={<PaymentSuccessNFT/>}/>
+  useEffect(() => {
+    if (isAuthenticated && user?._id) {
+      registerUserForNotifications(user._id);
+    }
+  }, [isAuthenticated, user]);
 
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </div>
-                  </main>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col">
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
-                  <Footer />
-                </>
-              }
-            />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+              {/* Main app routes with navbar/footer */}
+              <Route
+                path="/*"
+                element={
+                  <>
+                    <Navbar />
+                    <main className="flex-1">
+                      <div className="container mx-auto px-4 py-6">
+                        <Breadcrumbs />
+                        <Routes>
+                        <Route path="/" element={<Index />} />
+                          <Route path="/dashboard" element={<DashboardPage />} />
+                          <Route path="/freelance" element={<FreelancePage />} />
+                          <Route
+                            path="/freelance/create"
+                            element={<CreateGigPage />}
+                          />
+                          <Route path="/gig/:id" element={<GigDetailsPage />} />
+                          <Route
+                            path="/gig/:id/proposal"
+                            element={<ProposalPage />}
+                          />
+                          <Route path="/events" element={<EventsPage />} />
+                          <Route
+                            path="/events/create"
+                            element={<CreateEventPage />}
+                          />
+                          <Route
+                            path="/event/:id"
+                            element={<EventDetailsPage />}
+                          />
+                          <Route path="/community" element={<CommunityPage />} />
+                          <Route path="/community/:id" element={<ChatInterface />} />
+                          <Route path="/profile" element={<ProfilePage />} />
+                          <Route
+                            path="/notifications"
+                            element={<NotificationsPage />}
+                          />
+                          <Route path="/settings" element={<SettingsPage />} />
+                          <Route path="/payment/:type/:id" element={<PaymentPage/>}/>
+                          <Route path="/payment/success" element={<PaymentSuccessPage/>}/>
+                          <Route path="/payment/cancel" element={<PaymentCancelPage/>}/>
+                          <Route path="/NFTpayment/success" element={<PaymentSuccessNFT/>}/>
+
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </div>
+                    </main>
+
+                    <Footer />
+                  </>
+                }
+              />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

@@ -1,8 +1,11 @@
 const Group = require('./models/Group.js');
 const Message = require('./models/Message.js');
+const Notification = require('./models/Notification');
+const notificationService = require('./services/notificationService');
 
 module.exports = (io) => {
   const activeUsersByGroup = {};
+  const userSocketMap = {};
 
   io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
@@ -83,8 +86,28 @@ module.exports = (io) => {
 
         // Emit the new message to all group members
         io.to(groupId).emit('newMessage', { groupId, message });
+
+        // Notify all group members except sender
+        const memberIds = group.members?.map(m => m.toString()) || [];
+        await Promise.all(memberIds.filter(id => id !== sender._id).map(userId =>
+          notificationService.createAndSendNotification({
+            userId,
+            type: 'message',
+            title: `New message in group ${group.name}`,
+            message: `${sender.username}: ${text.substring(0, 50)}`,
+            sourceId: groupId,
+            actionUrl: `/community/${groupId}`
+          })
+        ));
       } catch (err) {
         console.error('Error sending message:', err);
+      }
+    });
+
+    // Track userId <-> socket.id mapping for notifications
+    socket.on('registerUser', (userId) => {
+      if (userId) {
+        userSocketMap[userId] = socket.id;
       }
     });
 
@@ -109,6 +132,20 @@ module.exports = (io) => {
           );
         }
       }
+      // Remove from userSocketMap
+      for (const userId in userSocketMap) {
+        if (userSocketMap[userId] === socket.id) {
+          delete userSocketMap[userId];
+        }
+      }
     });
   });
+
+  // Helper to emit notification to a user
+  io.sendNotificationToUser = (userId, notification) => {
+    const socketId = userSocketMap[userId];
+    if (socketId) {
+      io.to(socketId).emit('notification', notification);
+    }
+  };
 };

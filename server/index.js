@@ -16,6 +16,8 @@ const { Server } = require('socket.io');
 const groupRoutes= require("./routes/groupRoutes.js")
 const proposalRoutes = require("./routes/proposalRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
+const notificationRoutes = require("./routes/notificationRoutes.js");
+const notificationService = require('./services/notificationService');
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -25,6 +27,7 @@ const io = new Server(server, {
   }
 });
 require('./socket.js')(io);
+notificationService.setSocketIoInstance(io);
 connectDB();
 app.use(cors());
 app.use(express.json());
@@ -38,6 +41,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/groups", groupRoutes)
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/notifications", notificationRoutes);
 const PORT= process.env.PORT || 3000;
 
 server.listen(PORT, () => {
