@@ -1,5 +1,7 @@
 const Gig = require("../models/Gig");
 const mongoose = require("mongoose");
+const notificationService = require('../services/notificationService');
+const User = require('../models/User');
 
 exports.createGig = async (req, res) => {
   try {
@@ -13,6 +15,18 @@ exports.createGig = async (req, res) => {
     console.log(gig)
 
     await gig.save();
+
+    // Notify all users (for demo; in production, filter by category/followers)
+    const users = await User.find();
+    await Promise.all(users.map(user => notificationService.createAndSendNotification({
+      userId: user._id,
+      type: 'gig',
+      title: 'New Gig Posted',
+      message: `A new gig "${gig.title}" has been posted!`,
+      sourceId: gig._id,
+      actionUrl: `/gig/${gig._id}`
+    })));
+
     return res.status(201).json(gig);
   } catch (err) {
     return res.status(400).json({ message: err.message });
