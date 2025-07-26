@@ -23,6 +23,11 @@ contract EventTicketNFT is ERC721URIStorage, Ownable {
         uint256 indexed tokenId,
         string tokenURI
     );
+    
+    // === Custom Errors ===
+    error EventTicketNFT__InvalidOwnerAddress();
+    error EventTicketNFT__InvalidRecipientAddress();
+    error EventTicketNFT__EmptyTokenURI();
 
     /**
      * @dev Contract constructor
@@ -32,7 +37,9 @@ contract EventTicketNFT is ERC721URIStorage, Ownable {
         ERC721("Event Ticket", "ETIX")
         Ownable() // ✅ Fixed: no arguments allowed in OZ v4
     {
-        require(initialOwner != address(0), "Invalid owner address");
+        if (initialOwner == address(0)) {
+            revert EventTicketNFT__InvalidOwnerAddress();
+        }
         transferOwnership(initialOwner); // ✅ Set the real owner
         s_tokenCounter = 0;
     }
@@ -43,6 +50,10 @@ contract EventTicketNFT is ERC721URIStorage, Ownable {
      * @return newTokenId The ID of the newly minted ticket
      */
     function mintTicket(string memory tokenURI) public returns (uint256) {
+        if (bytes(tokenURI).length == 0) {
+            revert EventTicketNFT__EmptyTokenURI();
+        }
+        
         uint256 newTokenId = s_tokenCounter;
         
         _safeMint(msg.sender, newTokenId);
@@ -61,7 +72,13 @@ contract EventTicketNFT is ERC721URIStorage, Ownable {
      * @param uri The metadata URI for this ticket
      */
     function safeMint(address to, string memory uri) public onlyOwner {
-        require(to != address(0), "Invalid recipient address");
+        if (to == address(0)) {
+            revert EventTicketNFT__InvalidRecipientAddress();
+        }
+        
+        if (bytes(uri).length == 0) {
+            revert EventTicketNFT__EmptyTokenURI();
+        }
         
         uint256 tokenId = s_tokenIdCounter.current();
         s_tokenIdCounter.increment();

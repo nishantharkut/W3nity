@@ -14,17 +14,25 @@ contract Lock {
     // === Events ===
     event Withdrawal(uint256 amount, uint256 when);
     event Deposit(address indexed from, uint256 amount);
+    
+    // === Custom Errors ===
+    error Lock__UnlockTimeNotInFuture();
+    error Lock__NoFundsProvided();
+    error Lock__WithdrawalTooEarly(uint256 currentTime, uint256 unlockTime);
+    error Lock__NotOwner(address caller, address owner);
+    error Lock__TransferFailed();
 
     /**
      * @dev Contract constructor
      * @param _unlockTime Unix timestamp when funds will be unlockable
      */
     constructor(uint256 _unlockTime) payable {
-        require(
-            block.timestamp < _unlockTime,
-            "Unlock time should be in the future"
-        );
-        require(msg.value > 0, "Must deposit some funds");
+        if (block.timestamp >= _unlockTime) {
+            revert Lock__UnlockTimeNotInFuture();
+        }
+        if (msg.value <= 0) {
+            revert Lock__NoFundsProvided();
+        }
 
         i_unlockTime = _unlockTime;
         i_owner = payable(msg.sender);
@@ -47,8 +55,12 @@ contract Lock {
      */
     function withdraw() external {
         // Check conditions
-        require(block.timestamp >= i_unlockTime, "You can't withdraw yet");
-        require(msg.sender == i_owner, "You aren't the owner");
+        if (block.timestamp < i_unlockTime) {
+            revert Lock__WithdrawalTooEarly(block.timestamp, i_unlockTime);
+        }
+        if (msg.sender != i_owner) {
+            revert Lock__NotOwner(msg.sender, i_owner);
+        }
         
         uint256 amount = address(this).balance;
         
@@ -57,7 +69,9 @@ contract Lock {
 
         // Transfer funds
         (bool success, ) = i_owner.call{value: amount}("");
-        require(success, "Transfer failed");
+        if (!success) {
+            revert Lock__TransferFailed();
+        }
     }
 
     /**
