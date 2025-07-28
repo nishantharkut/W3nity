@@ -96,7 +96,8 @@ const Navbar = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="pl-1 sm:pl-14">
+
+           <div className="pl-1 sm:pl-14">
              <Logo variant="navbar" height="h-24" />
            </div>
 
