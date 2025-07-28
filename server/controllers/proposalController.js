@@ -1,5 +1,6 @@
 const Proposal = require("../models/Proposal");
 const Gig = require("../models/Gig");
+const notificationService = require('../services/notificationService');
 
 exports.createProposalWithEscrow = async (req, res) => {
   try {
@@ -34,6 +35,24 @@ exports.createProposalWithEscrow = async (req, res) => {
 
     gig.proposals.push(proposal._id);
     await gig.save();
+
+    await notificationService.createAndSendNotification({
+      userId: gig.createdBy.toString(),
+      type: 'gig',
+      title: 'New Proposal Received',
+      message: `You received a new proposal for your gig '${gig.title}'.`,
+      sourceId: gig._id,
+      actionUrl: `/gig/${gig._id}`
+    });
+    // Notify proposal creator (for demo)
+    await notificationService.createAndSendNotification({
+      userId: userId,
+      type: 'gig',
+      title: 'Proposal Submitted',
+      message: `Your proposal for gig '${gig.title}' has been submitted.`,
+      sourceId: gig._id,
+      actionUrl: `/gig/${gig._id}`
+    });
 
     return res.status(201).json(proposal);
   } catch (err) {
