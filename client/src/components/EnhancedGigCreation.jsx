@@ -44,12 +44,12 @@ const EnhancedGigCreation = () => {
   console.log(token)
 
   const categories = [
-    'ai-ml',
-    'app-development',
-    'data-science',
-    'design',
-    'web-development',
-    'other',
+    { value: 'ai-ml', label: 'AI & Machine Learning' },
+    { value: 'app-development', label: 'App Development' },
+    { value: 'data-science', label: 'Data Science' },
+    { value: 'design', label: 'Design' },
+    { value: 'web-development', label: 'Web Development' },
+    { value: 'other', label: 'Other' },
   ];
 
   const popularSkills = [
@@ -109,6 +109,9 @@ const EnhancedGigCreation = () => {
       deliverables,
       attachments
     };
+    
+    console.log('Submitting gig with category:', category);
+    console.log('Full payload:', payload);
   
     try {
       const token = JSON.parse(localStorage.getItem('sparkverse-auth') || '{}')?.token;
@@ -181,16 +184,26 @@ const EnhancedGigCreation = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Category</label>
-                  <Select value={gigData.category} onValueChange={(value) => setGigData(prev => ({ ...prev, category: value }))}>
+                  <Select value={gigData.category} onValueChange={(value) => {
+                    console.log('Category selected:', value);
+                    setGigData(prev => ({ ...prev, category: value }));
+                  }}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  {gigData.category && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Selected: {categories.find(cat => cat.value === gigData.category)?.label || gigData.category}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -205,7 +218,10 @@ const EnhancedGigCreation = () => {
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={() => setStep(2)}
+                    onClick={() => {
+                      console.log('Current gigData:', gigData);
+                      setStep(2);
+                    }}
                     disabled={!gigData.title || !gigData.category || !gigData.description}
                     className="glow-button"
                   >
@@ -339,8 +355,8 @@ const EnhancedGigCreation = () => {
                     </label>
                     <Input
                       type="number"
-                      value={gigData.budgetMin}
-                      onChange={(e) => setGigData(prev => ({ ...prev, budgetMin: e.target.value }))}
+                      value={gigData.minBudget}
+                      onChange={(e) => setGigData(prev => ({ ...prev, minBudget: e.target.value }))}
                       placeholder="1000"
                     />
                   </div>
@@ -350,8 +366,8 @@ const EnhancedGigCreation = () => {
                     </label>
                     <Input
                       type="number"
-                      value={gigData.budgetMax}
-                      onChange={(e) => setGigData(prev => ({ ...prev, budgetMax: e.target.value }))}
+                      value={gigData.maxBudget}
+                      onChange={(e) => setGigData(prev => ({ ...prev, maxBudget: e.target.value }))}
                       placeholder="5000"
                     />
                   </div>
@@ -395,7 +411,7 @@ const EnhancedGigCreation = () => {
                   </Button>
                   <Button
                     onClick={() => setStep(4)}
-                    disabled={!gigData.budgetMin || !gigData.budgetMax || !gigData.duration}
+                    disabled={!gigData.minBudget || !gigData.maxBudget || !gigData.duration}
                     className="glow-button"
                   >
                     Continue
@@ -436,7 +452,7 @@ const EnhancedGigCreation = () => {
                       <strong>Category:</strong> {gigData.category}
                     </div>
                     <div>
-                      <strong>Budget:</strong> ${gigData.budgetMin} - ${gigData.budgetMax} ({gigData.budgetType})
+                      <strong>Budget:</strong> ${gigData.minBudget} - ${gigData.maxBudget} ({gigData.budgetType})
                     </div>
                     <div>
                       <strong>Duration:</strong> {gigData.duration}
