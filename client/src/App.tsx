@@ -30,6 +30,7 @@ import PaymentSuccessNFT from "./pages/PaymentSuccessNFT";
 import { useAuthState } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { registerUserForNotifications } from "@/socket";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <ScrollToTop/>
           <div className="min-h-screen flex flex-col">
             <Routes>
               <Route path="/login" element={<LoginPage />} />
