@@ -1,6 +1,7 @@
 const Proposal = require("../models/Proposal");
 const Gig = require("../models/Gig");
 const notificationService = require('../services/notificationService');
+const logActivity = require('../utils/logActivity');
 
 exports.createProposalWithEscrow = async (req, res) => {
   try {
@@ -27,7 +28,12 @@ exports.createProposalWithEscrow = async (req, res) => {
       escrowAddress,
       status: "Pending",
     });
-
+await logActivity({
+  userId: gig.createdBy.toString(),
+  actionTitle: "New proposal received",
+  context: gig.title,
+  status: "pending"
+});
     // Ensure gig.proposals is an array
     if (!Array.isArray(gig.proposals)) {
       gig.proposals = [];

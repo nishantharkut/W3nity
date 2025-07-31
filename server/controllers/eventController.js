@@ -1,12 +1,19 @@
 const Event =require("../models/Event.js")
 const notificationService = require('../services/notificationService');
 const User = require('../models/User');
-
+const logActivity = require('../utils/logActivity');
 
 exports.createEvent = async (req, res) => {
   try {
     const event = new Event(req.body);
     await event.save();
+    await logActivity({
+  userId: event.organizer.toString(),
+  actionTitle: "Event created",
+  context: event.title,
+  status: "upcoming"
+});
+
     const populatedEvent = await Event.findById(event._id).populate("organizer");
     // Notify all users (for demo; in production, filter by area)
     const users = await User.find();
@@ -27,6 +34,13 @@ exports.createEvent = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate("organizer");
+    await logActivity({
+  userId: event.organizer.toString(),
+  actionTitle: "Event updated",
+  context: event.title,
+  status: "upcoming"
+});
+
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
     }

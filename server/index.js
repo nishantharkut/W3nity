@@ -18,6 +18,7 @@ const proposalRoutes = require("./routes/proposalRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
 const notificationRoutes = require("./routes/notificationRoutes.js");
 const notificationService = require('./services/notificationService');
+const dashboardRoutes = require("./routes/dashboardRoutes");
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -42,6 +43,7 @@ app.use("/api/groups", groupRoutes)
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 const PORT= process.env.PORT || 3000;
 
 server.listen(PORT, () => {
