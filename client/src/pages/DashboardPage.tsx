@@ -57,17 +57,61 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [completedProjects, setCompletedProjects] = useState(12);
-  const [totalEarnings, setTotalEarnings] = useState(15420);
+  const [completedProjects, setCompletedProjects] = useState("");
+  const [totalEarnings, setTotalEarnings] = useState("");
   // const [portfolioProjects, setPortfolioProjects] = useState<Project[]>([]);
-  const [activeProjects, setActiveProjects] = useState([]);
+  const [activeProjects, setActiveProjects] = useState("");
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [showAllEvents, setShowAllEvents] = useState(false);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [network, setNetwork] = useState("");
+  const [changeStats, setChangeStats] = useState({
+    projectChange: 0,
+    earningsChange: 0,
+    successRate: 0,
+    newConnections: 0,
+  });
+  const [performance, setPerformance] = useState({
+    successRate: 0,
+    clientSatisfaction: 0,
+    responseTime: 0,
+  });
+
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/dashboard/${user._id}`
+        );
+        const data = await res.json();
+
+        setActiveProjects(data.activeProjects);
+        setCompletedProjects(data.completedProjects);
+        setTotalEarnings(data.totalEarnings);
+        setNetwork(data.network);
+        setRecentActivities(data.recentActivities);
+        setChangeStats(data.changeStats);
+        setPerformance(data.performance);
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?._id) {
+      fetchDashboardStats();
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const eventsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
+        const eventsRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/events`
+        );
 
         const eventsData = await eventsRes.json();
         const sortedEvents = eventsData.sort(
@@ -102,17 +146,21 @@ const DashboardPage = () => {
   const quickStats = [
     {
       title: "Active Projects",
-      value: 4,
+      value: activeProjects,
       icon: Briefcase,
-      change: "+2 this week",
+      change: `${changeStats.projectChange >= 0 ? "+" : ""}${
+        changeStats.projectChange
+      } this week`,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
     },
     {
       title: "Total Earnings",
-      value: `$${totalEarnings.toLocaleString()}`,
+      value: `$${Number(totalEarnings).toLocaleString()}`,
       icon: DollarSign,
-      change: "+$2,400 this month",
+      change: `${
+        changeStats.earningsChange >= 0 ? "+" : ""
+      }$${changeStats.earningsChange.toLocaleString()} this month`,
       color: "text-green-600",
       bgColor: "bg-green-50",
     },
@@ -120,44 +168,17 @@ const DashboardPage = () => {
       title: "Completed",
       value: completedProjects,
       icon: CheckCircle,
-      change: "98% success rate",
+      change: `${changeStats.successRate}% success rate`,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
     },
     {
       title: "Network",
-      value: "847",
+      value: network,
       icon: Users,
-      change: "+23 connections",
+      change: `+${changeStats.newConnections} connections`,
       color: "text-orange-600",
       bgColor: "bg-orange-50",
-    },
-  ];
-
-  const recentActivities = [
-    {
-      action: "New proposal received",
-      project: "React Dashboard",
-      time: "2 hours ago",
-      status: "pending",
-    },
-    {
-      action: "Project completed",
-      project: "Mobile App UI",
-      time: "1 day ago",
-      status: "completed",
-    },
-    {
-      action: "Event registered",
-      project: "Tech Meetup 2024",
-      time: "2 days ago",
-      status: "upcoming",
-    },
-    {
-      action: "Community post liked",
-      project: "Web3 Discussion",
-      time: "3 days ago",
-      status: "active",
     },
   ];
 
@@ -280,8 +301,6 @@ const DashboardPage = () => {
       </motion.div>
 
       {/* Wallet Connection */}
-
-      {/* Quick Stats */}
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         initial={{ opacity: 0, y: 40 }}
@@ -290,12 +309,12 @@ const DashboardPage = () => {
       >
         {quickStats.map((stat, index) => (
           <motion.div
+            key={index}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 + index * 0.1 }}
           >
             <Card
-              key={index}
               className="hover:shadow-lg transition-shadow cursor-pointer"
               onClick={handleViewProfile}
             >
@@ -325,7 +344,7 @@ const DashboardPage = () => {
         className="grid grid-cols-1 lg:grid-cols-3 gap-8"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay:0.4 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
       >
         {/* Left Column */}
         <motion.div
@@ -410,9 +429,9 @@ const DashboardPage = () => {
                     onClick={handleViewNotifications}
                   >
                     <div className="flex-1">
-                      <p className="font-medium">{activity.action}</p>
+                      <p className="font-medium">{activity.actionTitle}</p>
                       <p className="text-sm text-muted-foreground">
-                        {activity.project}
+                        {activity.context}
                       </p>
                     </div>
                     <div className="text-right">
@@ -457,25 +476,31 @@ const DashboardPage = () => {
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span>Project Success Rate</span>
-                  <span>98%</span>
+                  <span>{performance.successRate}%</span>
                 </div>
-                <Progress value={98} className="h-2" />
+                <Progress value={performance.successRate} className="h-2" />
               </div>
 
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span>Client Satisfaction</span>
-                  <span>4.9/5</span>
+                  <span>{performance.clientSatisfaction}/5</span>
                 </div>
-                <Progress value={98} className="h-2" />
+                <Progress
+                  value={(performance.clientSatisfaction / 5) * 100}
+                  className="h-2"
+                />
               </div>
 
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span>Response Time</span>
-                  <span>&lt; 2hrs</span>
+                  <span>{performance.responseTime}&nbsp;hrs</span>
                 </div>
-                <Progress value={95} className="h-2" />
+                <Progress
+                  value={Math.max(0, 100 - performance.responseTime * 10)}
+                  className="h-2"
+                />
               </div>
 
               <Button

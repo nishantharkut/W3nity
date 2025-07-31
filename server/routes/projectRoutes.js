@@ -2,6 +2,7 @@ const express=require("express")
 const router=express.Router();
 const Project=require("../models/Project.js")
 const authMiddleware= require("../middlewares/authMiddleware.js")
+const logActivity = require("../utils/logActivity.js");
 
 
 router.get("/:id", async (req, res) => {
@@ -40,6 +41,12 @@ router.post("/", authMiddleware,async (req, res) => {
   try {
     const savedProject = await project.save();
     console.log(savedProject)
+    await logActivity({
+      userId: req.user._id,
+      actionTitle: `New Project Created: ${title}`,
+      context: "Project Management",
+      status: "completed",
+    });
     return res.status(201).json(savedProject);
   } catch (err) {
     res.status(400).json({ message: err.message });
