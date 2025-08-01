@@ -30,13 +30,13 @@ describe("Lock", function () {
     it("Should set the right unlockTime", async function () {
       const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
 
-      expect(await lock.unlockTime()).to.equal(unlockTime);
+      expect(await lock.i_unlockTime()).to.equal(unlockTime);
     });
 
     it("Should set the right owner", async function () {
       const { lock, owner } = await loadFixture(deployOneYearLockFixture);
 
-      expect(await lock.owner()).to.equal(owner.address);
+      expect(await lock.i_owner()).to.equal(owner.address);
     });
 
     it("Should receive and store the funds to lock", async function () {
@@ -53,9 +53,8 @@ describe("Lock", function () {
       // We don't use the fixture here because we want a different deployment
       const latestTime = await time.latest();
       const Lock = await hre.ethers.getContractFactory("Lock");
-      await expect(Lock.deploy(latestTime, { value: 1 })).to.be.revertedWith(
-        "Unlock time should be in the future"
-      );
+      await expect(Lock.deploy(latestTime, { value: 1 }))
+        .to.be.revertedWithCustomError(Lock, "Lock__UnlockTimeNotInFuture");
     });
   });
 
@@ -64,9 +63,8 @@ describe("Lock", function () {
       it("Should revert with the right error if called too soon", async function () {
         const { lock } = await loadFixture(deployOneYearLockFixture);
 
-        await expect(lock.withdraw()).to.be.revertedWith(
-          "You can't withdraw yet"
-        );
+        await expect(lock.withdraw())
+          .to.be.revertedWithCustomError(lock, "Lock__WithdrawalTooEarly");
       });
 
       it("Should revert with the right error if called from another account", async function () {
@@ -78,9 +76,8 @@ describe("Lock", function () {
         await time.increaseTo(unlockTime);
 
         // We use lock.connect() to send a transaction from another account
-        await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWith(
-          "You aren't the owner"
-        );
+        await expect(lock.connect(otherAccount).withdraw())
+          .to.be.revertedWithCustomError(lock, "Lock__NotOwner");
       });
 
       it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
@@ -121,6 +118,31 @@ describe("Lock", function () {
           [owner, lock],
           [lockedAmount, -lockedAmount]
         );
+      });
+    });
+
+    describe("Additional Functions", function () {
+      it("Should return the correct balance", async function () {
+        const { lock, lockedAmount } = await loadFixture(deployOneYearLockFixture);
+        expect(await lock.getBalance()).to.equal(lockedAmount);
+      });
+
+      it("Should return correct time remaining", async function () {
+        const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+        const currentTime = await time.latest();
+        const expectedTimeRemaining = unlockTime - currentTime;
+        
+        // Small tolerance for execution time differences
+        const actualTimeRemaining = await lock.getTimeRemaining();
+        expect(actualTimeRemaining).to.be.closeTo(BigInt(expectedTimeRemaining), 5n);
+      });
+
+      it("Should return zero time remaining after unlock time", async function () {
+        const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+        
+        await time.increaseTo(unlockTime + 1);
+        
+        expect(await lock.getTimeRemaining()).to.equal(0);
       });
     });
   });
