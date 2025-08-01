@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 
 import {
   Briefcase,
@@ -22,6 +23,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
   const [featuredGigs, setFeaturedGigs] = useState<Gig[]>([]);
+  const [resetKey, setResetKey] = useState(0);
 
   const [events, setEvents] = useState([]); // will store fetched events
   const [gigs, setGigs] = useState([]); // will store fetched events
@@ -52,10 +54,10 @@ const Index = () => {
   ];
 
   const stats = [
-    { label: "Active Freelancers", value: "50K+", icon: Users },
-    { label: "Projects Completed", value: "25K+", icon: Briefcase },
-    { label: "Events Hosted", value: "1.2K+", icon: Calendar },
-    { label: "Community Members", value: "100K+", icon: Globe },
+    { label: "Active Freelancers", value: 50000, icon: Users, suffix: "+" },
+    { label: "Projects Completed", value: 25000, icon: Briefcase, suffix: "+" },
+    { label: "Events Hosted", value: 1200, icon: Calendar, suffix: "+" },
+    { label: "Community Members", value: 100000, icon: Globe, suffix: "+" },
   ];
 
   const benefits = [
@@ -76,6 +78,21 @@ const Index = () => {
         "Build your reputation and grow your network in the tech community.",
     },
   ];
+
+  // Reset counters on scroll to top or page refresh
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY < 100) {
+        setResetKey(prev => prev + 1);
+      }
+    };
+
+    // Reset on page load/refresh
+    setResetKey(prev => prev + 1);
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -227,20 +244,17 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="flex justify-center mb-2">
-                    <Icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <div className="text-3xl font-bold text-gradient">
-                    {stat.value}
-                  </div>
-                  <div className="text-muted-foreground">{stat.label}</div>
-                </div>
-              );
-            })}
+            {stats.map((stat, index) => (
+              <AnimatedCounter
+                key={`${resetKey}-${index}`}
+                label={stat.label}
+                value={stat.value}
+                icon={stat.icon}
+                suffix={stat.suffix}
+                duration={2500}
+                delay={index * 200}
+              />
+            ))}
           </motion.div>
         </div>
       </section>

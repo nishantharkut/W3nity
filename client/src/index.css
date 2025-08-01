@@ -120,6 +120,10 @@
     animation: slideUp 0.8s ease-out 0.2s both;
   }
 
+  .counter-pulse {
+    animation: counterPulse 0.5s ease-out;
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -139,6 +143,18 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes counterPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
     }
   }
 
