@@ -1,6 +1,6 @@
 
 export interface User {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   avatar?: string;
@@ -12,10 +12,20 @@ export interface User {
   isVerified: boolean;
   joinedAt: Date;
   location?: string;
+  role: 'freelancer' | 'client' | 'organizer';
+  fullName?: string;
+  socialLinks?: string[];
+  portfolioUrl?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  hourlyRate?: number;
+  companyName?: string;
+  clientSince?: Date;
 }
 
 export interface Gig {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   budget: {
@@ -25,6 +35,10 @@ export interface Gig {
     type?: 'fixed' | 'hourly';
   };
   skills: string[];
+  minBudget: number;
+maxBudget: number;
+
+  budgetType: String,
   client: {
     id: string;
     username: string;
@@ -36,6 +50,14 @@ export interface Gig {
   category: string;
   duration: string;
   experienceLevel: 'entry' | 'intermediate' | 'expert';
+    createdBy:{
+    id: string;
+    username: string;
+    rating: number;
+    reviewCount: number;
+    isVerified: boolean;
+    avatar?: string;
+  }
   postedAt: Date;
   createdAt: Date;
   deadline: Date;
@@ -46,7 +68,7 @@ export interface Gig {
 }
 
 export interface Event {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   startDate: Date;
@@ -75,7 +97,7 @@ export interface Event {
 }
 
 export interface ChatMessage {
-  id: string;
+  _id: string;
   userId: string;
   username: string;
   avatar?: string;
@@ -85,7 +107,7 @@ export interface ChatMessage {
 }
 
 export interface ChatRoom {
-  id: string;
+  _id: string;
   name: string;
   description?: string;
   type: 'public' | 'private';
@@ -97,7 +119,7 @@ export interface ChatRoom {
 }
 
 export interface Proposal {
-  id: string;
+  _id: string;
   gigId: string;
   freelancerId: string;
   coverLetter: string;
@@ -119,7 +141,7 @@ export interface Review {
 }
 
 export interface Notification {
-  id: string;
+  _id: string;
   userId: string;
   type: 'message' | 'proposal' | 'payment' | 'system';
   title: string;

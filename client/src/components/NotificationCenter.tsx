@@ -22,7 +22,7 @@ import { socket } from '@/socket';
 import { useAuthState } from '@/hooks/useAuth';
 
 interface Notification {
-  id: string;
+  _id: string;
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
@@ -40,7 +40,7 @@ interface NotificationCenterProps {
 const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose }) => {
   const [notifications, setNotifications] = useState<Notification[]>([
     {
-      id: '1',
+      _id: '1',
       title: 'New Gig Proposal',
       message: 'You received a proposal for your React development project',
       type: 'info',
@@ -50,7 +50,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
       actionUrl: '/gig/1'
     },
     {
-      id: '2',
+      _id: '2',
       title: 'Event Reminder',
       message: 'Tech meetup starts in 1 hour',
       type: 'warning',
@@ -60,7 +60,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
       actionUrl: '/event/1'
     },
     {
-      id: '3',
+      _id: '3',
       title: 'Profile Updated',
       message: 'Your profile has been successfully updated',
       type: 'success',
@@ -76,7 +76,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
   const playNotificationSound = () => {
     if (!soundEnabled) return;
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = new (window.AudioContext || window.AudioContext)();
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.type = 'sine';

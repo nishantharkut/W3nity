@@ -214,6 +214,7 @@ const EventCard = ({ event, onViewDetails, onRegister }: EventCardProps) => {
               {event.price > 0 ? 'Buy Ticket' : 'Register Free'}
             </Button>
           )}
+          
           {isLive && (
             <Button className="flex-1 glow-button">
               Join Now

@@ -14,12 +14,18 @@ const EditProfileModal: React.FC<Props> = ({ user, onClose, onSave }) => {
     setFormData(user);
   }, [user]);
 
-  const handleChange = (
+ const handleChange = (
   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
 ) => {
-  const { name, value, type, checked } = e.target;
+  const { name, value, type } = e.target;
 
-  if (name === "skills" || name === "socialLinks") {
+  if (type === "checkbox" && e.target instanceof HTMLInputElement) {
+    const { checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: checked,
+    });
+  } else if (name === "skills" || name === "socialLinks") {
     setFormData({
       ...formData,
       [name]: value.split(",").map((item) => item.trim()),
@@ -28,11 +34,6 @@ const EditProfileModal: React.FC<Props> = ({ user, onClose, onSave }) => {
     setFormData({
       ...formData,
       [name]: Number(value),
-    });
-  } else if (type === "checkbox") {
-    setFormData({
-      ...formData,
-      [name]: checked,
     });
   } else {
     setFormData({
