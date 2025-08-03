@@ -186,8 +186,8 @@ const CommunityPage = () => {
           Last active: {new Date(group.lastActivity).toLocaleDateString()}
         </div>
 
-        {user && (user._id || user.id) ? (
-          group.members.some((m: any) => m?._id === (user._id || user.id)) ? (
+        {user && (user._id || user._id) ? (
+          group.members.some((m: any) => m?._id === (user._id || user._id)) ? (
             <div className="flex gap-2">
               <Button variant="secondary" disabled className="w-full">
                 <Users className="w-4 h-4 mr-2" /> Joined
@@ -210,7 +210,7 @@ const CommunityPage = () => {
                   "Joining group with ID:",
                   group._id,
                   "as user",
-                  user._id || user.id
+                  user._id
                 );
                 handleJoinGroup(group._id);
               }}

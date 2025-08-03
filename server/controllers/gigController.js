@@ -19,7 +19,7 @@ exports.createGig = async (req, res) => {
     // Notify all users (for demo; in production, filter by category/followers)
     const users = await User.find();
     await Promise.all(users.map(user => notificationService.createAndSendNotification({
-      userId: user._id,
+      userId: new mongoose.Types.ObjectId(user._id),
       type: 'gig',
       title: 'New Gig Posted',
       message: `A new gig "${gig.title}" has been posted!`,

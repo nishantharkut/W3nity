@@ -7,17 +7,26 @@ exports.setSocketIoInstance = (io) => {
 };
 
 // Create and deliver a notification
+const mongoose = require('mongoose');
+
 exports.createAndSendNotification = async (data) => {
   try {
-    console.log('Creating notification:', data);
-    const notification = new Notification(data);
+    if (!data.userId) throw new Error("userId is required");
+    
+    const notification = new Notification({
+      ...data,
+      userId: new mongoose.Types.ObjectId(data.userId) // ✅ Enforce ObjectId
+    });
+
     await notification.save();
+
     if (ioInstance && ioInstance.sendNotificationToUser) {
       ioInstance.sendNotificationToUser(data.userId.toString(), notification);
     }
+
     return notification;
   } catch (err) {
     console.error('Error creating notification:', err);
     throw err;
   }
-}; 
+};

@@ -358,9 +358,9 @@ const Index = () => {
                 transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
               >
                 <Card
-                  key={gig.id}
+                  key={gig._id}
                   className="glass-effect card-hover cursor-pointer"
-                  onClick={() => navigate(`/gig/${gig.id}`)}
+                  onClick={() => navigate(`/gig/${gig._id}`)}
                 >
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
@@ -431,9 +431,9 @@ const Index = () => {
 
               return (
                 <Card
-                  key={event.id}
+                  key={event._id}
                   className="glass-effect card-hover cursor-pointer"
-                  onClick={() => navigate(`/event/${event.id}`)}
+                  onClick={() => navigate(`/event/${event._id}`)}
                 >
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
@@ -461,7 +461,7 @@ const Index = () => {
                       className="w-full mt-4"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/event/${event.id}`);
+                        navigate(`/event/${event._id}`);
                       }}
                     >
                       Register Now
