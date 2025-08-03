@@ -222,7 +222,7 @@ const FreelancePage = () => {
         }}
       >
         <Card className="glass-effect border-2 border-primary/10">
-          <CardHeader asChild>
+          <CardHeader>
             <motion.div variants={fadeInUp}>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center">
