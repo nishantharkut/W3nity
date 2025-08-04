@@ -34,7 +34,6 @@ const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'))
 const PaymentCancelPage = lazy(() => import('./pages/PaymentCancelPage'))
 const PaymentSuccessNFT = lazy(() => import('./pages/PaymentSuccessNFT'))
 
-
 const queryClient = new QueryClient()
 
 const App = () => {
@@ -52,9 +51,15 @@ const App = () => {
 				<Toaster />
 				<Sonner />
 				<BrowserRouter>
-					<ScrollToTop />
 					<div className='min-h-screen flex flex-col'>
-						<Suspense fallback={<div>Loading...</div>}>
+						<Suspense
+							fallback={
+								<div className='flex min-h-screen w-full justify-center items-center'>
+									Loading...
+								</div>
+							}
+						>
+							<ScrollToTop />
 							<Routes>
 								<Route path='/login' element={<LoginPage />} />
 								<Route
