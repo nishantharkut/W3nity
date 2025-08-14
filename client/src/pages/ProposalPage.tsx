@@ -437,30 +437,30 @@ const ProposalPage = () => {
   //     setTxStatus("⚠ Please connect your wallet to proceed.");
   //     return;
   //   }
-  
+
   //   try {
   //     setIsReleasing(true);
-  
+
   //     // Get the address of the connected wallet
   //     const signerAddress = await signer.getAddress();
-  
+
   //     // Initialize the escrow contract instance
   //     const contract = getEscrowInstance(signer, ESCROW_CONTRACT_ADDRESS);
-  
+
   //     // Retrieve the payer's address from the contract
   //     const payer: string = await contract.payer();
-  
+
   //     // Check if the connected wallet is the payer
   //     if (signerAddress.toLowerCase() !== payer.toLowerCase()) {
   //       setTxStatus("❌ Only the client who funded the escrow can release funds.");
   //       setIsReleasing(false);
   //       return;
   //     }
-  
+
   //     // Proceed to release funds
   //     const tx = await contract.releaseFunds();
   //     await tx.wait();
-  
+
   //     setTxStatus("✅ Funds released successfully!");
   //   } catch (err: any) {
   //     console.error("Release error:", err);
@@ -476,37 +476,37 @@ const ProposalPage = () => {
   //     setIsReleasing(false);
   //   }
   // };
-  
-  
-  
+
+
+
   const handleRelease = async () => {
     if (!signer) {
       setTxStatus("⚠ Please connect your wallet to proceed.");
       return;
     }
-  
+
     try {
       setIsReleasing(true);
       setTxStatus("⏳ Releasing funds...");
-  
+
       const contract = getEscrowInstance(signer, ESCROW_CONTRACT_ADDRESS);
-  
+
       if (!contract) {
         setTxStatus("❌ Contract instance not found.");
         setIsReleasing(false);
         return;
       }
-  
+
       // Check if the connected wallet is the client
       const signerAddress = await signer.getAddress();
       const clientAddress = await contract.i_client();
-      
+
       if (signerAddress.toLowerCase() !== clientAddress.toLowerCase()) {
         setTxStatus("❌ Only the client who funded the escrow can release funds.");
         setIsReleasing(false);
         return;
       }
-  
+
       // Check if funds are already released
       const isComplete = await contract.s_isComplete();
       if (isComplete) {
@@ -514,11 +514,11 @@ const ProposalPage = () => {
         setIsReleasing(false);
         return;
       }
-  
+
       // Call releaseFunds on the contract
       const tx = await contract.releaseFunds();
       await tx.wait();
-  
+
       setTxStatus("✅ Funds released successfully!");
     } catch (err: any) {
       console.error("Release error:", err);
@@ -527,8 +527,8 @@ const ProposalPage = () => {
       setIsReleasing(false);
     }
   };
-  
-  
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -553,7 +553,7 @@ const ProposalPage = () => {
     try {
       // Get the current user's wallet address (this is the freelancer submitting the proposal)
       const freelancerWalletAddress = await signer.getAddress();
-      
+
       // For now, we'll use the current user as the freelancer who will receive payment
       // In a complete implementation, the client should fund the escrow after accepting the proposal
       const factory = new ethers.ContractFactory(
@@ -561,40 +561,31 @@ const ProposalPage = () => {
         EscrowABI.bytecode,
         signer
       );
-    
+
       const ethValue = ethers.parseEther(proposedBudget.toString());
-    
+
       // Deploy contract with freelancer address and send ETH
       // Note: In reality, the client should be the one funding this escrow
       const contract = await factory.deploy(freelancerWalletAddress, { value: ethValue });
-    
+
       const receipt = await contract.waitForDeployment();
-    
+
       escrowAddress = await contract.getAddress();
-    
+
       console.log("✅ Escrow deployed at:", escrowAddress);
       console.log("💰 Funded with:", proposedBudget, "ETH");
       console.log("👨‍💼 Freelancer address:", freelancerWalletAddress);
     } catch (err: any) {
       console.error("Contract deployment error:", err);
-      
-      // Handle custom deployment errors
-      if (err?.reason) {
-        if (err.reason.includes("Escrow__NoEtherSent")) {
-          toast({ title: "Deployment Failed", description: "No ETH was sent with the transaction" });
-        } else if (err.reason.includes("Escrow__InvalidFreelancerAddress")) {
-          toast({ title: "Deployment Failed", description: "Invalid freelancer address provided" });
-        } else {
-          toast({ title: "Deployment Failed", description: err.reason });
-        }
-      } else {
-        toast({ title: "Contract Deployment Failed", description: err.message || "Unknown error" });
-      }
+      toast({
+        title: "Deployment Failed",
+        description: parseEscrowError(err)
+      });
       setIsSubmitting(false);
       return;
     }
-    
-    
+
+
 
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/api/proposals`, {
@@ -793,74 +784,74 @@ const ProposalPage = () => {
         </div>
 
         <div className="space-y-6">
-            {/* Tips Card */}
-            <Card className="glass-effect border-blue-200 bg-blue-50/50">
-              <CardHeader>
-                <CardTitle className="text-lg text-blue-800">💡 Proposal Tips</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-blue-700 space-y-3">
-                <p>• Personalize your message to the specific project</p>
-                <p>• Highlight relevant experience and portfolio pieces</p>
-                <p>• Be realistic with your timeline and budget</p>
-                <p>• Ask clarifying questions to show engagement</p>
-                <p>• Proofread before submitting</p>
-              </CardContent>
-            </Card>
+          {/* Tips Card */}
+          <Card className="glass-effect border-blue-200 bg-blue-50/50">
+            <CardHeader>
+              <CardTitle className="text-lg text-blue-800">💡 Proposal Tips</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-blue-700 space-y-3">
+              <p>• Personalize your message to the specific project</p>
+              <p>• Highlight relevant experience and portfolio pieces</p>
+              <p>• Be realistic with your timeline and budget</p>
+              <p>• Ask clarifying questions to show engagement</p>
+              <p>• Proofread before submitting</p>
+            </CardContent>
+          </Card>
 
-            {/* Project Summary */}
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle className="text-lg">Project Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div>
-                  <p className="font-medium text-muted-foreground">Client Budget</p>
-                  <p className="font-semibold">${gig.minBudget} - ${gig.maxBudget}</p>
+          {/* Project Summary */}
+          <Card className="glass-effect">
+            <CardHeader>
+              <CardTitle className="text-lg">Project Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium text-muted-foreground">Client Budget</p>
+                <p className="font-semibold">${gig.minBudget} - ${gig.maxBudget}</p>
+              </div>
+              <div>
+                <p className="font-medium text-muted-foreground">Required Skills</p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {gig.skills.map(skill => (
+                    <Badge key={skill} variant="outline" className="text-xs">
+                      {skill}
+                    </Badge>
+                  ))}
                 </div>
-                <div>
-                  <p className="font-medium text-muted-foreground">Required Skills</p>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {gig.skills.map(skill => (
-                      <Badge key={skill} variant="outline" className="text-xs">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium text-muted-foreground">Category</p>
-                  <p className="capitalize">{gig.category.replace('-', ' ')}</p>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div>
+                <p className="font-medium text-muted-foreground">Category</p>
+                <p className="capitalize">{gig.category.replace('-', ' ')}</p>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Form Validation */}
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle className="text-lg">Checklist</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className={`flex items-center gap-2 ${coverLetter.trim() ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${coverLetter.trim() ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
-                    {coverLetter.trim() && <span className="text-white text-xs">✓</span>}
-                  </div>
-                  Cover letter written
+          {/* Form Validation */}
+          <Card className="glass-effect">
+            <CardHeader>
+              <CardTitle className="text-lg">Checklist</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className={`flex items-center gap-2 ${coverLetter.trim() ? 'text-green-600' : 'text-muted-foreground'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${coverLetter.trim() ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                  {coverLetter.trim() && <span className="text-white text-xs">✓</span>}
                 </div>
-                <div className={`flex items-center gap-2 ${proposedBudget ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${proposedBudget ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
-                    {proposedBudget && <span className="text-white text-xs">✓</span>}
-                  </div>
-                  Budget proposed
+                Cover letter written
+              </div>
+              <div className={`flex items-center gap-2 ${proposedBudget ? 'text-green-600' : 'text-muted-foreground'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${proposedBudget ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                  {proposedBudget && <span className="text-white text-xs">✓</span>}
                 </div>
-                <div className={`flex items-center gap-2 ${deliveryTime ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${deliveryTime ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
-                    {deliveryTime && <span className="text-white text-xs">✓</span>}
-                  </div>
-                  Delivery time set
+                Budget proposed
+              </div>
+              <div className={`flex items-center gap-2 ${deliveryTime ? 'text-green-600' : 'text-muted-foreground'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${deliveryTime ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                  {deliveryTime && <span className="text-white text-xs">✓</span>}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                Delivery time set
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

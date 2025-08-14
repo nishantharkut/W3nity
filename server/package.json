@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.0",
+    "nodemon": "^3.1.10",
     "pm2": "^6.0.6",
     "socket.io": "^4.8.1",
     "stripe": "^18.2.0"
