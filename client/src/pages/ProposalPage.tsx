@@ -494,11 +494,30 @@ const ProposalPage = () => {
   
     try {
       setIsReleasing(true);
+      setTxStatus("⏳ Releasing funds...");
   
       const contract = getEscrowInstance(signer, ESCROW_CONTRACT_ADDRESS);
   
       if (!contract) {
         setTxStatus("❌ Contract instance not found.");
+        setIsReleasing(false);
+        return;
+      }
+  
+      // Check if the connected wallet is the client
+      const signerAddress = await signer.getAddress();
+      const clientAddress = await contract.i_client();
+      
+      if (signerAddress.toLowerCase() !== clientAddress.toLowerCase()) {
+        setTxStatus("❌ Only the client who funded the escrow can release funds.");
+        setIsReleasing(false);
+        return;
+      }
+  
+      // Check if funds are already released
+      const isComplete = await contract.s_isComplete();
+      if (isComplete) {
+        setTxStatus("❌ Funds have already been released.");
         setIsReleasing(false);
         return;
       }
@@ -511,19 +530,32 @@ const ProposalPage = () => {
     } catch (err: any) {
       console.error("Release error:", err);
   
-      // Ethers errors may have different formats, so we check multiple fields safely
-      const code = err?.code || err?.error?.code || err?.info?.error?.code;
-      const message =
-        err?.reason ||
-        err?.shortMessage ||
-        err?.message ||
-        "Unknown error.";
-  
-      setTxStatus(
-        code === 4001
-          ? "Transaction rejected by user."
-          : `❌ Failed to release funds: ${message}`
-      );
+      // Handle custom contract errors
+      if (err?.reason) {
+        if (err.reason.includes("Escrow__NotClient")) {
+          setTxStatus("❌ Only the client can release funds.");
+        } else if (err.reason.includes("Escrow__FundsAlreadyReleased")) {
+          setTxStatus("❌ Funds have already been released.");
+        } else if (err.reason.includes("Escrow__InsufficientBalance")) {
+          setTxStatus("❌ Insufficient balance in the contract.");
+        } else if (err.reason.includes("Escrow__EtherTransferFailed")) {
+          setTxStatus("❌ Failed to transfer Ether to freelancer.");
+        } else {
+          setTxStatus(`❌ Failed to release funds: ${err.reason}`);
+        }
+      } else {
+        const code = err?.code || err?.error?.code || err?.info?.error?.code;
+        const message =
+          err?.shortMessage ||
+          err?.message ||
+          "Unknown error.";
+    
+        setTxStatus(
+          code === 4001
+            ? "Transaction rejected by user."
+            : `❌ Failed to release funds: ${message}`
+        );
+      }
     } finally {
       setIsReleasing(false);
     }
