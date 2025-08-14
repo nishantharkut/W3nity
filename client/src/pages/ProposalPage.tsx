@@ -365,23 +365,16 @@ import {
 } from "lucide-react";
 
 import { useWeb3 } from "@/hooks/useWeb3";
-import { getEscrowInstance } from "@/lib/escrow";
+import { getEscrowInstance, parseEscrowError } from "@/lib/escrow";
 import { useAuthState } from "../hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import EscrowABI from "@/lib/Escrow.json";
 import { ethers } from "ethers";
 import axios from "axios";
 
-// const ESCROW_CONTRACT_ADDRESS = "0x21Ed0dC8810420c09a6507427F77fEF286121aC6";
-const ESCROW_CONTRACT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; // added new deployed address
+import { Gig } from "@/types";
 
-type Gig = {
-  title: string;
-  minBudget: number;
-  maxBudget: number;
-  skills: string[];
-  category: string;
-};
+const ESCROW_CONTRACT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
 const ProposalPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -529,33 +522,7 @@ const ProposalPage = () => {
       setTxStatus("✅ Funds released successfully!");
     } catch (err: any) {
       console.error("Release error:", err);
-  
-      // Handle custom contract errors
-      if (err?.reason) {
-        if (err.reason.includes("Escrow__NotClient")) {
-          setTxStatus("❌ Only the client can release funds.");
-        } else if (err.reason.includes("Escrow__FundsAlreadyReleased")) {
-          setTxStatus("❌ Funds have already been released.");
-        } else if (err.reason.includes("Escrow__InsufficientBalance")) {
-          setTxStatus("❌ Insufficient balance in the contract.");
-        } else if (err.reason.includes("Escrow__EtherTransferFailed")) {
-          setTxStatus("❌ Failed to transfer Ether to freelancer.");
-        } else {
-          setTxStatus(`❌ Failed to release funds: ${err.reason}`);
-        }
-      } else {
-        const code = err?.code || err?.error?.code || err?.info?.error?.code;
-        const message =
-          err?.shortMessage ||
-          err?.message ||
-          "Unknown error.";
-    
-        setTxStatus(
-          code === 4001
-            ? "Transaction rejected by user."
-            : `❌ Failed to release funds: ${message}`
-        );
-      }
+      setTxStatus(`❌ ${parseEscrowError(err)}`);
     } finally {
       setIsReleasing(false);
     }
@@ -584,8 +551,11 @@ const ProposalPage = () => {
     let escrowAddress = "";
 
     try {
-      const signerAddress = await signer.getAddress();
-    
+      // Get the current user's wallet address (this is the freelancer submitting the proposal)
+      const freelancerWalletAddress = await signer.getAddress();
+      
+      // For now, we'll use the current user as the freelancer who will receive payment
+      // In a complete implementation, the client should fund the escrow after accepting the proposal
       const factory = new ethers.ContractFactory(
         EscrowABI.abi,
         EscrowABI.bytecode,
@@ -594,16 +564,32 @@ const ProposalPage = () => {
     
       const ethValue = ethers.parseEther(proposedBudget.toString());
     
-      const contract = await factory.deploy(signerAddress, { value: ethValue });
+      // Deploy contract with freelancer address and send ETH
+      // Note: In reality, the client should be the one funding this escrow
+      const contract = await factory.deploy(freelancerWalletAddress, { value: ethValue });
     
-     
       const receipt = await contract.waitForDeployment();
     
-       escrowAddress = await contract.getAddress();
+      escrowAddress = await contract.getAddress();
     
       console.log("✅ Escrow deployed at:", escrowAddress);
+      console.log("💰 Funded with:", proposedBudget, "ETH");
+      console.log("👨‍💼 Freelancer address:", freelancerWalletAddress);
     } catch (err: any) {
-      toast({ title: "Contract Deployment Failed", description: err.message });
+      console.error("Contract deployment error:", err);
+      
+      // Handle custom deployment errors
+      if (err?.reason) {
+        if (err.reason.includes("Escrow__NoEtherSent")) {
+          toast({ title: "Deployment Failed", description: "No ETH was sent with the transaction" });
+        } else if (err.reason.includes("Escrow__InvalidFreelancerAddress")) {
+          toast({ title: "Deployment Failed", description: "Invalid freelancer address provided" });
+        } else {
+          toast({ title: "Deployment Failed", description: err.reason });
+        }
+      } else {
+        toast({ title: "Contract Deployment Failed", description: err.message || "Unknown error" });
+      }
       setIsSubmitting(false);
       return;
     }
