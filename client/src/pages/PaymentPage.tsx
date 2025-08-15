@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { InlineLoader } from '@/components/ui/spinner'
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -218,7 +219,9 @@ const PaymentPage = () => {
       </Button>
 
       {loading ? (
-        <div className="text-center mt-10">Loading event...</div>
+        <div className="text-center mt-10">
+          <InlineLoader message="Loading event..." variant="faded" size="lg" />
+        </div>
       ) : error || !event ? (
         <div className="text-center mt-10">
           <p className="text-red-500 mb-4">{error}</p>

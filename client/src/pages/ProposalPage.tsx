@@ -344,7 +344,8 @@
 // export default ProposalPage;
 
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { InlineLoader } from '@/components/ui/spinner'
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -624,7 +625,11 @@ const ProposalPage = () => {
 
   const isFormValid = coverLetter.trim() && proposedBudget && deliveryTime;
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) return (
+    <div className="text-center mt-10">
+      <InlineLoader message="Loading gig details..." variant="faded" size="lg" />
+    </div>
+  );
 
   if (error || !gig) {
     return (
