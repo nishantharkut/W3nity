@@ -344,7 +344,8 @@
 // export default ProposalPage;
 
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { InlineLoader } from '@/components/ui/spinner'
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -365,23 +366,16 @@ import {
 } from "lucide-react";
 
 import { useWeb3 } from "@/hooks/useWeb3";
-import { getEscrowInstance } from "@/lib/escrow";
+import { getEscrowInstance, parseEscrowError } from "@/lib/escrow";
 import { useAuthState } from "../hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import EscrowABI from "@/lib/Escrow.json";
 import { ethers } from "ethers";
 import axios from "axios";
 
-// const ESCROW_CONTRACT_ADDRESS = "0x21Ed0dC8810420c09a6507427F77fEF286121aC6";
-const ESCROW_CONTRACT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; // added new deployed address
+import { Gig } from "@/types";
 
-type Gig = {
-  title: string;
-  minBudget: number;
-  maxBudget: number;
-  skills: string[];
-  category: string;
-};
+const ESCROW_CONTRACT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
 const ProposalPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -444,30 +438,30 @@ const ProposalPage = () => {
   //     setTxStatus("⚠ Please connect your wallet to proceed.");
   //     return;
   //   }
-  
+
   //   try {
   //     setIsReleasing(true);
-  
+
   //     // Get the address of the connected wallet
   //     const signerAddress = await signer.getAddress();
-  
+
   //     // Initialize the escrow contract instance
   //     const contract = getEscrowInstance(signer, ESCROW_CONTRACT_ADDRESS);
-  
+
   //     // Retrieve the payer's address from the contract
   //     const payer: string = await contract.payer();
-  
+
   //     // Check if the connected wallet is the payer
   //     if (signerAddress.toLowerCase() !== payer.toLowerCase()) {
   //       setTxStatus("❌ Only the client who funded the escrow can release funds.");
   //       setIsReleasing(false);
   //       return;
   //     }
-  
+
   //     // Proceed to release funds
   //     const tx = await contract.releaseFunds();
   //     await tx.wait();
-  
+
   //     setTxStatus("✅ Funds released successfully!");
   //   } catch (err: any) {
   //     console.error("Release error:", err);
@@ -483,53 +477,58 @@ const ProposalPage = () => {
   //     setIsReleasing(false);
   //   }
   // };
-  
-  
-  
+
+
+
   const handleRelease = async () => {
     if (!signer) {
       setTxStatus("⚠ Please connect your wallet to proceed.");
       return;
     }
-  
+
     try {
       setIsReleasing(true);
-  
+
       const contract = getEscrowInstance(signer, ESCROW_CONTRACT_ADDRESS);
-  
+
       if (!contract) {
         setTxStatus("❌ Contract instance not found.");
         setIsReleasing(false);
         return;
       }
-  
+
+      // Check if the connected wallet is the client
+      const signerAddress = await signer.getAddress();
+      const clientAddress = await contract.i_client();
+
+      if (signerAddress.toLowerCase() !== clientAddress.toLowerCase()) {
+        setTxStatus("❌ Only the client who funded the escrow can release funds.");
+        setIsReleasing(false);
+        return;
+      }
+
+      // Check if funds are already released
+      const isComplete = await contract.s_isComplete();
+      if (isComplete) {
+        setTxStatus("❌ Funds have already been released.");
+        setIsReleasing(false);
+        return;
+      }
+
       // Call releaseFunds on the contract
       const tx = await contract.releaseFunds();
       await tx.wait();
-  
+
       setTxStatus("✅ Funds released successfully!");
     } catch (err: any) {
       console.error("Release error:", err);
-  
-      // Ethers errors may have different formats, so we check multiple fields safely
-      const code = err?.code || err?.error?.code || err?.info?.error?.code;
-      const message =
-        err?.reason ||
-        err?.shortMessage ||
-        err?.message ||
-        "Unknown error.";
-  
-      setTxStatus(
-        code === 4001
-          ? "Transaction rejected by user."
-          : `❌ Failed to release funds: ${message}`
-      );
+      setTxStatus(`❌ ${parseEscrowError(err)}`);
     } finally {
       setIsReleasing(false);
     }
   };
-  
-  
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -552,31 +551,39 @@ const ProposalPage = () => {
     let escrowAddress = "";
 
     try {
-      const signerAddress = await signer.getAddress();
-    
+      // Get the current user's wallet address (this is the freelancer submitting the proposal)
+      const freelancerWalletAddress = await signer.getAddress();
+
+      // For now, we'll use the current user as the freelancer who will receive payment
+      // In a complete implementation, the client should fund the escrow after accepting the proposal
       const factory = new ethers.ContractFactory(
         EscrowABI.abi,
         EscrowABI.bytecode,
         signer
       );
-    
+
       const ethValue = ethers.parseEther(proposedBudget.toString());
-    
-      const contract = await factory.deploy(signerAddress, { value: ethValue });
-    
-     
+
+      const contract = await factory.deploy(freelancerWalletAddress, { value: ethValue });
+
       const receipt = await contract.waitForDeployment();
-    
-       escrowAddress = await contract.getAddress();
-    
+
+      escrowAddress = await contract.getAddress();
+
       console.log("✅ Escrow deployed at:", escrowAddress);
+      console.log("💰 Funded with:", proposedBudget, "ETH");
+      console.log("👨‍💼 Freelancer address:", freelancerWalletAddress);
     } catch (err: any) {
-      toast({ title: "Contract Deployment Failed", description: err.message });
+      console.error("Contract deployment error:", err);
+      toast({
+        title: "Deployment Failed",
+        description: parseEscrowError(err)
+      });
       setIsSubmitting(false);
       return;
     }
-    
-    
+
+
 
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/api/proposals`, {
@@ -618,7 +625,11 @@ const ProposalPage = () => {
 
   const isFormValid = coverLetter.trim() && proposedBudget && deliveryTime;
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) return (
+    <div className="text-center mt-10">
+      <InlineLoader message="Loading gig details..." variant="faded" size="lg" />
+    </div>
+  );
 
   if (error || !gig) {
     return (
@@ -775,74 +786,74 @@ const ProposalPage = () => {
         </div>
 
         <div className="space-y-6">
-            {/* Tips Card */}
-            <Card className="glass-effect border-blue-200 bg-blue-50/50">
-              <CardHeader>
-                <CardTitle className="text-lg text-blue-800">💡 Proposal Tips</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-blue-700 space-y-3">
-                <p>• Personalize your message to the specific project</p>
-                <p>• Highlight relevant experience and portfolio pieces</p>
-                <p>• Be realistic with your timeline and budget</p>
-                <p>• Ask clarifying questions to show engagement</p>
-                <p>• Proofread before submitting</p>
-              </CardContent>
-            </Card>
+          {/* Tips Card */}
+          <Card className="glass-effect border-blue-200 bg-blue-50/50">
+            <CardHeader>
+              <CardTitle className="text-lg text-blue-800">💡 Proposal Tips</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-blue-700 space-y-3">
+              <p>• Personalize your message to the specific project</p>
+              <p>• Highlight relevant experience and portfolio pieces</p>
+              <p>• Be realistic with your timeline and budget</p>
+              <p>• Ask clarifying questions to show engagement</p>
+              <p>• Proofread before submitting</p>
+            </CardContent>
+          </Card>
 
-            {/* Project Summary */}
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle className="text-lg">Project Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div>
-                  <p className="font-medium text-muted-foreground">Client Budget</p>
-                  <p className="font-semibold">${gig.minBudget} - ${gig.maxBudget}</p>
+          {/* Project Summary */}
+          <Card className="glass-effect">
+            <CardHeader>
+              <CardTitle className="text-lg">Project Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium text-muted-foreground">Client Budget</p>
+                <p className="font-semibold">${gig.minBudget} - ${gig.maxBudget}</p>
+              </div>
+              <div>
+                <p className="font-medium text-muted-foreground">Required Skills</p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {gig.skills.map(skill => (
+                    <Badge key={skill} variant="outline" className="text-xs">
+                      {skill}
+                    </Badge>
+                  ))}
                 </div>
-                <div>
-                  <p className="font-medium text-muted-foreground">Required Skills</p>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {gig.skills.map(skill => (
-                      <Badge key={skill} variant="outline" className="text-xs">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium text-muted-foreground">Category</p>
-                  <p className="capitalize">{gig.category.replace('-', ' ')}</p>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div>
+                <p className="font-medium text-muted-foreground">Category</p>
+                <p className="capitalize">{gig.category.replace('-', ' ')}</p>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Form Validation */}
-            <Card className="glass-effect">
-              <CardHeader>
-                <CardTitle className="text-lg">Checklist</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className={`flex items-center gap-2 ${coverLetter.trim() ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${coverLetter.trim() ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
-                    {coverLetter.trim() && <span className="text-white text-xs">✓</span>}
-                  </div>
-                  Cover letter written
+          {/* Form Validation */}
+          <Card className="glass-effect">
+            <CardHeader>
+              <CardTitle className="text-lg">Checklist</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className={`flex items-center gap-2 ${coverLetter.trim() ? 'text-green-600' : 'text-muted-foreground'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${coverLetter.trim() ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                  {coverLetter.trim() && <span className="text-white text-xs">✓</span>}
                 </div>
-                <div className={`flex items-center gap-2 ${proposedBudget ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${proposedBudget ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
-                    {proposedBudget && <span className="text-white text-xs">✓</span>}
-                  </div>
-                  Budget proposed
+                Cover letter written
+              </div>
+              <div className={`flex items-center gap-2 ${proposedBudget ? 'text-green-600' : 'text-muted-foreground'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${proposedBudget ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                  {proposedBudget && <span className="text-white text-xs">✓</span>}
                 </div>
-                <div className={`flex items-center gap-2 ${deliveryTime ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${deliveryTime ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
-                    {deliveryTime && <span className="text-white text-xs">✓</span>}
-                  </div>
-                  Delivery time set
+                Budget proposed
+              </div>
+              <div className={`flex items-center gap-2 ${deliveryTime ? 'text-green-600' : 'text-muted-foreground'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${deliveryTime ? 'bg-green-600 border-green-600' : 'border-muted-foreground'}`}>
+                  {deliveryTime && <span className="text-white text-xs">✓</span>}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                Delivery time set
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

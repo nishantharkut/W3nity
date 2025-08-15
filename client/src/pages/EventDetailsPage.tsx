@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { InlineLoader } from '@/components/ui/spinner'
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,7 +59,11 @@ const EventDetailsPage = () => {
 
   // Loading and error states
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return (
+      <div className="text-center mt-10">
+        <InlineLoader message="Loading event details..." variant="faded" size="lg" />
+      </div>
+    );
   }
 
   if (error || !event) {

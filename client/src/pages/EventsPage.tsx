@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
+import { InlineLoader } from '@/components/ui/spinner'
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,7 +79,7 @@ const EventsPage = () => {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <p>Loading events...</p>
+        <InlineLoader message="Loading events..." variant="faded" size="lg" />
       </div>
     );
   }
@@ -186,21 +187,21 @@ const EventsPage = () => {
       {/* Event Tabs */}
       <Tabs defaultValue="upcoming" className="space-y-6">
         <motion.div initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}>
-        <TabsList className="grid w-full grid-cols-3 glass-effect">
-          <TabsTrigger value="upcoming" className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4" />
-            <span>Upcoming ({upcomingEvents.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="live" className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span>Live ({liveEvents.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="past">Past ({pastEvents.length})</TabsTrigger>
-        </TabsList>
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}>
+          <TabsList className="grid w-full grid-cols-3 glass-effect">
+            <TabsTrigger value="upcoming" className="flex items-center space-x-2">
+              <Calendar className="w-4 h-4" />
+              <span>Upcoming ({upcomingEvents.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="live" className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <span>Live ({liveEvents.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="past">Past ({pastEvents.length})</TabsTrigger>
+          </TabsList>
         </motion.div>
-        
+
 
         <TabsContent value="upcoming" className="space-y-6">
           <motion.div

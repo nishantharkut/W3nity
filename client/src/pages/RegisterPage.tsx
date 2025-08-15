@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react'
+import { Spinner } from '@/components/ui/spinner'
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -216,7 +217,7 @@ const RegisterPage = () => {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                  <Spinner variant="default" size="sm" className="text-white" />
                 ) : (
                   <>
                     Create Account
