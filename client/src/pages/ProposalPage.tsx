@@ -487,7 +487,6 @@ const ProposalPage = () => {
 
     try {
       setIsReleasing(true);
-      setTxStatus("⏳ Releasing funds...");
 
       const contract = getEscrowInstance(signer, ESCROW_CONTRACT_ADDRESS);
 
@@ -564,8 +563,6 @@ const ProposalPage = () => {
 
       const ethValue = ethers.parseEther(proposedBudget.toString());
 
-      // Deploy contract with freelancer address and send ETH
-      // Note: In reality, the client should be the one funding this escrow
       const contract = await factory.deploy(freelancerWalletAddress, { value: ethValue });
 
       const receipt = await contract.waitForDeployment();
