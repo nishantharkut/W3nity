@@ -1,63 +1,59 @@
-import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; 
-import { ArrowLeft, Mail, KeyRound } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import { Home, ArrowLeft, Search } from 'lucide-react';
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log('Password reset request for:', email);
-
-    toast.success('Password reset link sent successfully!');
-  };
-
+const NotFound = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 ">
-      <div className="text-center max-w-md w-full mx-auto p-8 border border-border rounded-xl shadow-lg bg-card">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-           <KeyRound className="h-8 w-8 text-primary" />
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="text-center max-w-md mx-auto">
+        <div className="relative mb-8">
+          <div className="text-9xl font-bold text-gradient opacity-20">404</div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Search className="w-16 h-16 text-muted-foreground animate-pulse" />
+          </div>
         </div>
         
-        <h1 className="text-3xl font-bold mb-3 text-foreground">Forgot Your Password?</h1>
-        <p className="text-muted-foreground mb-8">
-          No worries! Enter your email address below and we'll send you a link to reset your password.
+        <h1 className="text-4xl font-bold mb-4">Page Not Found</h1>
+        <p className="text-muted-foreground mb-8 text-lg">
+          Oops! The page you're looking for seems to have vanished into the digital void.
         </p>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="pl-10 h-12" 
-            />
-          </div>
-          <Button type="submit" className="w-full h-12 text-lg glow-button">
-            Send Reset Link
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button asChild className="glow-button">
+            <Link to="/">
+              <Home className="w-4 h-4 mr-2" />
+              Go Home
+            </Link>
           </Button>
-        </form>
+          <Button variant="outline" onClick={() => window.history.back()}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Go Back
+          </Button>
+        </div>
         
-        <div className="mt-8">
-          <Button variant="ghost" asChild>
-            <a href="/login">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Login
-            </a>
-          </Button>
+        <div className="mt-12 p-6 bg-gradient-dark rounded-lg border border-border/50">
+          <h3 className="font-semibold mb-2">Popular Destinations</h3>
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Link to="/freelance" className="text-sm text-primary hover:text-primary/80 transition-colors">
+              Freelance Gigs
+            </Link>
+            <span className="text-muted-foreground">•</span>
+            <Link to="/events" className="text-sm text-primary hover:text-primary/80 transition-colors">
+              Tech Events
+            </Link>
+            <span className="text-muted-foreground">•</span>
+            <Link to="/community" className="text-sm text-primary hover:text-primary/80 transition-colors">
+              Community
+            </Link>
+            <span className="text-muted-foreground">•</span>
+            <Link to="/dashboard" className="text-sm text-primary hover:text-primary/80 transition-colors">
+              Dashboard
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default ForgotPassword;
-
-
-
+export default NotFound;

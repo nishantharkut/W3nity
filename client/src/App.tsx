@@ -12,6 +12,7 @@ import Navbar from '@/components/Navbar'
 import Breadcrumbs from './components/BreadCrumbs'
 import Footer from '@/components/Footer'
 import NotFound from './pages/NotFound'
+import ForgotPassword from './pages/ForgotPassword'
 
 const Index = lazy(() => import('./pages/Index'))
 const FreelancePage = lazy(() => import('./pages/FreelancePage'))
@@ -33,6 +34,7 @@ const PaymentPage = lazy(() => import('./pages/PaymentPage'))
 const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'))
 const PaymentCancelPage = lazy(() => import('./pages/PaymentCancelPage'))
 const PaymentSuccessNFT = lazy(() => import('./pages/PaymentSuccessNFT'))
+
 
 const queryClient = new QueryClient()
 
@@ -183,7 +185,12 @@ const App = () => {
 																<PaymentSuccessNFT />
 															}
 														/>
-
+														<Route
+															path='/forgot-password'
+															element={
+																<ForgotPassword />
+															}
+														/>
 														<Route
 															path='*'
 															element={
