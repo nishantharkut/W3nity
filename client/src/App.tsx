@@ -35,7 +35,6 @@ const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'))
 const PaymentCancelPage = lazy(() => import('./pages/PaymentCancelPage'))
 const PaymentSuccessNFT = lazy(() => import('./pages/PaymentSuccessNFT'))
 
-
 const queryClient = new QueryClient()
 
 const App = () => {
