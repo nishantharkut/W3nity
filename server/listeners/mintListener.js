@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const Ticket = require("../models/ticket");
-const abi = require("../../artifacts/contracts/EventTicketNFT.sol/EventTicketNFT.json").abi;
+const abi = require("../abi/EventTicketNFT.json").abi;
 
 async function main() {
   // Connect to MongoDB
