@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PageLoader, InlineLoader } from '@/components/ui/spinner';
 
 export const GigCardSkeleton: React.FC = () => (
   <Card className="animate-pulse">
@@ -103,16 +104,8 @@ export const DashboardSkeleton: React.FC = () => (
   </div>
 );
 
-export const PageLoadingSpinner: React.FC<{ message?: string }> = ({ 
-  message = "Loading..." 
+export const PageLoadingSpinner: React.FC<{ message?: string }> = ({
+  message = "Loading..."
 }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50">
-    <div className="text-center">
-      <div className="relative">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mx-auto"></div>
-        <div className="animate-ping absolute inset-0 rounded-full h-16 w-16 border-4 border-primary/10"></div>
-      </div>
-      <p className="text-muted-foreground mt-4 font-medium">{message}</p>
-    </div>
-  </div>
+  <PageLoader message={message} variant="faded" />
 );

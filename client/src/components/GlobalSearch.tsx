@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Spinner } from '@/components/ui/spinner';
+import { LoadingSpinner } from '@/components/ui/spinner';
 import {
   Search,
   Users,
@@ -198,21 +200,22 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
             <div className="max-h-96 overflow-y-auto">
               {isLoading ? (
                 <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Searching...
-                  </p>
+                  <div className="flex flex-col items-center space-y-3">
+                    <Spinner variant="faded" size="md" />
+                    <p className="text-sm text-foreground">
+                      Searching...
+                    </p>
+                  </div>
                 </div>
               ) : results.length > 0 ? (
                 <div className="py-2">
                   {results.map((result, index) => (
                     <div
                       key={result.id}
-                      className={`px-4 py-3 cursor-pointer transition-colors flex items-center gap-3 ${
-                        selectedIndex === index
+                      className={`px-4 py-3 cursor-pointer transition-colors flex items-center gap-3 ${selectedIndex === index
                           ? "bg-gray-100"
                           : "hover:bg-gray-50"
-                      }`}
+                        }`}
                       onClick={() => handleResultClick(result)}
                     >
                       <div className="flex-shrink-0">
