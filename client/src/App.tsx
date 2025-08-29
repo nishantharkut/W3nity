@@ -4,8 +4,9 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useAuthState } from '@/hooks/useAuth'
-import { lazy, Suspense, useEffect } from 'react'
+import { PageLoader } from '@/components/ui/spinner'
 import { registerUserForNotifications } from '@/socket'
+import { Suspense, useEffect, lazy } from 'react'
 
 import ScrollToTop from './components/ScrollToTop'
 import Navbar from '@/components/Navbar'
@@ -55,9 +56,7 @@ const App = () => {
 					<div className='min-h-screen flex flex-col'>
 						<Suspense
 							fallback={
-								<div className='flex min-h-screen w-full justify-center items-center'>
-									Loading...
-								</div>
+								<PageLoader message="Loading..." variant="faded" />
 							}
 						>
 							<ScrollToTop />
