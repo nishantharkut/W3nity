@@ -30,13 +30,13 @@ describe("Lock", function () {
     it("Should set the right unlockTime", async function () {
       const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
 
-      expect(await lock.unlockTime()).to.equal(unlockTime);
+      expect(await lock.i_unlockTime()).to.equal(unlockTime);
     });
 
     it("Should set the right owner", async function () {
       const { lock, owner } = await loadFixture(deployOneYearLockFixture);
 
-      expect(await lock.owner()).to.equal(owner.address);
+      expect(await lock.i_owner()).to.equal(owner.address);
     });
 
     it("Should receive and store the funds to lock", async function () {
@@ -53,8 +53,19 @@ describe("Lock", function () {
       // We don't use the fixture here because we want a different deployment
       const latestTime = await time.latest();
       const Lock = await hre.ethers.getContractFactory("Lock");
-      await expect(Lock.deploy(latestTime, { value: 1 })).to.be.revertedWith(
-        "Unlock time should be in the future"
+      await expect(Lock.deploy(latestTime, { value: 1 })).to.be.revertedWithCustomError(
+        Lock,
+        "Lock__UnlockTimeNotInFuture"
+      );
+    });
+
+    it("Should fail if no funds are provided", async function () {
+      const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+      const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+      const Lock = await hre.ethers.getContractFactory("Lock");
+      await expect(Lock.deploy(unlockTime, { value: 0 })).to.be.revertedWithCustomError(
+        Lock,
+        "Lock__NoFundsProvided"
       );
     });
   });
@@ -64,8 +75,9 @@ describe("Lock", function () {
       it("Should revert with the right error if called too soon", async function () {
         const { lock } = await loadFixture(deployOneYearLockFixture);
 
-        await expect(lock.withdraw()).to.be.revertedWith(
-          "You can't withdraw yet"
+        await expect(lock.withdraw()).to.be.revertedWithCustomError(
+          lock,
+          "Lock__WithdrawalTooEarly"
         );
       });
 
@@ -78,8 +90,9 @@ describe("Lock", function () {
         await time.increaseTo(unlockTime);
 
         // We use lock.connect() to send a transaction from another account
-        await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWith(
-          "You aren't the owner"
+        await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWithCustomError(
+          lock,
+          "Lock__NotOwner"
         );
       });
 
@@ -122,6 +135,70 @@ describe("Lock", function () {
           [lockedAmount, -lockedAmount]
         );
       });
+    });
+  });
+
+  describe("Additional Functions", function () {
+    it("Should return the correct balance", async function () {
+      const { lock, lockedAmount } = await loadFixture(deployOneYearLockFixture);
+
+      expect(await lock.getBalance()).to.equal(lockedAmount);
+    });
+
+    it("Should return the correct time remaining", async function () {
+      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+      
+      const currentTime = await time.latest();
+      const expectedTimeRemaining = unlockTime - currentTime;
+      
+      expect(await lock.getTimeRemaining()).to.be.closeTo(expectedTimeRemaining, 2);
+    });
+
+    it("Should return 0 time remaining after unlock time", async function () {
+      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+      
+      await time.increaseTo(unlockTime + 1);
+      
+      expect(await lock.getTimeRemaining()).to.equal(0);
+    });
+  });
+
+  describe("Deposits", function () {
+    it("Should emit Deposit event on construction", async function () {
+      const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+      const ONE_GWEI = 1_000_000_000;
+      const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+      const [owner] = await hre.ethers.getSigners();
+
+      const Lock = await hre.ethers.getContractFactory("Lock");
+      const lock = await Lock.deploy(unlockTime, { value: ONE_GWEI });
+      const receipt = await lock.deploymentTransaction()?.wait();
+      
+      // Check that a Deposit event was emitted during deployment
+      const depositEvents = receipt?.logs.filter(log => {
+        try {
+          const parsed = lock.interface.parseLog(log);
+          return parsed?.name === 'Deposit';
+        } catch {
+          return false;
+        }
+      });
+
+      expect(depositEvents).to.have.length(1);
+    });
+
+    it("Should accept additional deposits via receive function", async function () {
+      const { lock, owner, lockedAmount } = await loadFixture(deployOneYearLockFixture);
+      const additionalAmount = 500_000_000;
+
+      await expect(owner.sendTransaction({
+        to: lock.target,
+        value: additionalAmount
+      }))
+        .to.emit(lock, "Deposit")
+        .withArgs(owner.address, additionalAmount);
+
+      expect(await lock.getBalance()).to.equal(lockedAmount + additionalAmount);
     });
   });
 });
