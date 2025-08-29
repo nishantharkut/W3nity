@@ -137,4 +137,68 @@ describe("Lock", function () {
       });
     });
   });
+
+  describe("Additional Functions", function () {
+    it("Should return the correct balance", async function () {
+      const { lock, lockedAmount } = await loadFixture(deployOneYearLockFixture);
+
+      expect(await lock.getBalance()).to.equal(lockedAmount);
+    });
+
+    it("Should return the correct time remaining", async function () {
+      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+      
+      const currentTime = await time.latest();
+      const expectedTimeRemaining = unlockTime - currentTime;
+      
+      expect(await lock.getTimeRemaining()).to.be.closeTo(expectedTimeRemaining, 2);
+    });
+
+    it("Should return 0 time remaining after unlock time", async function () {
+      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+      
+      await time.increaseTo(unlockTime + 1);
+      
+      expect(await lock.getTimeRemaining()).to.equal(0);
+    });
+  });
+
+  describe("Deposits", function () {
+    it("Should emit Deposit event on construction", async function () {
+      const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+      const ONE_GWEI = 1_000_000_000;
+      const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+      const [owner] = await hre.ethers.getSigners();
+
+      const Lock = await hre.ethers.getContractFactory("Lock");
+      const lock = await Lock.deploy(unlockTime, { value: ONE_GWEI });
+      const receipt = await lock.deploymentTransaction()?.wait();
+      
+      // Check that a Deposit event was emitted during deployment
+      const depositEvents = receipt?.logs.filter(log => {
+        try {
+          const parsed = lock.interface.parseLog(log);
+          return parsed?.name === 'Deposit';
+        } catch {
+          return false;
+        }
+      });
+
+      expect(depositEvents).to.have.length(1);
+    });
+
+    it("Should accept additional deposits via receive function", async function () {
+      const { lock, owner, lockedAmount } = await loadFixture(deployOneYearLockFixture);
+      const additionalAmount = 500_000_000;
+
+      await expect(owner.sendTransaction({
+        to: lock.target,
+        value: additionalAmount
+      }))
+        .to.emit(lock, "Deposit")
+        .withArgs(owner.address, additionalAmount);
+
+      expect(await lock.getBalance()).to.equal(lockedAmount + additionalAmount);
+    });
+  });
 });
