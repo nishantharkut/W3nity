@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import { UserJourney } from './UserJourney';
+import { UserJourney } from '../components/UserJourney';
 
 const About = () => {
     const [activeFeature, setActiveFeature] = useState(0);
