@@ -35,6 +35,7 @@ const PaymentPage = lazy(() => import('./pages/PaymentPage'))
 const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'))
 const PaymentCancelPage = lazy(() => import('./pages/PaymentCancelPage'))
 const PaymentSuccessNFT = lazy(() => import('./pages/PaymentSuccessNFT'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
 
 const queryClient = new QueryClient()
 
@@ -187,6 +188,12 @@ const App = () => {
 															path='/forgot-password'
 															element={
 																<ForgotPassword />
+															}
+														/>
+														<Route 
+															path='/about'
+															element={
+																<AboutPage />
 															}
 														/>
 														<Route
